@@ -18,6 +18,7 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.util.Elements;
@@ -29,6 +30,7 @@ import com.google.auto.service.AutoService;
 import com.google.common.collect.ImmutableMap;
 import com.sngular.annotation.pact.Example;
 import com.sngular.annotation.pact.PactDslBodyBuilder;
+import com.sngular.annotation.processor.exception.TemplateFactoryException;
 import com.sngular.annotation.processor.exception.TemplateGenerationException;
 import com.sngular.annotation.processor.mapping.BooleanMapping;
 import com.sngular.annotation.processor.mapping.ByteMapping;
@@ -89,7 +91,12 @@ public class PactDslProcessor extends AbstractProcessor {
 
   @Override
   public boolean process(final Set<? extends TypeElement> annotations, final RoundEnvironment roundEnv) {
-    var templateFactory = new TemplateFactory();
+    TemplateFactory templateFactory;
+    try {
+      templateFactory = new TemplateFactory();
+    } catch (TemplateException e) {
+      throw new TemplateFactoryException(e);
+    }
     elementUtils = processingEnv.getElementUtils();
     typeUtils = processingEnv.getTypeUtils();
     Set<? extends Element> elementsAnnotatedWith = roundEnv.getElementsAnnotatedWith(PactDslBodyBuilder.class);
@@ -204,7 +211,7 @@ public class PactDslProcessor extends AbstractProcessor {
 
   private DslSimpleField composeDslSimpleField(final Element fieldElement, final TypeMapping mapping, final boolean insideCollection) {
     var simpleFieldBuilder = DslSimpleField.builder()
-                         .name(fieldElement.getSimpleName().toString())
+                         .name(getNameOrNull(fieldElement.getSimpleName()))
                          .fieldType(mapping.getFieldType())
                          .functionByType(insideCollection ? mapping.getFunctionOnlyValue() : mapping.getFunctionType())
                          .onlyValueFunction(insideCollection)
@@ -216,6 +223,10 @@ public class PactDslProcessor extends AbstractProcessor {
      simpleFieldBuilder.defaultValue(mapping.getRandomDefaultValue(null));
     }
     return simpleFieldBuilder.build();
+  }
+
+  private String getNameOrNull(final Name simpleName) {
+    return simpleName.toString().matches("[A-Z].*") ? null : simpleName.toString();
   }
 
   private static Object getDefaultValue(final Element fieldElement, final String type) {

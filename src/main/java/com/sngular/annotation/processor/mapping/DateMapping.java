@@ -1,7 +1,6 @@
 package com.sngular.annotation.processor.mapping;
 
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.Date;
 
 import com.sngular.annotation.processor.model.FieldValidations;
@@ -20,7 +19,7 @@ public class DateMapping implements TypeMapping<Date> {
 
   @Override
   public String getFunctionOnlyValue() {
-    return "date";
+    return "dateValue";
   }
 
   @Override

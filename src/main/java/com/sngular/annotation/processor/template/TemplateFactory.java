@@ -23,11 +23,12 @@ public class TemplateFactory {
 
   private final Configuration cfg = new Configuration(Configuration.VERSION_2_3_32);
 
-  public TemplateFactory() {
+  public TemplateFactory() throws TemplateException {
     cfg.setTemplateLoader(new ClasspathTemplateLoader());
     cfg.setDefaultEncoding("UTF-8");
     cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
     cfg.setLogTemplateExceptions(true);
+    cfg.setSetting("c_format", "Java");
   }
 
   public void writeTemplateToFile(final String templateName, final ClassBuilderTemplate classBuilder, final Writer writer) throws IOException, TemplateException {

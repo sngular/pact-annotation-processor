@@ -1,18 +1,40 @@
-<#macro writeField field isLast>
-  <#if field.functionByType??>
-        .${field.functionByType}(<#if !field.onlyValueFunction>"${field.name}",</#if> <#if field.formatValue??>"${field.formatValue?no_esc}"</#if> <#if field.defaultValue?is_number>${field.defaultValue?string.c}<#elseif field.defaultValue?is_boolean>${field.defaultValue?then('true', 'false')}<#elseif field.functionByType != "date" && field.functionByType != "datetime">"${field.defaultValue}"</#if>${field.suffixValue})
-  <#else>
-        <@writeComplexField complexField=field isLast=isLast/>
-  </#if>
-</#macro>
 
 <#macro writeAttrField field>
   <#if field.functionByType??>
-  ${field.fieldType} ${field.name} = ${field.defaultValue};
+    <#if field.defaultValue?is_number>
+      <#if field.functionByType == "decimalType">
+        ${field.fieldType} ${field.name} = new BigDecimal("${field.defaultValue?j_string}");
+      <#else>
+        ${field.fieldType} ${field.name} = ${field.defaultValue?c};
+      </#if>
+    <#elseif field.defaultValue?is_boolean>
+      ${field.fieldType} ${field.name} = ${field.defaultValue?then('true', 'false')};
+    <#elseif field.functionByType == "date">
+      ${field.fieldType} ${field.name} = LocalDate.parse("${field.defaultValue?date}"));
+    <#elseif field.functionByType == "datetime" && field.formatValue?has_content>
+      ${field.fieldType} ${field.name} = ZonedDateTime.parse("${field.defaultValue?string}",  DateTimeFormatter.ofPattern("${field.formatValue}"));
+    <#elseif field.functionByType != "date" && field.functionByType != "datetime">
+      ${field.fieldType} ${field.name} = "${field.defaultValue}";
+    </#if>
   <#else>
   <@writeComplexAttrField complexField=field/>
   </#if>
 </#macro>
+
+<#function writeRightValue value type format="">
+    <#if value?is_number>
+      <#return value?c/>
+    <#elseif value?is_boolean>
+      <#return value?then('true', 'false')/>
+    <#elseif type == "date">
+      <#return 'LocalDate.parse("${value?date}")'?j_string/>
+    <#elseif type == "datetime" && format?has_content>
+      <#return 'ZonedDateTime.parse("${value?string}",  DateTimeFormatter.ofPattern("${format}")'?j_string/>
+    <#elseif type != "date" && type != "datetime">
+      <#return value?string/>
+    </#if>
+
+</#function>
 
 <#macro writeSetterField field builderName>
 <#if field.functionByType??>
@@ -41,46 +63,42 @@
 
 </#macro>
 
-<#macro writeComplexField complexField isLast>
-    <#if complexField.complexType.name() == "COLLECTION">
-    .array("${complexField.name}")
-    <#else>
-    .object("${complexField.name}")
-    </#if>
-    <#list complexField.fields as internalField>
-      <@writeField field=internalField isLast=internalField?is_last/>
-    </#list>
-    <#if complexField.complexType.name() == "COLLECTION">
-    .closeArray()
-    <#else>
-    .closeObject()
-    </#if>
-</#macro>
-
 <#macro writeBuilderField field>
   <#if field.functionByType??>
-    if (Objects.nonNull(${field.name})) {
+    <#if field.name?has_content>
+      if (Objects.nonNull(${field.name})) {
+        <#if field.formatValue??>
+         <#if field.functionByType != "date" && field.functionByType != "datetime">
+          pactDslJsonBody.${field.functionByType}("${field.name}", "${field.formatValue?no_esc}", ${field.name});
+         <#else>
+          pactDslJsonBody.${field.functionByType}("${field.name}", "${field.formatValue?no_esc}", ${field.name}.toInstant());
+         </#if>
+        <#else>
+          pactDslJsonBody.${field.functionByType}("${field.name}", ${field.name});
+        </#if>
+      }
+    <#else>
       <#if field.formatValue??>
-       <#if field.functionByType != "date" && field.functionByType != "datetime">
-        pactDslJsonBody.${field.functionByType}("${field.name}", "${field.formatValue?no_esc}", ${field.name});
-       <#else>
-        pactDslJsonBody.${field.functionByType}("${field.name}", "${field.formatValue?no_esc}", ${field.name}.toInstant());
+        <#if field.functionByType == "date">
+          pactDslJsonBody.${field.functionByType}("${field.defaultValue?date}");
+        <#elseif field.functionByType == "datetime">
+          pactDslJsonBody.${field.functionByType}("${field.defaultValue?datetime}");
+        <#else>
+          pactDslJsonBody.${field.functionByType}("${field.formatValue?no_esc}", ${field.defaultValue});
+        </#if>
        </#if>
-      <#else>
-        pactDslJsonBody.${field.functionByType}("${field.name}", ${field.name});
-      </#if>
-    }
+    </#if>
   </#if>
 </#macro>
 
 <#macro writeBuilderComplexField complexField>
   <#if complexField.complexType.name() == "COLLECTION">
   if (!${complexField.name}.isEmpty()) {
-    .array("${complexField.name}")
+    pactDslJsonBody.array("${complexField.name}");
       <#list complexField.fields as internalField>
           <@writeBuilderField field=internalField/>
       </#list>
-    .closeArray()
+    pactDslJsonBody.closeArray();
   }
   <#else>
   pactDslJsonBody.object("${complexField.name}");
@@ -99,6 +117,10 @@ import au.com.dius.pact.consumer.dsl.PactDslJsonArray;
 import com.sngular.annotation.processor.mapping.CustomDslModifier;
 </#if>
 import java.util.Objects;
+import java.util.Date;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.math.BigDecimal;
 
 <#function complex(field)>
   <#return field.functionByType??>
@@ -126,22 +148,6 @@ public class ${schema.className}Builder {
         <#list schema.fieldList?filter(complex) as field><@writeBuilderField field=field/></#list>
         <#list schema.fieldList?filter(nocomplex) as field><@writeBuilderComplexField complexField=field /></#list>
 
-        <#if schema.customModifiers??>
-        try {
-            applyCustomModifiers(pactDslJsonBody);
-        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
-            throw new RuntimeException(e);
-        }
-        </#if>
-        return pactDslJsonBody;
-    }
-
-    public static DslPart defaultBuild() {
-        PactDslJsonBody pactDslJsonBody = new PactDslJsonBody();
-        pactDslJsonBody
-        <#list schema.fieldList?filter(complex) as field><@writeField field=field isLast=field?is_last/></#list>
-        <#list schema.fieldList?filter(nocomplex) as field><@writeComplexField complexField=field isLast=field?is_last/></#list>
-        ;
         <#if schema.customModifiers??>
         try {
             applyCustomModifiers(pactDslJsonBody);

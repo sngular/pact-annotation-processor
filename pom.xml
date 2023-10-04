@@ -13,7 +13,7 @@
     <projectlombok.version>1.18.26</projectlombok.version>
     <commons-lang3.version>3.12.0</commons-lang3.version>
     <google-auto.version>1.1.1</google-auto.version>
-    <pact-consumer.version>4.5.8</pact-consumer.version>
+    <pact-consumer.version>4.6.2</pact-consumer.version>
     <org-json.version>20230618</org-json.version>
     <ktor.version>2.3.4</ktor.version>
     <netty-codec.version>4.1.95.Final</netty-codec.version>
@@ -54,48 +54,12 @@
           <groupId>commons-collections</groupId>
           <artifactId>commons-collections</artifactId>
         </exclusion>
-        <exclusion>
-          <groupId>io.ktor</groupId>
-          <artifactId>ktor-server-core</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>io.ktor</groupId>
-          <artifactId>ktor-utils-jvm</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>io.netty</groupId>
-          <artifactId>netty-codec</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.json</groupId>
-          <artifactId>json</artifactId>
-        </exclusion>
       </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.json</groupId>
-      <artifactId>json</artifactId>
-      <version>${org-json.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>io.ktor</groupId>
-      <artifactId>ktor-server-core-jvm</artifactId>
-      <version>${ktor.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>io.ktor</groupId>
-      <artifactId>ktor-utils-jvm</artifactId>
-      <version>${ktor.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>io.netty</groupId>
-      <artifactId>netty-codec</artifactId>
-      <version>${netty-codec.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-collections4</artifactId>
-      <version>${commons-collection.version}</version>
+      <version>4.4</version>
     </dependency>
     <dependency>
       <groupId>commons-codec</groupId>
@@ -175,6 +139,25 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
         <version>3.3.1</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.5.0</version>
+        <configuration>
+          <minimizeJar>false</minimizeJar>
+          <createDependencyReducedPom>true</createDependencyReducedPom>
+          <useDependencyReducedPomInJar>true</useDependencyReducedPomInJar>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-shadow</id>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <phase>package</phase>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

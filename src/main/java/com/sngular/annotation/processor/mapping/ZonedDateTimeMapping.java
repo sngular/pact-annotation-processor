@@ -18,7 +18,7 @@ public class ZonedDateTimeMapping implements TypeMapping<ZonedDateTime> {
 
   @Override
   public String getFunctionOnlyValue() {
-    return "datetime";
+    return "datetimeValue";
   }
 
   @Override
