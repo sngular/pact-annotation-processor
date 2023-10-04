@@ -8,7 +8,7 @@
 
 <#macro writeAttrField field>
   <#if field.functionByType??>
-  ${field.fieldType} ${field.name};
+  ${field.fieldType} ${field.name} = ${field.defaultValue};
   <#else>
   <@writeComplexAttrField complexField=field/>
   </#if>
@@ -76,6 +76,11 @@
 <#macro writeBuilderComplexField complexField>
   <#if complexField.complexType.name() == "COLLECTION">
   if (!${complexField.name}.isEmpty()) {
+    .array("${complexField.name}")
+      <#list complexField.fields as internalField>
+          <@writeBuilderField field=internalField/>
+      </#list>
+    .closeArray()
   }
   <#else>
   pactDslJsonBody.object("${complexField.name}");
