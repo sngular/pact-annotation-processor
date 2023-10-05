@@ -104,8 +104,7 @@
     pactDslJsonBody.closeArray();
   }
   <#else>
-  pactDslJsonBody.object("${complexField.name}");
-  ${complexField.name}.build(pactDslJsonBody);
+  pactDslJsonBody.object("${complexField.name}", ${complexField.name}.build());
   pactDslJsonBody.closeObject();
   </#if>
 
@@ -149,8 +148,8 @@ public class ${schema.className}Builder {
     <@writeSetterField field=field builderName=schema.className?cap_first/>
     </#list>
 
-    public DslPart build(final PactDslJsonBody pactDslJsonBody) {
-
+    public DslPart build() {
+        PactDslJsonBody pactDslJsonBody = new PactDslJsonBody();
         <#list schema.fieldList?filter(complex) as field><@writeBuilderField field=field/></#list>
         <#list schema.fieldList?filter(nocomplex) as field><@writeBuilderComplexField complexField=field /></#list>
 
