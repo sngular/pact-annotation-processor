@@ -3,7 +3,7 @@
   <#if field.functionByType??>
     <#if field.defaultValue?is_number>
       <#if field.functionByType == "decimalType">
-        ${field.fieldType} ${field.name} = new BigDecimal("${field.defaultValue?j_string}");
+        ${field.fieldType} ${field.name} = new BigDecimal("${field.defaultValue?c}");
       <#else>
         ${field.fieldType} ${field.name} = ${field.defaultValue?c};
       </#if>
@@ -12,7 +12,8 @@
     <#elseif field.functionByType == "date">
       ${field.fieldType} ${field.name} = LocalDate.parse("${field.defaultValue?date}"));
     <#elseif field.functionByType == "datetime" && field.formatValue?has_content>
-      ${field.fieldType} ${field.name} = ZonedDateTime.parse("${field.defaultValue?string}",  DateTimeFormatter.ofPattern("${field.formatValue}"));
+      //"${field.defaultValue}"
+      ${field.fieldType} ${field.name} = ZonedDateTime.parse("${field.defaultValue?j_string?no_esc}",  DateTimeFormatter.ofPattern("${field.formatValue?no_esc}"));
     <#elseif field.functionByType != "date" && field.functionByType != "datetime">
       ${field.fieldType} ${field.name} = "${field.defaultValue}";
     </#if>
@@ -29,7 +30,7 @@
     <#elseif type == "date">
       <#return 'LocalDate.parse("${value?date}")'?j_string/>
     <#elseif type == "datetime" && format?has_content>
-      <#return 'ZonedDateTime.parse("${value?string}",  DateTimeFormatter.ofPattern("${format}")'?j_string/>
+      <#return 'ZonedDateTime.parse("${value?datetime}", DateTimeFormatter.ofPattern("${format?no_esc}")'?no_esc/>
     <#elseif type != "date" && type != "datetime">
       <#return value?string/>
     </#if>
@@ -79,14 +80,16 @@
       }
     <#else>
       <#if field.formatValue??>
-        <#if field.functionByType == "date">
-          pactDslJsonBody.${field.functionByType}("${field.defaultValue?date}");
-        <#elseif field.functionByType == "datetime">
-          pactDslJsonBody.${field.functionByType}("${field.defaultValue?datetime}");
-        <#else>
-          pactDslJsonBody.${field.functionByType}("${field.formatValue?no_esc}", ${field.defaultValue});
+        <#if field.functionByType == "dateValue">
+          pactDslJsonBody.eachLike(PactDslJsonRootValue.date("${field.formatValue?no_esc}", Date.from(Instant.now())));
+        <#elseif field.functionByType == "datetimeValue">
+          pactDslJsonBody.eachLike(PactDslJsonRootValue.datetime("${field.formatValue?no_esc}", ZonedDateTime.now()));
+        <#elseif field.functionByType == "integerValue">
+          pactDslJsonBody.eachLike(PactDslJsonRootValue.integerMatching("${field.formatValue?no_esc}", ${field.defaultValue?int});
+        <#elseif field.functionByType == "decimalValue">
+          pactDslJsonBody.eachLike(PactDslJsonRootValue.decimalMatching("${field.formatValue?no_esc}", ${field.defaultValue?float});
         </#if>
-       </#if>
+      </#if>
     </#if>
   </#if>
 </#macro>
@@ -111,8 +114,9 @@
 package ${schema.modelPackage};
 
 import au.com.dius.pact.consumer.dsl.DslPart;
-import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslJsonArray;
+import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
+import au.com.dius.pact.consumer.dsl.PactDslJsonRootValue;
 <#if schema.customModifiers??>
 import com.sngular.annotation.processor.mapping.CustomDslModifier;
 </#if>
@@ -121,6 +125,8 @@ import java.util.Date;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.Date;
 
 <#function complex(field)>
   <#return field.functionByType??>

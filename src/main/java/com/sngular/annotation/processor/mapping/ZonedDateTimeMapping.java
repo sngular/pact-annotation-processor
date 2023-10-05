@@ -28,6 +28,6 @@ public class ZonedDateTimeMapping implements TypeMapping<ZonedDateTime> {
 
   @Override
   public String getFormatValue() {
-    return "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
+    return "yyyy-MM-dd'T'HH:mm:ss[.SSSSSS][.SSS]XXX['['VV']']";
   }
 }
