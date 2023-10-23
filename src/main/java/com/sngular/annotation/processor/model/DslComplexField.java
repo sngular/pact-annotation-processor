@@ -18,4 +18,6 @@ public class DslComplexField extends DslField {
 
   String fieldType;
 
+  FieldValidations fieldValidations;
+
 }

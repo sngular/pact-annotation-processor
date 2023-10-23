@@ -21,6 +21,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
@@ -48,6 +49,7 @@ import com.sngular.annotation.processor.model.DslComplexField;
 import com.sngular.annotation.processor.model.DslComplexTypeEnum;
 import com.sngular.annotation.processor.model.DslField;
 import com.sngular.annotation.processor.model.DslSimpleField;
+import com.sngular.annotation.processor.model.FieldValidations;
 import com.sngular.annotation.processor.template.TemplateFactory;
 import freemarker.template.TemplateException;
 import lombok.extern.slf4j.Slf4j;
@@ -80,6 +82,10 @@ public class PactDslProcessor extends AbstractProcessor {
 
   private static final String CUSTOM_MODIFIERS = "customModifiers";
 
+  private static final String MAX = "Max";
+
+  private static final String MIN = "Min";
+
   private Elements elementUtils;
 
   private Types typeUtils;
@@ -101,12 +107,10 @@ public class PactDslProcessor extends AbstractProcessor {
     typeUtils = processingEnv.getTypeUtils();
     Set<? extends Element> elementsAnnotatedWith = roundEnv.getElementsAnnotatedWith(PactDslBodyBuilder.class);
     IteratorUtils
-      .transformedIterator(elementsAnnotatedWith.iterator(),
-                           this::composeBuilderTemplate).forEachRemaining(builderTemplate -> {
+      .transformedIterator(elementsAnnotatedWith.iterator(), this::composeBuilderTemplate).forEachRemaining(builderTemplate -> {
         try {
           var builderFile = processingEnv.getFiler().createSourceFile(builderTemplate.completePath());
-          templateFactory.writeTemplateToFile(TEMPLATE_DSL_BUILDER,
-                                              builderTemplate, builderFile.openWriter());
+          templateFactory.writeTemplateToFile(TEMPLATE_DSL_BUILDER, builderTemplate, builderFile.openWriter());
         } catch (IOException | TemplateException e) {
           throw new TemplateGenerationException("PactDslBodyBuilder", e);
         }
@@ -136,8 +140,7 @@ public class PactDslProcessor extends AbstractProcessor {
 
   @NotNull
   private static List<? extends Element> getFieldElements(final Element element) {
-    return IterableUtils
-      .toList(IterableUtils.filteredIterable(element.getEnclosedElements(), elt -> elt.getKind().isField()));
+    return IterableUtils.toList(IterableUtils.filteredIterable(element.getEnclosedElements(), elt -> elt.getKind().isField()));
   }
 
   @NotNull
@@ -157,8 +160,7 @@ public class PactDslProcessor extends AbstractProcessor {
   }
 
   private AnnotationValue getAnnotationValue(final AnnotationMirror annotationMirror, final String key) {
-    for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : annotationMirror
-      .getElementValues().entrySet()) {
+    for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : annotationMirror.getElementValues().entrySet()) {
       if (entry.getKey().getSimpleName().toString().equals(key)) {
         return entry.getValue();
       }
@@ -177,20 +179,43 @@ public class PactDslProcessor extends AbstractProcessor {
 
   private DslComplexField composeDslComplexField(final Element element) {
     Optional<TypeElement> typeElementOp = Optional.ofNullable(elementUtils.getTypeElement(element.asType().toString()));
+    var validationBuilder = FieldValidations.builder();
     if (typeElementOp.isPresent()) {
       List<? extends Element> fieldElements = getFieldElements(typeElementOp.get());
+      for (var annotation : element.asType().getAnnotationMirrors()) {
+        if (annotation.getAnnotationType().toString().toUpperCase().endsWith("MAX")) {
+          validationBuilder.max(((Long) getAnnotationValue(annotation, "value").getValue()).intValue());
+        } else {
+          validationBuilder.min(((Long) getAnnotationValue(annotation, "value").getValue()).intValue());
+        }
+      }
       return DslComplexField.builder()
                             .name(element.getSimpleName().toString())
                             .fieldType(element.asType().toString())
                             .fields(getFields(fieldElements))
                             .complexType(DslComplexTypeEnum.OBJECT)
+                            .fieldValidations(validationBuilder.build())
                             .build();
     } else {
       //is collection
+      var type = element.asType();
+      var typeStr = type.toString();
+      if (CollectionUtils.isNotEmpty(type.getAnnotationMirrors())) {
+        for (var annotation : type.getAnnotationMirrors()) {
+          typeStr = typeStr.replace(annotation.toString(), "");
+          if (annotation.getAnnotationType().toString().toUpperCase().endsWith("MAX")) {
+            validationBuilder.max(((Long) getAnnotationValue(annotation, "value").getValue()).intValue());
+          } else {
+            validationBuilder.min(((Long) getAnnotationValue(annotation, "value").getValue()).intValue());
+          }
+        }
+        typeStr = typeStr.replace(", ", "");
+      }
       return DslComplexField.builder()
                             .name(element.getSimpleName().toString())
-                            .fieldType(element.asType().toString())
+                            .fieldType(typeStr)
                             .fields(extractTypes(element))
+                            .fieldValidations(validationBuilder.build())
                             .complexType(DslComplexTypeEnum.COLLECTION).build();
     }
   }

@@ -94,14 +94,58 @@
   </#if>
 </#macro>
 
+<#macro writeBuilderLambdaField fieldLlist>
+  object ->
+  <#list fieldLlist as internalField>
+    <#if internalField.functionByType??>
+      <#if internalField.name?has_content>
+        if (Objects.nonNull(${internalField.name})) {
+          <#if internalField.formatValue??>
+            <#if internalField.functionByType != "date" && internalField.functionByType != "datetime">
+              object.${internalField.functionByType}("${internalField.name}", "${internalField.formatValue?no_esc}", ${internalField.name})
+            <#else>
+              object.${internalField.functionByType}("${internalField.name}", "${internalField.formatValue?no_esc}", ${internalField.name}.toInstant())
+            </#if>
+          <#else>
+            object.${internalField.functionByType}("${internalField.name}", ${internalField.name})
+          </#if>
+        }
+      <#else>
+        <#if internalField.formatValue??>
+          <#if internalField.functionByType == "dateValue">
+            object.dateValue(PactDslJsonRootValue.date("${internalField.formatValue?no_esc}", Date.from(Instant.now())))
+          <#elseif internalField.functionByType == "datetimeValue">
+            object.datetimeValue(PactDslJsonRootValue.datetime("${internalField.formatValue?no_esc}", ZonedDateTime.now()))
+          <#elseif internalField.functionByType == "integerValue">
+            object.integerValue(PactDslJsonRootValue.integerMatching("${internalField.formatValue?no_esc}", ${internalField.defaultValue?int})
+          <#elseif internalField.functionByType == "decimalValue">
+            object.decimalValue(PactDslJsonRootValue.decimalMatching("${internalField.formatValue?no_esc}", ${internalField.defaultValue?float})
+          </#if>
+        </#if>
+      </#if>
+    </#if>
+  </#list>
+</#macro>
+
 <#macro writeBuilderComplexField complexField>
   <#if complexField.complexType.name() == "COLLECTION">
   if (!${complexField.name}.isEmpty()) {
-    pactDslJsonBody.array("${complexField.name}");
-      <#list complexField.fields as internalField>
-          <@writeBuilderField field=internalField/>
-      </#list>
-    pactDslJsonBody.closeArray();
+    <#assign max = "${complexField.fieldValidations.max}"/>
+    <#assign min = "${complexField.fieldValidations.min}"/>
+
+    <#if max?has_content && min?has_content>
+      pactDslJsonBody.minMaxArrayLike("${complexField.name}", ${min}, ${max}, <@writeBuilderLambdaField fieldLlist=complexField.fields/>, ${min});
+    <#elseif min?has_content>
+      pactDslJsonBody.minArrayLike("${complexField.name}", ${min}, <@writeBuilderLambdaField fieldLlist=complexField.fields/>, ${min});
+    <#elseif max?has_content>
+      pactDslJsonBody.maxArrayLike("${complexField.name}", ${max}, <@writeBuilderLambdaField fieldLlist=complexField.fields/>, ${max});
+    <#else>
+      pactDslJsonBody.array("${complexField.name}");
+        <#list complexField.fields as internalField>
+            <@writeBuilderField field=internalField/>
+        </#list>
+      pactDslJsonBody.closeArray();
+    </#if>
   }
   <#else>
   pactDslJsonBody.object("${complexField.name}", ${complexField.name}.build());
