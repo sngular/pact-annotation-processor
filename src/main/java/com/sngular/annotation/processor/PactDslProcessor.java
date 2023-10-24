@@ -1,3 +1,9 @@
+/*
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  * License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
 package com.sngular.annotation.processor;
 
 import java.io.IOException;
@@ -21,11 +27,8 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-
-import static com.sngular.annotation.processor.template.ClasspathTemplateLoader.TEMPLATE_DSL_BUILDER;
 
 import com.google.auto.service.AutoService;
 import com.google.common.collect.ImmutableMap;
@@ -50,6 +53,7 @@ import com.sngular.annotation.processor.model.DslComplexTypeEnum;
 import com.sngular.annotation.processor.model.DslField;
 import com.sngular.annotation.processor.model.DslSimpleField;
 import com.sngular.annotation.processor.model.FieldValidations;
+import com.sngular.annotation.processor.template.ClasspathTemplateLoader;
 import com.sngular.annotation.processor.template.TemplateFactory;
 import freemarker.template.TemplateException;
 import lombok.extern.slf4j.Slf4j;
@@ -82,53 +86,49 @@ public class PactDslProcessor extends AbstractProcessor {
 
   private static final String CUSTOM_MODIFIERS = "customModifiers";
 
-  private static final String MAX = "Max";
-
-  private static final String MIN = "Min";
-
   private Elements elementUtils;
 
   private Types typeUtils;
 
   @Override
-  public SourceVersion getSupportedSourceVersion() {
+  public final SourceVersion getSupportedSourceVersion() {
     return SourceVersion.latestSupported();
   }
 
   @Override
-  public boolean process(final Set<? extends TypeElement> annotations, final RoundEnvironment roundEnv) {
-    TemplateFactory templateFactory;
+  public final boolean process(final Set<? extends TypeElement> annotations, final RoundEnvironment roundEnv) {
+    final TemplateFactory templateFactory;
     try {
       templateFactory = new TemplateFactory();
-    } catch (TemplateException e) {
+    } catch (final TemplateException e) {
       throw new TemplateFactoryException(e);
     }
     elementUtils = processingEnv.getElementUtils();
     typeUtils = processingEnv.getTypeUtils();
-    Set<? extends Element> elementsAnnotatedWith = roundEnv.getElementsAnnotatedWith(PactDslBodyBuilder.class);
+    final Set<? extends Element> elementsAnnotatedWith = roundEnv.getElementsAnnotatedWith(PactDslBodyBuilder.class);
     IteratorUtils
-      .transformedIterator(elementsAnnotatedWith.iterator(), this::composeBuilderTemplate).forEachRemaining(builderTemplate -> {
-        try {
-          var builderFile = processingEnv.getFiler().createSourceFile(builderTemplate.completePath());
-          templateFactory.writeTemplateToFile(TEMPLATE_DSL_BUILDER, builderTemplate, builderFile.openWriter());
-        } catch (IOException | TemplateException e) {
-          throw new TemplateGenerationException("PactDslBodyBuilder", e);
-        }
-      });
+        .transformedIterator(elementsAnnotatedWith.iterator(), this::composeBuilderTemplate).forEachRemaining(builderTemplate -> {
+          try {
+            final var builderFile = processingEnv.getFiler().createSourceFile(builderTemplate.completePath());
+            templateFactory.writeTemplateToFile(ClasspathTemplateLoader.TEMPLATE_DSL_BUILDER, builderTemplate, builderFile.openWriter());
+          } catch (IOException | TemplateException e) {
+            throw new TemplateGenerationException("PactDslBodyBuilder", e);
+          }
+        });
     return true;
   }
 
   private ClassBuilderTemplate composeBuilderTemplate(final Element element) {
-    List<? extends Element> fieldElements = getFieldElements(element);
-    var qualifiedName = ((TypeElement) element).getQualifiedName().toString();
+    final List<? extends Element> fieldElements = getFieldElements(element);
+    final var qualifiedName = ((TypeElement) element).getQualifiedName().toString();
     String packageName = null;
-    int lastDot = qualifiedName.lastIndexOf('.');
+    final int lastDot = qualifiedName.lastIndexOf('.');
     if (lastDot > 0) {
       packageName = qualifiedName.substring(0, lastDot);
     }
 
-    var builderClassName = qualifiedName + "Builder";
-    var builderSimpleClassName = qualifiedName.substring(lastDot + 1);
+    final var builderClassName = qualifiedName + "Builder";
+    final var builderSimpleClassName = qualifiedName.substring(lastDot + 1);
     return ClassBuilderTemplate.builder()
                                .fileName(builderClassName)
                                .className(builderSimpleClassName)
@@ -149,7 +149,7 @@ public class PactDslProcessor extends AbstractProcessor {
   }
 
   private List<String> getAnnotationValueAsType(final AnnotationMirror annotationMirror, final String key) {
-    var annotationValue = getAnnotationValue(annotationMirror, key);
+    final var annotationValue = getAnnotationValue(annotationMirror, key);
     if (annotationValue == null) {
       return List.of();
     }
@@ -169,7 +169,7 @@ public class PactDslProcessor extends AbstractProcessor {
   }
 
   private DslField composeDslField(final Element fieldElement, final boolean insideCollection) {
-    Optional<TypeMapping> mappingOp = extractMappingByType(fieldElement);
+    final Optional<TypeMapping> mappingOp = extractMappingByType(fieldElement);
     if (mappingOp.isEmpty()) {
       return composeDslComplexField(fieldElement);
     } else {
@@ -178,15 +178,15 @@ public class PactDslProcessor extends AbstractProcessor {
   }
 
   private DslComplexField composeDslComplexField(final Element element) {
-    Optional<TypeElement> typeElementOp = Optional.ofNullable(elementUtils.getTypeElement(element.asType().toString()));
-    var validationBuilder = FieldValidations.builder();
+    final Optional<TypeElement> typeElementOp = Optional.ofNullable(elementUtils.getTypeElement(element.asType().toString()));
+    final var validationBuilder = FieldValidations.builder();
     if (typeElementOp.isPresent()) {
-      List<? extends Element> fieldElements = getFieldElements(typeElementOp.get());
+      final List<? extends Element> fieldElements = getFieldElements(typeElementOp.get());
       for (var annotation : element.asType().getAnnotationMirrors()) {
         if (annotation.getAnnotationType().toString().toUpperCase().endsWith("MAX")) {
-          validationBuilder.max(((Long) getAnnotationValue(annotation, "value").getValue()).intValue());
+          validationBuilder.max(((Long) Objects.requireNonNull(getAnnotationValue(annotation, "value")).getValue()).intValue());
         } else {
-          validationBuilder.min(((Long) getAnnotationValue(annotation, "value").getValue()).intValue());
+          validationBuilder.min(((Long) Objects.requireNonNull(getAnnotationValue(annotation, "value")).getValue()).intValue());
         }
       }
       return DslComplexField.builder()
@@ -198,15 +198,15 @@ public class PactDslProcessor extends AbstractProcessor {
                             .build();
     } else {
       //is collection
-      var type = element.asType();
+      final var type = element.asType();
       var typeStr = type.toString();
       if (CollectionUtils.isNotEmpty(type.getAnnotationMirrors())) {
         for (var annotation : type.getAnnotationMirrors()) {
           typeStr = typeStr.replace(annotation.toString(), "");
           if (annotation.getAnnotationType().toString().toUpperCase().endsWith("MAX")) {
-            validationBuilder.max(((Long) getAnnotationValue(annotation, "value").getValue()).intValue());
+            validationBuilder.max(((Long) Objects.requireNonNull(getAnnotationValue(annotation, "value")).getValue()).intValue());
           } else {
-            validationBuilder.min(((Long) getAnnotationValue(annotation, "value").getValue()).intValue());
+            validationBuilder.min(((Long) Objects.requireNonNull(getAnnotationValue(annotation, "value")).getValue()).intValue());
           }
         }
         typeStr = typeStr.replace(", ", "");
@@ -235,7 +235,7 @@ public class PactDslProcessor extends AbstractProcessor {
   }
 
   private DslSimpleField composeDslSimpleField(final Element fieldElement, final TypeMapping mapping, final boolean insideCollection) {
-    var simpleFieldBuilder = DslSimpleField.builder()
+    final var simpleFieldBuilder = DslSimpleField.builder()
                          .name(getNameOrNull(fieldElement.getSimpleName()))
                          .fieldType(mapping.getFieldType())
                          .functionByType(insideCollection ? mapping.getFunctionOnlyValue() : mapping.getFunctionType())
@@ -243,9 +243,9 @@ public class PactDslProcessor extends AbstractProcessor {
                          .suffixValue(mapping.getSuffixValue())
                          .formatValue(mapping.getFormatValue());
     if (Objects.nonNull(fieldElement.getAnnotation(Example.class))) {
-     simpleFieldBuilder.defaultValue(getDefaultValue(fieldElement, mapping.getFieldType()));
+      simpleFieldBuilder.defaultValue(getDefaultValue(fieldElement, mapping.getFieldType()));
     } else {
-     simpleFieldBuilder.defaultValue(mapping.getRandomDefaultValue(null));
+      simpleFieldBuilder.defaultValue(mapping.getRandomDefaultValue(null));
     }
     return simpleFieldBuilder.build();
   }
@@ -255,8 +255,8 @@ public class PactDslProcessor extends AbstractProcessor {
   }
 
   private static Object getDefaultValue(final Element fieldElement, final String type) {
-    Object realValue = null;
-    String value = fieldElement.getAnnotation(Example.class).value();
+    final Object realValue;
+    final String value = fieldElement.getAnnotation(Example.class).value();
     if (StringUtils.isNumeric(value)) {
       realValue = switch (type.toLowerCase()) {
         case "integer", "int" -> NumberUtils.toInt(value);
@@ -273,7 +273,7 @@ public class PactDslProcessor extends AbstractProcessor {
 
   private Optional<TypeMapping> extractMappingByType(final Element element) {
 
-    var type = element.asType();
+    final var type = element.asType();
     return switch (type.getKind()) {
       case BOOLEAN -> Optional.of(TYPE_MAPPING.get("boolean"));
       case BYTE -> Optional.of(TYPE_MAPPING.get("byte"));

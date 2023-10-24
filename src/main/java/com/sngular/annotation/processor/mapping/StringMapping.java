@@ -1,3 +1,9 @@
+/*
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  * License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
 package com.sngular.annotation.processor.mapping;
 
 import java.util.Objects;
@@ -14,23 +20,23 @@ public class StringMapping implements TypeMapping<String> {
   public static final int DEFAULT_MIN = 1;
 
   @Override
-  public String getFieldType() {
+  public final String getFieldType() {
     return "java.lang.String";
   }
 
   @Override
-  public String getFunctionType() {
+  public final String getFunctionType() {
     return "stringType";
   }
 
   @Override
-  public String getFunctionOnlyValue() {
+  public final String getFunctionOnlyValue() {
     return "stringValue";
   }
 
   @Override
-  public String getRandomDefaultValue(final FieldValidations fieldValidations) {
-    int count;
+  public final String getRandomDefaultValue(final FieldValidations fieldValidations) {
+    final int count;
     if (Objects.nonNull(fieldValidations)) {
       count = RandomUtils.nextInt(ObjectUtils.defaultIfNull(fieldValidations.getMin(), DEFAULT_MIN),
                                   ObjectUtils.defaultIfNull(fieldValidations.getMax(), DEFAULT_MAX));

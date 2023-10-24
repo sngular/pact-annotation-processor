@@ -1,3 +1,9 @@
+/*
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  * License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
 package com.sngular.annotation.processor.mapping;
 
 import java.util.Objects;
@@ -9,22 +15,22 @@ import org.apache.commons.lang3.RandomUtils;
 public class DecimalMapping implements TypeMapping<Number> {
 
   @Override
-  public String getFieldType() {
+  public final String getFieldType() {
     return "java.math.BigDecimal";
   }
 
   @Override
-  public String getFunctionType() {
+  public final String getFunctionType() {
     return "decimalType";
   }
 
   @Override
-  public String getFunctionOnlyValue() {
+  public final String getFunctionOnlyValue() {
     return "decimalValue";
   }
 
   @Override
-  public Number getRandomDefaultValue(final FieldValidations fieldValidations) {
+  public final Number getRandomDefaultValue(final FieldValidations fieldValidations) {
     if (Objects.nonNull(fieldValidations)) {
       return RandomUtils.nextDouble(ObjectUtils.defaultIfNull((double) fieldValidations.getMin(), Double.MIN_VALUE),
                                     ObjectUtils.defaultIfNull((double) fieldValidations.getMax(), Double.MAX_VALUE));

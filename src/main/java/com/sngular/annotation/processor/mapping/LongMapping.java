@@ -1,3 +1,9 @@
+/*
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  * License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
 package com.sngular.annotation.processor.mapping;
 
 import java.util.Objects;
@@ -9,21 +15,22 @@ import org.apache.commons.lang3.RandomUtils;
 public class LongMapping implements TypeMapping<Long> {
 
   @Override
-  public String getFieldType() {
+  public final String getFieldType() {
     return "long";
   }
+
   @Override
-  public String getFunctionType() {
+  public final String getFunctionType() {
     return "integerType";
   }
 
   @Override
-  public String getFunctionOnlyValue() {
+  public final String getFunctionOnlyValue() {
     return "integerValue";
   }
 
   @Override
-  public Long getRandomDefaultValue(final FieldValidations fieldValidations) {
+  public final Long getRandomDefaultValue(final FieldValidations fieldValidations) {
     if (Objects.nonNull(fieldValidations)) {
       return RandomUtils.nextLong((Long) ObjectUtils.defaultIfNull(fieldValidations.getMin(), Long.MIN_VALUE),
                                   (Long) ObjectUtils.defaultIfNull(fieldValidations.getMax(), Long.MAX_VALUE));
@@ -32,7 +39,7 @@ public class LongMapping implements TypeMapping<Long> {
   }
 
   @Override
-  public String getSuffixValue() {
+  public final String getSuffixValue() {
     return "L";
   }
 }
