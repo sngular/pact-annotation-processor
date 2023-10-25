@@ -29,6 +29,16 @@
       </roles>
       <timezone>Europe/Madrid</timezone>
     </developer>
+    <developer>
+      <id>ana.villa</id>
+      <name>Ana Villa Caballero</name>
+      <email>ana.villa@sngular.com</email>
+      <organizationUrl>https://sngular.github.io/</organizationUrl>
+      <roles>
+        <role>Senior Developer</role>
+      </roles>
+      <timezone>Europe/Madrid</timezone>
+    </developer>
   </developers>
 
   <scm>
