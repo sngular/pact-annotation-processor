@@ -5,14 +5,13 @@
       <#if field.functionByType == "decimalType">
         ${field.fieldType} ${field.name} = new BigDecimal("${field.defaultValue?c}");
       <#else>
-        ${field.fieldType} ${field.name} = ${field.defaultValue?c};
+        ${field.fieldType} ${field.name} = ${field.defaultValue?c}<#if field.suffixValue?has_content && field.suffixValue == "L">L</#if>;
       </#if>
     <#elseif field.defaultValue?is_boolean>
       ${field.fieldType} ${field.name} = ${field.defaultValue?then('true', 'false')};
     <#elseif field.functionByType == "date">
-      ${field.fieldType} ${field.name} = LocalDate.parse("${field.defaultValue?date}"));
+      ${field.fieldType} ${field.name} = Date.from(Instant.parse("${field.defaultValue?date}"));
     <#elseif field.functionByType == "datetime" && field.formatValue?has_content>
-      //"${field.defaultValue}"
       ${field.fieldType} ${field.name} = ZonedDateTime.parse("${field.defaultValue?j_string?no_esc}",  DateTimeFormatter.ofPattern("${field.formatValue?no_esc}"));
     <#elseif field.functionByType != "date" && field.functionByType != "datetime">
       ${field.fieldType} ${field.name} = "${field.defaultValue}";
@@ -28,7 +27,7 @@
     <#elseif value?is_boolean>
       <#return value?then('true', 'false')/>
     <#elseif type == "date">
-      <#return 'LocalDate.parse("${value?date}")'?j_string/>
+      <#return 'Date.from(Instant.parse("${value?date}"))'?j_string/>
     <#elseif type == "datetime" && format?has_content>
       <#return 'ZonedDateTime.parse("${value?datetime}", DateTimeFormatter.ofPattern("${format?no_esc}")'?no_esc/>
     <#elseif type != "date" && type != "datetime">
@@ -69,7 +68,7 @@
     <#if field.name?has_content>
       if (Objects.nonNull(${field.name})) {
         <#if field.formatValue??>
-         <#if field.functionByType != "date" && field.functionByType != "datetime">
+         <#if field.functionByType != "datetime">
           pactDslJsonBody.${field.functionByType}("${field.name}", "${field.formatValue?no_esc}", ${field.name});
          <#else>
           pactDslJsonBody.${field.functionByType}("${field.name}", "${field.formatValue?no_esc}", ${field.name}.toInstant());
@@ -163,6 +162,7 @@ import com.sngular.annotation.processor.mapping.CustomDslModifier;
 </#if>
 import java.util.Objects;
 import java.util.Date;
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.math.BigDecimal;

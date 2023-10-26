@@ -19,7 +19,7 @@ public interface TypeMapping<T> {
   T getRandomDefaultValue(final FieldValidations fieldValidations);
 
   default String getSuffixValue() {
-    return "";
+    return null;
   }
 
   default String getFormatValue() {

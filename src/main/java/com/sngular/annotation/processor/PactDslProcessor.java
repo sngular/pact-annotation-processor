@@ -9,6 +9,7 @@ package com.sngular.annotation.processor;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -149,14 +150,15 @@ public class PactDslProcessor extends AbstractProcessor {
   }
 
   private List<String> getAnnotationValueAsType(final AnnotationMirror annotationMirror, final String key) {
+    final var valueAsTypeList = new ArrayList<String>();
     final var annotationValue = getAnnotationValue(annotationMirror, key);
-    if (annotationValue == null) {
-      return List.of();
+    if (annotationValue != null) {
+      valueAsTypeList.addAll(List.of(annotationValue.toString()
+                                         .replace(" ", "").replace("{", "")
+                                         .replace("}", "").replace("\"", "")
+                                         .split(",")));
     }
-    return Arrays.asList(annotationValue.toString()
-                                        .replace(" ", "").replace("{", "")
-                                        .replace("}", "").replace("\"", "")
-                                        .split(","));
+    return valueAsTypeList;
   }
 
   private AnnotationValue getAnnotationValue(final AnnotationMirror annotationMirror, final String key) {
@@ -223,8 +225,11 @@ public class PactDslProcessor extends AbstractProcessor {
   @NotNull
   private List<DslField> extractTypes(final Element element) {
     final var listOfCustomMods = CollectionUtils.collect(((DeclaredType) element.asType()).getTypeArguments(), typeUtils::asElement);
-    return new ArrayList<>(CollectionUtils.collect(listOfCustomMods, e -> composeDslField(e, true)));
-
+    if (listOfCustomMods.size() > 1) {
+      return new ArrayList<>(CollectionUtils.collect(listOfCustomMods, e -> composeDslField(e, true)));
+    } else {
+      return Collections.emptyList();
+    }
   }
 
   private List<String> extractCustomModifiers(final Element element) {
@@ -235,17 +240,26 @@ public class PactDslProcessor extends AbstractProcessor {
   }
 
   private DslSimpleField composeDslSimpleField(final Element fieldElement, final TypeMapping mapping, final boolean insideCollection) {
+    final var validationBuilder = FieldValidations.builder();
+    for (var annotation : fieldElement.asType().getAnnotationMirrors()) {
+      if (annotation.getAnnotationType().toString().toUpperCase().endsWith("MAX")) {
+        validationBuilder.max(((Long) Objects.requireNonNull(getAnnotationValue(annotation, "value")).getValue()).intValue());
+      } else {
+        validationBuilder.min(((Long) Objects.requireNonNull(getAnnotationValue(annotation, "value")).getValue()).intValue());
+      }
+    }
     final var simpleFieldBuilder = DslSimpleField.builder()
                          .name(getNameOrNull(fieldElement.getSimpleName()))
                          .fieldType(mapping.getFieldType())
                          .functionByType(insideCollection ? mapping.getFunctionOnlyValue() : mapping.getFunctionType())
                          .onlyValueFunction(insideCollection)
                          .suffixValue(mapping.getSuffixValue())
-                         .formatValue(mapping.getFormatValue());
+                         .formatValue(mapping.getFormatValue())
+                         .fieldValidations(validationBuilder.build());
     if (Objects.nonNull(fieldElement.getAnnotation(Example.class))) {
       simpleFieldBuilder.defaultValue(getDefaultValue(fieldElement, mapping.getFieldType()));
     } else {
-      simpleFieldBuilder.defaultValue(mapping.getRandomDefaultValue(null));
+      simpleFieldBuilder.defaultValue(mapping.getRandomDefaultValue(validationBuilder.build()));
     }
     return simpleFieldBuilder.build();
   }
@@ -260,6 +274,9 @@ public class PactDslProcessor extends AbstractProcessor {
     if (StringUtils.isNumeric(value)) {
       realValue = switch (type.toLowerCase()) {
         case "integer", "int" -> NumberUtils.toInt(value);
+        case "long" -> NumberUtils.toLong(value);
+        case "short" -> NumberUtils.toShort(value);
+        case "byte" -> NumberUtils.toByte(value);
         case "float" -> NumberUtils.toFloat(value);
         case "double" -> NumberUtils.toDouble(value);
         case "bigdecimal" -> NumberUtils.createNumber(value);
