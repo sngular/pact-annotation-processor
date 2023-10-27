@@ -13,9 +13,9 @@ import lombok.Value;
 @Builder
 public class FieldValidations {
 
-  int min;
+  Integer min;
 
-  int max;
+  Integer max;
 
   String regex;
 

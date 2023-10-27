@@ -143,8 +143,8 @@ public class PactDslProcessor extends AbstractProcessor {
       packageName = qualifiedName.substring(0, lastDot);
     }
 
-    final var builderClassName = qualifiedName + "Builder";
     final var builderSimpleClassName = qualifiedName.substring(lastDot + 1);
+    final var builderClassName = builderSimpleClassName + "Builder";
     return ClassBuilderTemplate.builder()
                                .fileName(builderClassName)
                                .className(builderSimpleClassName)
@@ -224,7 +224,8 @@ public class PactDslProcessor extends AbstractProcessor {
                             .fieldType(typeStr)
                             .fields(extractTypes(element))
                             .fieldValidations(validationBuilder.build())
-                            .complexType(DslComplexTypeEnum.COLLECTION).build();
+                            .complexType(DslComplexTypeEnum.COLLECTION)
+                            .build();
   }
 
   private boolean checkIfOwn(final Element element) {
@@ -263,11 +264,11 @@ public class PactDslProcessor extends AbstractProcessor {
 
   @NotNull
   private List<DslField> extractTypes(final Element element) {
-    final var listOfCustomMods = CollectionUtils.collect(((DeclaredType) element.asType()).getTypeArguments(), typeUtils::asElement);
+    final var listOfCustomMods = new ArrayList<>(CollectionUtils.collect(((DeclaredType) element.asType()).getTypeArguments(), typeUtils::asElement));
     if (listOfCustomMods.size() > 1) {
       return new ArrayList<>(CollectionUtils.collect(listOfCustomMods, e -> composeDslField(e, true)));
     } else {
-      return Collections.emptyList();
+      return List.of(composeDslSimpleField(listOfCustomMods.get(0), extractMappingByType(listOfCustomMods.get(0)).get(), true));
     }
   }
 

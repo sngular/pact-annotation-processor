@@ -10,7 +10,7 @@
     <#elseif field.defaultValue?is_boolean>
       ${field.fieldType} ${field.name} = ${field.defaultValue?then('true', 'false')};
     <#elseif field.functionByType == "date">
-      ${field.fieldType} ${field.name} = Date.from(Instant.parse("${field.defaultValue?date}"));
+      ${field.fieldType} ${field.name} = Date.from(Instant.parse("${field.defaultValue?datetime?string.iso}"));
     <#elseif field.functionByType == "datetime" && field.formatValue?has_content>
       ${field.fieldType} ${field.name} = ZonedDateTime.parse("${field.defaultValue?j_string?no_esc}",  DateTimeFormatter.ofPattern("${field.formatValue?no_esc}"));
     <#elseif field.functionByType != "date" && field.functionByType != "datetime">
@@ -26,14 +26,13 @@
       <#return value?c/>
     <#elseif value?is_boolean>
       <#return value?then('true', 'false')/>
-    <#elseif type == "date">
-      <#return 'Date.from(Instant.parse("${value?date}"))'?j_string/>
-    <#elseif type == "datetime" && format?has_content>
+    <#elseif type == "dateValue">
+      <#return 'Date.from(Instant.parse(\"${value?datetime?string.iso}\"))'?no_esc/>
+    <#elseif type == "datetimeValue" && format?has_content>
       <#return 'ZonedDateTime.parse("${value?datetime}", DateTimeFormatter.ofPattern("${format?no_esc}")'?no_esc/>
-    <#elseif type != "date" && type != "datetime">
-      <#return value?string/>
+    <#elseif type != "dateValue" && type != "datetimeValue">
+      <#return value?j_string/>
     </#if>
-
 </#function>
 
 <#macro writeSetterField field builderName>
@@ -53,12 +52,17 @@
     this.${field.name} = ${field.name};
     return this;
   }
-
 </#macro>
+
+<#function writeDefaultsList fieldList>
+    <#list fieldList as internalField>
+        ${writeRightValue(internalField.defaultValue, internalField.functionByType, internalField.format)}<#if internalField?is_last>, </#if>
+    </#list>
+</#function>
 
 <#macro writeComplexAttrField complexField>
     <#if complexField.complexType.name() == "COLLECTION">
-    ${complexField.fieldType?no_esc} ${complexField.name} = new java.util.ArrayList();
+    ${complexField.fieldType?no_esc} ${complexField.name} = List.of(${writeDefaultsList(complexField.fields)});
     <#elseif complexField.needBuilder>
     ${complexField.fieldType?no_esc}Builder ${complexField.name};
     <#else >
@@ -97,9 +101,9 @@
   </#if>
 </#macro>
 
-<#macro writeBuilderLambdaField fieldLlist>
-  new PactDslJsonRootValue()
-  <#list fieldLlist as internalField>
+<#macro writeBuilderLambdaField fieldList>
+  PactDslJsonRootValue
+  <#list fieldList as internalField>
     <#if internalField.functionByType??>
       <#if internalField.name?has_content>
         if (Objects.nonNull(${internalField.name})) {
@@ -116,13 +120,25 @@
       <#else>
         <#if internalField.formatValue??>
           <#if internalField.functionByType == "dateValue">
-            .date("${internalField.formatValue?no_esc}", Date.from(Instant.now()))
+            .date("${internalField.formatValue?no_esc}", ${writeRightValue(internalField.defaultValue, internalField.functionByType)})
           <#elseif internalField.functionByType == "datetimeValue">
-            .datetime("${internalField.formatValue?no_esc}", ZonedDateTime.now())
+            .datetime("${internalField.formatValue?no_esc}", ${writeRightValue(internalField.defaultValue, internalField.functionByType)})
           <#elseif internalField.functionByType == "integerValue">
-            .integer("${internalField.formatValue?no_esc}", ${internalField.defaultValue?int})
+            .integerType("${internalField.formatValue?no_esc}",${writeRightValue(internalField.defaultValue, internalField.functionByType)})
           <#elseif internalField.functionByType == "decimalValue">
-            .decimal("${internalField.formatValue?no_esc}", ${internalField.defaultValue?float})
+            .decimalType("${internalField.formatValue?no_esc}", ${writeRightValue(internalField.defaultValue, internalField.functionByType)})
+          </#if>
+        <#elseif internalField.defaultValue?is_number>
+          <#if internalField.functionByType == "dateValue">
+            .date(${writeRightValue(internalField.defaultValue, internalField.functionByType)})
+          <#elseif internalField.functionByType == "datetimeValue">
+            .datetime(${writeRightValue(internalField.defaultValue, internalField.functionByType)})
+          <#elseif internalField.functionByType == "integerValue">
+            .integerType(${writeRightValue(internalField.defaultValue, internalField.functionByType)})
+          <#elseif internalField.functionByType == "decimalValue">
+            .decimalType(${writeRightValue(internalField.defaultValue, internalField.functionByType)})
+          <#else >
+            .${internalField.functionByType}(${writeRightValue(internalField.defaultValue, internalField.functionByType)})
           </#if>
         </#if>
       </#if>
@@ -136,11 +152,23 @@
   <#assign min = "${complexField.fieldValidations.min}"/>
 
   <#if max?has_content && min?has_content>
-    pactDslJsonBody.minMaxArrayLike("${complexField.name}", ${min}, ${max}, <@writeBuilderLambdaField fieldLlist=complexField.fields/>, ${min});
+    if (${complexField.name}.isEmpty()) {
+      pactDslJsonBody.minMaxArrayLike("${complexField.name}", ${min}, ${max});
+    } else {
+      pactDslJsonBody.minMaxArrayLike("${complexField.name}", ${min}, ${max}, <@writeBuilderLambdaField fieldList=complexField.fields/>, ${min});
+    }
   <#elseif min?has_content>
-    pactDslJsonBody.minArrayLike("${complexField.name}", ${min}, <@writeBuilderLambdaField fieldLlist=complexField.fields/>, ${min});
+    if (${complexField.name}.isEmpty()) {
+      pactDslJsonBody.minArrayLike("${complexField.name}", ${min});
+    } else {
+      pactDslJsonBody.minArrayLike("${complexField.name}", ${min}, <@writeBuilderLambdaField fieldList=complexField.fields/>, ${min});
+    }
   <#elseif max?has_content>
-    pactDslJsonBody.maxArrayLike("${complexField.name}", ${max}, <@writeBuilderLambdaField fieldLlist=complexField.fields/>, ${max});
+    if (${complexField.name}.isEmpty()) {
+      pactDslJsonBody.maxArrayLike("${complexField.name}", ${max});
+    } else {
+      pactDslJsonBody.maxArrayLike("${complexField.name}", ${max}, <@writeBuilderLambdaField fieldList=complexField.fields/>, ${max});
+    }
   <#else>
     pactDslJsonBody.array("${complexField.name}");
       <#list complexField.fields as internalField>
@@ -174,6 +202,7 @@ import java.time.format.DateTimeFormatter;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Date;
+import java.util.List;
 
 <#function complex(field)>
   <#return field.functionByType??>
