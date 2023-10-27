@@ -8,8 +8,6 @@ package com.sngular.annotation.processor;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -54,7 +52,6 @@ import com.sngular.annotation.processor.model.DslComplexTypeEnum;
 import com.sngular.annotation.processor.model.DslField;
 import com.sngular.annotation.processor.model.DslSimpleField;
 import com.sngular.annotation.processor.model.FieldValidations;
-import com.sngular.annotation.processor.model.FieldValidations.FieldValidationsBuilder;
 import com.sngular.annotation.processor.template.ClasspathTemplateLoader;
 import com.sngular.annotation.processor.template.TemplateFactory;
 import freemarker.template.TemplateException;
@@ -206,7 +203,7 @@ public class PactDslProcessor extends AbstractProcessor {
   }
 
   private DslComplexField composeDslComplexField(final Element element) {
-    final var validationBuilder = extractValidations(element);
+    final FieldValidations.FieldValidationsBuilder validationBuilder = extractValidations(element);
     return DslComplexField.builder()
                           .name(element.getSimpleName().toString())
                           .fieldType(element.asType().toString())
@@ -246,7 +243,7 @@ public class PactDslProcessor extends AbstractProcessor {
     return finalType.replace(", ", "");
   }
 
-  private FieldValidationsBuilder extractValidations(final Element element) {
+  private FieldValidations.FieldValidationsBuilder extractValidations(final Element element) {
     final var validationBuilder = FieldValidations.builder();
 
     final var type = element.asType();
