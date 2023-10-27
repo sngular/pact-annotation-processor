@@ -31,7 +31,7 @@
     <#elseif type == "datetimeValue" && format?has_content>
       <#return 'ZonedDateTime.parse("${value?datetime}", DateTimeFormatter.ofPattern("${format?no_esc}")'?no_esc/>
     <#elseif type != "dateValue" && type != "datetimeValue">
-      <#return value?j_string/>
+      <#return '\"${value?j_string}\"'?no_esc/>
     </#if>
 </#function>
 
@@ -137,9 +137,11 @@
             .integerType(${writeRightValue(internalField.defaultValue, internalField.functionByType)})
           <#elseif internalField.functionByType == "decimalValue">
             .decimalType(${writeRightValue(internalField.defaultValue, internalField.functionByType)})
+            </#if>
+          <#elseif internalField.functionByType == "stringValue" >
+          .stringType(${writeRightValue(internalField.defaultValue, internalField.functionByType)})
           <#else >
-            .${internalField.functionByType}(${writeRightValue(internalField.defaultValue, internalField.functionByType)})
-          </#if>
+          .${internalField.functionByType}(${writeRightValue(internalField.defaultValue, internalField.functionByType)})
         </#if>
       </#if>
     </#if>
