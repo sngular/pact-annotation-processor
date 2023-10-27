@@ -75,7 +75,7 @@
     <google-guava.version>31.1-jre</google-guava.version>
     <sortpom-maven-plugin.version>3.3.0</sortpom-maven-plugin.version>
     <maven-javadoc-plugin.version>3.6.0</maven-javadoc-plugin.version>
-    <maven-surefire-plugin.version>3.0.0</maven-surefire-plugin.version>
+    <maven-source-plugin.version>3.0.0</maven-source-plugin.version>
   </properties>
 
   <dependencies>
