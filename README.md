@@ -1,6 +1,6 @@
 # PactAnnotationBuilder
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/4a9be5a4b6ab48afba293b2315edd47e)]()[![Maven Central](https://img.shields.io/maven-central/v/com.sngular/?label=Maven%20Central)]()
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/67f7406f9b79477faae81cc93ed79395)](https://app.codacy.com/gh/sngular/pact-annotation-processor/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)[![Maven Central](https://img.shields.io/maven-central/v/com.sngular/pact-annotation-processor?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.sngular%22%20AND%20a:%22pact-annotation-processor%22)
 
 This is an annotation processor designed to generate Pact Dsl Builders based on annotated classes.
 
