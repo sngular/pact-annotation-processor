@@ -148,9 +148,17 @@
 
 <#macro writeBuilderComplexField complexField>
   <#if complexField.complexType.name() == "COLLECTION">
-  <#assign max = "${complexField.fieldValidations.max}"/>
-  <#assign min = "${complexField.fieldValidations.min}"/>
-
+      <#if complexField.fieldValidations??>
+          <#if complexField.fieldValidations.max??>
+              <#assign max = "${complexField.fieldValidations.max}"/>
+          <#else >
+              <#assign max = ""/>
+          </#if>
+          <#if complexField.fieldValidations.min??>
+              <#assign min = "${complexField.fieldValidations.min}"/>
+          <#else >
+              <#assign min = ""/>
+          </#if>
   <#if max?has_content && min?has_content>
     if (${complexField.name}.isEmpty()) {
       pactDslJsonBody.minMaxArrayLike("${complexField.name}", ${min}, ${max});
@@ -169,6 +177,9 @@
     } else {
       pactDslJsonBody.maxArrayLike("${complexField.name}", ${max}, <@writeBuilderLambdaField fieldList=complexField.fields/>, ${max});
     }
+    <#else >
+    pactDslJsonBody.eachLike("${complexField.name}", <@writeBuilderLambdaField fieldList=complexField.fields/>, 1);
+    </#if>
   <#else>
     pactDslJsonBody.array("${complexField.name}");
       <#list complexField.fields as internalField>
@@ -230,13 +241,13 @@ public class ${schema.className}Builder {
         <#list schema.fieldList?filter(complex) as field><@writeBuilderField field=field/></#list>
         <#list schema.fieldList?filter(nocomplex) as field><@writeBuilderComplexField complexField=field /></#list>
 
-        <#if schema.customModifiers??>
+        <#-- if schema.customModifiers??>
         try {
             applyCustomModifiers(pactDslJsonBody);
         } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
             throw new RuntimeException(e);
         }
-        </#if>
+        </#if -->
         return pactDslJsonBody;
     }
 
