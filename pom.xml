@@ -62,10 +62,10 @@
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
     <freemarker.version>2.3.32</freemarker.version>
-    <projectlombok.version>1.18.26</projectlombok.version>
-    <commons-lang3.version>3.12.0</commons-lang3.version>
+    <projectlombok.version>1.18.30</projectlombok.version>
+    <commons-lang3.version>3.13.0</commons-lang3.version>
     <google-auto.version>1.1.1</google-auto.version>
-    <pact-consumer.version>4.6.2</pact-consumer.version>
+    <pact-consumer.version>4.6.3</pact-consumer.version>
     <org-json.version>20230618</org-json.version>
     <ktor.version>2.3.4</ktor.version>
     <netty-codec.version>4.1.95.Final</netty-codec.version>
