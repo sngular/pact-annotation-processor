@@ -37,7 +37,7 @@ public class StringMapping implements TypeMapping<String> {
   @Override
   public final String getRandomDefaultValue(final FieldValidations fieldValidations) {
     final int count;
-    if (Objects.nonNull(fieldValidations)) {
+    if (Objects.nonNull(fieldValidations) && ObjectUtils.anyNotNull(fieldValidations.getMin(), fieldValidations.getMax())) {
       count = RandomUtils.nextInt(ObjectUtils.defaultIfNull(fieldValidations.getMin(), DEFAULT_MIN),
                                   ObjectUtils.defaultIfNull(fieldValidations.getMax(), DEFAULT_MAX));
     } else {

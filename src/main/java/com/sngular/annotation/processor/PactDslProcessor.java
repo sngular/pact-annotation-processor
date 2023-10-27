@@ -54,6 +54,7 @@ import com.sngular.annotation.processor.model.DslComplexTypeEnum;
 import com.sngular.annotation.processor.model.DslField;
 import com.sngular.annotation.processor.model.DslSimpleField;
 import com.sngular.annotation.processor.model.FieldValidations;
+import com.sngular.annotation.processor.model.FieldValidations.FieldValidationsBuilder;
 import com.sngular.annotation.processor.template.ClasspathTemplateLoader;
 import com.sngular.annotation.processor.template.TemplateFactory;
 import freemarker.template.TemplateException;
@@ -72,17 +73,31 @@ public class PactDslProcessor extends AbstractProcessor {
 
   static final Map<String, TypeMapping> TYPE_MAPPING = ImmutableMap.<String, TypeMapping>builder()
                                                                    .put("int", new IntegerMapping())
+                                                                   .put("java.lang.Integer", new IntegerMapping())
+                                                                   .put("Integer", new IntegerMapping())
                                                                    .put("short", new ShortMapping())
+                                                                   .put("java.lang.Short", new ShortMapping())
+                                                                   .put("Short", new ShortMapping())
                                                                    .put("byte", new ByteMapping())
                                                                    .put("long", new LongMapping())
+                                                                   .put("java.lang.Long", new LongMapping())
+                                                                   .put("Long", new LongMapping())
                                                                   .put("char", new CharMapping())
                                                                   .put("java.lang.String", new StringMapping())
+                                                                  .put("String", new StringMapping())
                                                                   .put("double", new DecimalMapping())
+                                                                  .put("java.lang.Double", new DecimalMapping())
+                                                                  .put("Double", new DecimalMapping())
                                                                   .put("java.math.BigDecimal", new DecimalMapping())
+                                                                  .put("BigDecimal", new DecimalMapping())
                                                                   .put("boolean", new BooleanMapping())
+                                                                  .put("Boolean", new BooleanMapping())
+                                                                  .put("java.lang.Boolean", new BooleanMapping())
                                                                   .put("date", new DateMapping())
                                                                   .put("java.time.ZonedDateTime", new ZonedDateTimeMapping())
+                                                                  .put("ZonedDateTime", new ZonedDateTimeMapping())
                                                                   .put("java.util.Date", new DateMapping())
+                                                                  .put("Date", new DateMapping())
                                                                   .build();
 
   private static final String CUSTOM_MODIFIERS = "customModifiers";
@@ -171,55 +186,79 @@ public class PactDslProcessor extends AbstractProcessor {
   }
 
   private DslField composeDslField(final Element fieldElement, final boolean insideCollection) {
+    final DslField result;
     final Optional<TypeMapping> mappingOp = extractMappingByType(fieldElement);
     if (mappingOp.isEmpty()) {
-      return composeDslComplexField(fieldElement);
+      if (checkIfOwn(fieldElement)) {
+        result = composeDslComplexField(fieldElement);
+      } else {
+        final String type = extractType(fieldElement);
+        if (type.endsWith("List") || type.endsWith("Map") || type.endsWith("Set") || type.endsWith("Collection")) {
+          result = composeCollection(fieldElement);
+        } else {
+          result = composeDslComplexField(fieldElement);
+        }
+      }
     } else {
-      return composeDslSimpleField(fieldElement, mappingOp.get(), insideCollection);
+      result = composeDslSimpleField(fieldElement, mappingOp.get(), insideCollection);
     }
+    return result;
   }
 
   private DslComplexField composeDslComplexField(final Element element) {
-    final Optional<TypeElement> typeElementOp = Optional.ofNullable(elementUtils.getTypeElement(element.asType().toString()));
+    final var validationBuilder = extractValidations(element);
+    return DslComplexField.builder()
+                          .name(element.getSimpleName().toString())
+                          .fieldType(element.asType().toString())
+                          .needBuilder(checkIfOwn(element))
+                          .complexType(DslComplexTypeEnum.OBJECT)
+                          .fieldValidations(validationBuilder.build())
+                          .build();
+  }
+
+  private DslComplexField composeCollection(final Element element) {
+    final var typeStr = cleanType(element);
+    final var validationBuilder = extractValidations(element);
+    return DslComplexField.builder()
+                            .name(element.getSimpleName().toString())
+                            .fieldType(typeStr)
+                            .fields(extractTypes(element))
+                            .fieldValidations(validationBuilder.build())
+                            .complexType(DslComplexTypeEnum.COLLECTION).build();
+  }
+
+  private boolean checkIfOwn(final Element element) {
+    final var typePackage = elementUtils.getPackageOf(typeUtils.asElement(element.asType())).toString();
+    final var parentType = elementUtils.getPackageOf(typeUtils.asElement(element.getEnclosingElement().asType())).toString();
+    return parentType.equalsIgnoreCase(typePackage);
+  }
+
+  private String extractType(final Element element) {
+    return ((TypeElement) typeUtils.asElement(element.asType())).getQualifiedName().toString();
+  }
+
+  private String cleanType(final Element element) {
+    var finalType = element.asType().toString();
+    for (var annotation : element.asType().getAnnotationMirrors()) {
+      finalType = finalType.replace(annotation.toString(), "");
+    }
+    return finalType.replace(", ", "");
+  }
+
+  private FieldValidationsBuilder extractValidations(final Element element) {
     final var validationBuilder = FieldValidations.builder();
-    if (typeElementOp.isPresent()) {
-      final List<? extends Element> fieldElements = getFieldElements(typeElementOp.get());
-      for (var annotation : element.asType().getAnnotationMirrors()) {
+
+    final var type = element.asType();
+    if (CollectionUtils.isNotEmpty(type.getAnnotationMirrors())) {
+      for (var annotation : type.getAnnotationMirrors()) {
         if (annotation.getAnnotationType().toString().toUpperCase().endsWith("MAX")) {
           validationBuilder.max(((Long) Objects.requireNonNull(getAnnotationValue(annotation, "value")).getValue()).intValue());
         } else {
           validationBuilder.min(((Long) Objects.requireNonNull(getAnnotationValue(annotation, "value")).getValue()).intValue());
         }
       }
-      return DslComplexField.builder()
-                            .name(element.getSimpleName().toString())
-                            .fieldType(element.asType().toString())
-                            .fields(getFields(fieldElements))
-                            .complexType(DslComplexTypeEnum.OBJECT)
-                            .fieldValidations(validationBuilder.build())
-                            .build();
-    } else {
-      //is collection
-      final var type = element.asType();
-      var typeStr = type.toString();
-      if (CollectionUtils.isNotEmpty(type.getAnnotationMirrors())) {
-        for (var annotation : type.getAnnotationMirrors()) {
-          typeStr = typeStr.replace(annotation.toString(), "");
-          if (annotation.getAnnotationType().toString().toUpperCase().endsWith("MAX")) {
-            validationBuilder.max(((Long) Objects.requireNonNull(getAnnotationValue(annotation, "value")).getValue()).intValue());
-          } else {
-            validationBuilder.min(((Long) Objects.requireNonNull(getAnnotationValue(annotation, "value")).getValue()).intValue());
-          }
-        }
-        typeStr = typeStr.replace(", ", "");
-      }
-      return DslComplexField.builder()
-                            .name(element.getSimpleName().toString())
-                            .fieldType(typeStr)
-                            .fields(extractTypes(element))
-                            .fieldValidations(validationBuilder.build())
-                            .complexType(DslComplexTypeEnum.COLLECTION).build();
     }
+    return validationBuilder;
   }
 
   @NotNull
@@ -300,7 +339,7 @@ public class PactDslProcessor extends AbstractProcessor {
       case CHAR -> Optional.of(TYPE_MAPPING.get("char"));
       case FLOAT -> Optional.of(TYPE_MAPPING.get("float"));
       case DOUBLE -> Optional.of(TYPE_MAPPING.get("double"));
-      case DECLARED -> Optional.ofNullable(TYPE_MAPPING.get(type.toString()));
+      case DECLARED -> Optional.ofNullable(TYPE_MAPPING.get(this.typeUtils.asElement(type).getSimpleName().toString()));
       default -> Optional.empty();
     };
   }

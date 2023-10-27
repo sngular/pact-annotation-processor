@@ -31,7 +31,7 @@ public class DecimalMapping implements TypeMapping<Number> {
 
   @Override
   public final Number getRandomDefaultValue(final FieldValidations fieldValidations) {
-    if (Objects.nonNull(fieldValidations)) {
+    if (Objects.nonNull(fieldValidations) && ObjectUtils.anyNotNull(fieldValidations.getMin(), fieldValidations.getMax())) {
       return RandomUtils.nextDouble(ObjectUtils.defaultIfNull((double) fieldValidations.getMin(), Double.MIN_VALUE),
                                     ObjectUtils.defaultIfNull((double) fieldValidations.getMax(), Double.MAX_VALUE));
     }

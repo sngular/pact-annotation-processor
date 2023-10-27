@@ -31,7 +31,7 @@ public class IntegerMapping implements TypeMapping<Integer> {
 
   @Override
   public final Integer getRandomDefaultValue(final FieldValidations fieldValidations) {
-    if (Objects.nonNull(fieldValidations)) {
+    if (Objects.nonNull(fieldValidations) && ObjectUtils.anyNotNull(fieldValidations.getMin(), fieldValidations.getMax())) {
       return RandomUtils.nextInt(ObjectUtils.defaultIfNull(fieldValidations.getMin(), Integer.MIN_VALUE),
                                  ObjectUtils.defaultIfNull(fieldValidations.getMax(), Integer.MAX_VALUE));
     }

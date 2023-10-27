@@ -9,6 +9,7 @@ package com.sngular.annotation.processor.mapping;
 import java.util.Objects;
 
 import com.sngular.annotation.processor.model.FieldValidations;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.RandomUtils;
 
 public class LongMapping implements TypeMapping<Long> {
@@ -31,7 +32,7 @@ public class LongMapping implements TypeMapping<Long> {
   @Override
   public final Long getRandomDefaultValue(final FieldValidations fieldValidations) {
     final long value;
-    if (Objects.nonNull(fieldValidations)) {
+    if (Objects.nonNull(fieldValidations) && ObjectUtils.anyNotNull(fieldValidations.getMin(), fieldValidations.getMax())) {
       final long min = Objects.nonNull(fieldValidations.getMin()) ? fieldValidations.getMin() : Long.MIN_VALUE;
       final long max = Objects.nonNull(fieldValidations.getMax()) ? fieldValidations.getMax() : Long.MIN_VALUE;
       value = RandomUtils.nextLong(min, max);

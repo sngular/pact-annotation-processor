@@ -42,8 +42,10 @@
 <#elseif field.complexType??>
 <#if field.complexType.name() == "COLLECTION">
   public ${builderName}Builder set${field.name?cap_first}(final ${field.fieldType?no_esc} ${field.name}) {
-<#else>
+<#elseif field.needBuilder>
   public ${builderName}Builder set${field.name?cap_first}(final ${field.fieldType?no_esc}Builder ${field.name}) {
+<#else >
+  public ${builderName}Builder set${field.name?cap_first}(final ${field.fieldType?no_esc} ${field.name}) {
 </#if>
 <#else>
   public ${builderName}Builder set${field.name?cap_first}(final ${field.fieldType?no_esc} ${field.name}) {
@@ -57,8 +59,10 @@
 <#macro writeComplexAttrField complexField>
     <#if complexField.complexType.name() == "COLLECTION">
     ${complexField.fieldType?no_esc} ${complexField.name} = new java.util.ArrayList();
-    <#else>
+    <#elseif complexField.needBuilder>
     ${complexField.fieldType?no_esc}Builder ${complexField.name};
+    <#else >
+    ${complexField.fieldType?no_esc} ${complexField.name};
     </#if>
 
 </#macro>
@@ -144,9 +148,11 @@
       </#list>
     pactDslJsonBody.closeArray();
   </#if>
-  <#else>
+  <#elseif complexField.needBuilder>
   pactDslJsonBody.object("${complexField.name}", ${complexField.name}.build());
   pactDslJsonBody.closeObject();
+  <#else>
+  <@writeBuilderField field=complexField/>
   </#if>
 
 </#macro>

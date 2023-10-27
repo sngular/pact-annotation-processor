@@ -26,4 +26,6 @@ public class DslComplexField extends DslField {
 
   FieldValidations fieldValidations;
 
+  boolean needBuilder;
+
 }
