@@ -203,24 +203,22 @@ public class PactDslProcessor extends AbstractProcessor {
   }
 
   private DslComplexField composeDslComplexField(final Element element) {
-    final FieldValidations.FieldValidationsBuilder validationBuilder = extractValidations(element);
     return DslComplexField.builder()
                           .name(element.getSimpleName().toString())
                           .fieldType(element.asType().toString())
                           .needBuilder(checkIfOwn(element))
                           .complexType(DslComplexTypeEnum.OBJECT)
-                          .fieldValidations(validationBuilder.build())
+                          .fieldValidations(extractValidations(element))
                           .build();
   }
 
   private DslComplexField composeCollection(final Element element) {
     final var typeStr = cleanType(element);
-    final var validationBuilder = extractValidations(element);
     return DslComplexField.builder()
                             .name(element.getSimpleName().toString())
                             .fieldType(typeStr)
                             .fields(extractTypes(element))
-                            .fieldValidations(validationBuilder.build())
+                            .fieldValidations(extractValidations(element))
                             .complexType(DslComplexTypeEnum.COLLECTION)
                             .build();
   }
@@ -243,7 +241,7 @@ public class PactDslProcessor extends AbstractProcessor {
     return finalType.replace(", ", "");
   }
 
-  private FieldValidations.FieldValidationsBuilder extractValidations(final Element element) {
+  private FieldValidations extractValidations(final Element element) {
     final var validationBuilder = FieldValidations.builder();
 
     final var type = element.asType();
@@ -256,7 +254,7 @@ public class PactDslProcessor extends AbstractProcessor {
         }
       }
     }
-    return validationBuilder;
+    return validationBuilder.build();
   }
 
   @NotNull
