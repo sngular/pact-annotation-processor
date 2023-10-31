@@ -24,7 +24,7 @@ Just add the dependency on the
     <dependency>
       <groupId>com.sngular</groupId>
       <artifactId>pact-annotation-processor</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>1.0.0</version>
     </dependency>
     ...
   </dependencies>
@@ -71,7 +71,7 @@ Other annotations you can use in order to configure value and builder generation
 ### How to use the builders
 
 Once the code is compiled, builders will be generated and available to build Pact Json Bodies. Just only need to add the import you required and add the values you want to overwrite
-So this code 
+So this code
 ```java
     personBuilder
         .setAddress(new com.sngular.model.AddressBuilder()
