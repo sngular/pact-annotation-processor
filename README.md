@@ -24,7 +24,7 @@ Just add the dependency on the
     <dependency>
       <groupId>com.sngular</groupId>
       <artifactId>pact-annotation-processor</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>1.0.0</version>
     </dependency>
     ...
   </dependencies>
