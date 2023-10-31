@@ -1,23 +1,45 @@
-# PactAnnotationBuilder
+# Pact Builder DSL
 
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/67f7406f9b79477faae81cc93ed79395)](https://app.codacy.com/gh/sngular/pact-annotation-processor/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)[![Maven Central](https://img.shields.io/maven-central/v/com.sngular/pact-annotation-processor?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.sngular%22%20AND%20a:%22pact-annotation-processor%22)
 
-This is an annotation processor designed to generate Pact Dsl Builders based on annotated classes.
+This is a helper tool for Contract Testing with [Pact](https://docs.pact.io/).
+An annotation processor designed to generate DslPart objects for the body definitions based on annotations included in your model classes.
 
-## Index
+The focus is to simplify JVM contract testing implementation, minimizing the amount of boilerplate code needed.
 
-- [Pact Annotation Builder](#pact-annotation-builder)
-- [Main Configuration](#main-configuration)
-  - [How to add the annotations](#how-to-add-the-annotations)
-  - [How to use the Builders](#how-to-use-the-builders)
+Specially useful when defining body validations for interactions with complex models.
 
-## Main Configuration
+## Table of Contents
 
-This plugin allows developers to automatize the creation of code for build Pact Request Bodies for Pact Consumer Contracts.
+- [Pact Builder DSL](#pact-builder-dsl)
+- [Getting Started](#getting-started)
+  - [Requirements](#requirements)
+  - [Compatibility with pact-jvm](#compatibility-with-pact-jvm)
+  - [Configuration](#configuration)
+- [Usage](#usage)
+  - [Annotations](#annotations)
+  - [Builder](#builder)
+- [Roadmap](#roadmap)
+- [Contributing](#contributing)
+- [License](#license)
+- [Contact](#contact)
 
-### How to configure the POM file
+## Getting Started
+### Requirements
+- JDK +17
+- Having in project a verification library from your choice to have @Max and @Min annotations available (like [Jakarta](https://central.sonatype.com/artifact/jakarta.validation/jakarta.validation-api), [Spring Boot](https://central.sonatype.com/artifact/org.springframework.boot/spring-boot-starter-validation), or similar)
 
-Just add the dependency on the 
+### Compatibility with pact-jvm
+
+|                                       Pact Builder DSL                                       |  Pact JVM  |
+|:--------------------------------------------------------------------------------------------:|:----------:|
+|  [1.0.0](https://central.sonatype.com/artifact/com.sngular/pact-annotation-processor/1.0.0)  |   +4.6.3   |
+
+### Configuration
+
+The only configuration needed for starting using the library is adding the dependency to your build automation tool:
+
+Maven
 ```xml
   <dependencies>
     ...
@@ -29,11 +51,31 @@ Just add the dependency on the
     ...
   </dependencies>
 ```
+Gradle
 
-### How to add the annotations
+```groovy
+implementation('com.sngular:pact-annotation-processor:1.0.0')
+```
 
-To maintain the generation of the different builders each class should be annotated as `@PactDslBodyBuilder`.
-If you want to provide son specific value for a field, then use the annotation `@Example` with the value you want to be added as default in the builder
+## Usage
+
+To enable the code generation in a model class, you should annotate it as `@PactDslBodyBuilder`.
+That is the only requirement, all other annotations are optional and used for customize the code generated.
+
+### Annotations
+
+
+|            Annotation | Required | Level | Description                                                                                                                                 |
+|----------------------:|:--------:|:-----:|:--------------------------------------------------------------------------------------------------------------------------------------------|
+| `@PactDslBodyBuilder` |   true   | Class | Main annotation, to be included in classes that want to be processed.                                                                       |
+|            `@Example` |  false   | Field | Used to provide an specific value for a field. If not present in a field, the value created will be random.                                 |
+|                `@Min` |  false   | Field | Defines the maximum value for numeric fields, or number of elements if applied to collections. Will be ignored if an `@Example` is present. |
+|                `@Max` |  false   | Field | Defines the minimum value for numeric fields, or number of elements if applied to collections. Will be ignored if an `@Example` is present. |
+
+`@Example` values are always provided as String. For Dates and ZonedDateTime the only format supported in this version is the one shown in the example.
+Support for custom date formats will be included in following releases.
+
+#### Example
 
 ```java
 package com.sngular.model;
@@ -51,55 +93,81 @@ public class Address {
   @Example("2023-12-03T10:15:30+01:00[Europe/Madrid]")
   private ZonedDateTime deliveryTime;
 
+  @Example("Sep 27, 2022, 11:02:00 AM")
+  private Date creationDate;
+
   @Example("Jose")
   private String name;
 
   @Max(12)
   @Min(1)
-  @Example("4")
   private int number;
 
+  @Example("4")
+  private long aLong;
+
   private ZonedDateTime init;
-
-
+  
   private City city;
 
 }
 ```
-Other annotations you can use in order to configure value and builder generation are `@Max` `@Min`. Which will indicate the minimum and maximum values that property can have. In case of collections it will delimitate the number of elements that collection will contain.
 
-### How to use the builders
+### Builder
 
-Once the code is compiled, builders will be generated and available to build Pact Json Bodies. Just only need to add the import you required and add the values you want to overwrite
-So this code 
+Once the code is compiled, builder will be generated and available under `generated-sources` in your build directory.
+
+You will need to add the required import, and make use of the related builder class.
+
+#### Example
+
 ```java
-    personBuilder
-        .setAddress(new com.sngular.model.AddressBuilder()
-             .setCity(new com.sngular.model.CityBuilder()
-                      .setCoords(BigDecimal.valueOf(8.7))
-                      .setCityName("Ourense")))
-    .build();
-```
-will generate this output
+import com.sngular.model.AddressBuilder;
+        
+AddressBuilder addressBuilder = new AddressBuilder();
+DslPart bodyDslPart = addressBuilder.build();
 
-```json
-{
-  "address":
-  {
-    "city":
-    {
-      "cityName":"Ourense",
-      "coords":8.7,
-      "isCapital":true,
-      "objectList":["2023-10-25[[+02:00]]"]
-    },
-    "deliveryTime":"2023-12-03T10:15:30.000000.000+01:00[Europe/Madrid]",
-    "init":"2023-10-25T17:47:09.637165.637+02:00[Europe/Madrid]",
-    "name":"Jose",
-    "number":4
-  },
-  "age":1572804885,
-  "name":"7z2",
-  "wallet":1.6901720963006214E+308
+
+@Pact(consumer = "consumer-poc", provider = "provider-poc")
+public RequestResponsePact getStudents(PactDslWithProvider builder) {
+        AddressBuilder addressBuilder = new AddressBuilder();
+        DslPart bodyDslPart = studentBuilder.build();
+        
+        return builder.given("Address exist")
+        .uponReceiving("get all address")
+        .path("/address/")
+        .method("GET")
+        .willRespondWith()
+        .status(200)
+        .headers(Map.of("Content-Type", "application/json"))
+        .body(bodyDslPart)
+        .toPact();
 }
 ```
+
+## Roadmap
+
+Roadmap available under [GitHub Projects section](https://github.com/orgs/sngular/projects/2).
+
+See the [open issues](https://github.com/sngular/pact-annotation-processor/issues) for a full list of proposed features (and known issues).
+
+## Contributing
+
+Contributions are what makes the open source community special. Any contributions you make are greatly appreciated.
+
+If you have a suggestion that would make this library better, please [review our contributing guidelines](#https://github.com/sngular/pact-annotation-processor/blob/main/CONTRIBUTING.md).
+
+Or you can simply [open a feature request issue](#https://github.com/sngular/pact-annotation-processor/issues/new/choose).
+
+## License
+
+Distributed under Mozilla Public License Version 2.0. See [LICENSE](https://github.com/sngular/pact-annotation-processor/blob/main/LICENSE) for more information
+
+## Contact
+
+OS3 team: [os3@sngular.com](mailto:os3@sngular.com)
+
+Sngular - [GitHub Org](https://github.com/sngular)
+
+https://www.sngular.com
+
