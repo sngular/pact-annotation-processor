@@ -27,8 +27,7 @@ Specially useful when defining body validations for interactions with complex mo
 ## Getting Started
 ### Requirements
 - JDK +17
-- Having in project a verification library from your choice to have @Max and @Min annotations available (like [Jakarta](https://central.sonatype.com/artifact/jakarta.validation/jakarta.validation-api), [Spring Boot](https://central.sonatype.com/artifact/org.springframework.boot/spring-boot-starter-validation), or similar)
-
+- Having inside your project a verification library of your choice to have the `@Max` and `@Min` annotations available, such as [Jakarta](https://central.sonatype.com/artifact/jakarta.validation/jakarta.validation-api), [Spring Boot](https://central.sonatype.com/artifact/org.springframework.boot/spring-boot-starter-validation) or similar.
 ### Compatibility with pact-jvm
 
 |                                       Pact Builder DSL                                       |  Pact JVM  |
@@ -60,7 +59,7 @@ implementation('com.sngular:pact-annotation-processor:1.0.0')
 ## Usage
 
 To enable the code generation in a model class, you should annotate it as `@PactDslBodyBuilder`.
-That is the only requirement, all other annotations are optional and used for customize the code generated.
+That is the only requirement, all other annotations are optional and used for customising the generated code.
 
 ### Annotations
 
@@ -72,7 +71,7 @@ That is the only requirement, all other annotations are optional and used for cu
 |                `@Min` |  false   | Field | Defines the maximum value for numeric fields, or number of elements if applied to collections. Will be ignored if an `@Example` is present. |
 |                `@Max` |  false   | Field | Defines the minimum value for numeric fields, or number of elements if applied to collections. Will be ignored if an `@Example` is present. |
 
-`@Example` values are always provided as String. For Dates and ZonedDateTime the only format supported in this version is the one shown in the example.
+`@Example` values are always provided as String. For Dates and ZonedDateTime the only format supported in this version is the one shown in the example below.
 Support for custom date formats will be included in following releases.
 
 #### Example
