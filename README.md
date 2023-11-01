@@ -1,6 +1,6 @@
 # Pact Builder DSL
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/67f7406f9b79477faae81cc93ed79395)](https://app.codacy.com/gh/sngular/pact-annotation-processor/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)[![Maven Central](https://img.shields.io/maven-central/v/com.sngular/pact-annotation-processor?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.sngular%22%20AND%20a:%22pact-annotation-processor%22)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/67f7406f9b79477faae81cc93ed79395)](https://app.codacy.com/gh/sngular/pact-annotation-processor/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)[![Maven Central](https://img.shields.io/maven-central/v/com.sngular/pact-annotation-processor?label=Maven%20Central)](https://central.sonatype.com/artifact/com.sngular/pact-annotation-processor)
 
 This is a helper tool for Contract Testing with [Pact](https://docs.pact.io/).
 An annotation processor designed to generate DslPart objects for the body definitions based on annotations included in your model classes.
