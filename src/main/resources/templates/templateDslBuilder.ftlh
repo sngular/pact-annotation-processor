@@ -151,6 +151,11 @@
 <#macro writeBuilderComplexField complexField>
   <#if complexField.complexType.name() == "COLLECTION">
       <#if complexField.fieldValidations??>
+          <#if complexField.fieldValidations.randomSize??>
+                <#assign randomSize = "${complexField.fieldValidations.randomSize}"/>
+          <#else >
+                <#assign collectionSize = ""/>
+          </#if>
           <#if complexField.fieldValidations.max??>
               <#assign max = "${complexField.fieldValidations.max}"/>
           <#else >
@@ -165,19 +170,19 @@
     if (${complexField.name}.isEmpty()) {
       pactDslJsonBody.minMaxArrayLike("${complexField.name}", ${min}, ${max});
     } else {
-      pactDslJsonBody.minMaxArrayLike("${complexField.name}", ${min}, ${max}, <@writeBuilderLambdaField fieldList=complexField.fields/>, ${min});
+      pactDslJsonBody.minMaxArrayLike("${complexField.name}", ${min}, ${max}, <@writeBuilderLambdaField fieldList=complexField.fields/>, ${randomSize});
     }
   <#elseif min?has_content>
     if (${complexField.name}.isEmpty()) {
       pactDslJsonBody.minArrayLike("${complexField.name}", ${min});
     } else {
-      pactDslJsonBody.minArrayLike("${complexField.name}", ${min}, <@writeBuilderLambdaField fieldList=complexField.fields/>, ${min});
+      pactDslJsonBody.minArrayLike("${complexField.name}", ${min}, <@writeBuilderLambdaField fieldList=complexField.fields/>, ${randomSize});
     }
   <#elseif max?has_content>
     if (${complexField.name}.isEmpty()) {
       pactDslJsonBody.maxArrayLike("${complexField.name}", ${max});
     } else {
-      pactDslJsonBody.maxArrayLike("${complexField.name}", ${max}, <@writeBuilderLambdaField fieldList=complexField.fields/>, ${max});
+      pactDslJsonBody.maxArrayLike("${complexField.name}", ${max}, <@writeBuilderLambdaField fieldList=complexField.fields/>, ${randomSize});
     }
     <#else >
     pactDslJsonBody.eachLike("${complexField.name}", <@writeBuilderLambdaField fieldList=complexField.fields/>, 1);
