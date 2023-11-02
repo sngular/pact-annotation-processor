@@ -39,6 +39,17 @@
       </roles>
       <timezone>Europe/Madrid</timezone>
     </developer>
+    <developer>
+      <id>apenlor</id>
+      <name>Alejandro Pena Lorenzo</name>
+      <email>alejandro.pena@sngular.com</email>
+      <organizationUrl>https://sngular.github.io/</organizationUrl>
+      <roles>
+        <role>Principal Engineer</role>
+        <role>Team Leader</role>
+      </roles>
+      <timezone>America/New_York</timezone>
+    </developer>
   </developers>
 
   <scm>
