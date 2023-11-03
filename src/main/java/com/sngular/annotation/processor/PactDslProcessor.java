@@ -110,6 +110,7 @@ public class PactDslProcessor extends AbstractProcessor {
 
   @Override
   public final boolean process(final Set<? extends TypeElement> annotations, final RoundEnvironment roundEnv) {
+
     final TemplateFactory templateFactory;
     try {
       templateFactory = new TemplateFactory();
