@@ -64,7 +64,7 @@
     <#if complexField.complexType.name() == "COLLECTION">
     ${complexField.fieldType?no_esc} ${complexField.name} = List.of(${writeDefaultsList(complexField.fields)});
     <#elseif complexField.needBuilder>
-    ${complexField.fieldType?no_esc}Builder ${complexField.name};
+    ${complexField.fieldType?no_esc}Builder ${complexField.name} = new ${complexField.fieldType?no_esc}Builder();
     <#else >
     ${complexField.fieldType?no_esc} ${complexField.name};
     </#if>

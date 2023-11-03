@@ -42,3 +42,4 @@ pom.xml.bak
 **/.java-version
 
 *.bak
+dependency-reduced-pom*
