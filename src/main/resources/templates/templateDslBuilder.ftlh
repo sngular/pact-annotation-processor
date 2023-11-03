@@ -154,7 +154,7 @@
           <#if complexField.fieldValidations.randomSize??>
                 <#assign randomSize = "${complexField.fieldValidations.randomSize}"/>
           <#else >
-                <#assign collectionSize = ""/>
+                <#assign randomSize = ""/>
           </#if>
           <#if complexField.fieldValidations.max??>
               <#assign max = "${complexField.fieldValidations.max}"/>
