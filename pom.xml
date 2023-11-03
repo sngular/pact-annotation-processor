@@ -4,7 +4,7 @@
 
   <groupId>com.sngular</groupId>
   <artifactId>pact-annotation-processor</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
 
   <name>PactDslBuilder - Annotation Processor</name>
   <description>Pact DSL Builder annotation processor.</description>
@@ -38,6 +38,17 @@
         <role>Senior Developer</role>
       </roles>
       <timezone>Europe/Madrid</timezone>
+    </developer>
+    <developer>
+      <id>apenlor</id>
+      <name>Alejandro Pena Lorenzo</name>
+      <email>alejandro.pena@sngular.com</email>
+      <organizationUrl>https://sngular.github.io/</organizationUrl>
+      <roles>
+        <role>Principal Engineer</role>
+        <role>Team Leader</role>
+      </roles>
+      <timezone>America/New_York</timezone>
     </developer>
   </developers>
 
