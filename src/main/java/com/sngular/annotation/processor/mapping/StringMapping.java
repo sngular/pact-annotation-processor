@@ -11,9 +11,12 @@ import java.util.Objects;
 import com.sngular.annotation.processor.model.FieldValidations;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.rng.UniformRandomProvider;
+import org.apache.commons.rng.simple.RandomSource;
 
 public class StringMapping implements TypeMapping<String> {
+
+  UniformRandomProvider uniformRandomProvider = RandomSource.XO_RO_SHI_RO_128_PP.create();
 
   public static final int DEFAULT_MAX = 15;
 
@@ -36,13 +39,16 @@ public class StringMapping implements TypeMapping<String> {
 
   @Override
   public final String getRandomDefaultValue(final FieldValidations fieldValidations) {
-    final int count;
+    int length;
     if (Objects.nonNull(fieldValidations) && ObjectUtils.anyNotNull(fieldValidations.getMin(), fieldValidations.getMax())) {
-      count = RandomUtils.nextInt(ObjectUtils.defaultIfNull(fieldValidations.getMin(), DEFAULT_MIN),
-                                  ObjectUtils.defaultIfNull(fieldValidations.getMax(), DEFAULT_MAX));
+      int minLength = ObjectUtils.defaultIfNull(fieldValidations.getMin(), DEFAULT_MIN);
+      int maxLength = ObjectUtils.defaultIfNull(fieldValidations.getMax(), DEFAULT_MAX);
+
+      length = uniformRandomProvider.nextInt(minLength, maxLength);
     } else {
-      count = RandomUtils.nextInt(DEFAULT_MIN, DEFAULT_MAX);
+      length = uniformRandomProvider.nextInt(DEFAULT_MIN, DEFAULT_MAX);
     }
-    return RandomStringUtils.randomAlphanumeric(count);
+
+    return RandomStringUtils.randomAlphanumeric(length);
   }
 }

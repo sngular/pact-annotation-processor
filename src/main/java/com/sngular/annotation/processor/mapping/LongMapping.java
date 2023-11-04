@@ -10,9 +10,12 @@ import java.util.Objects;
 
 import com.sngular.annotation.processor.model.FieldValidations;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.rng.UniformRandomProvider;
+import org.apache.commons.rng.simple.RandomSource;
 
 public class LongMapping implements TypeMapping<Long> {
+
+  UniformRandomProvider uniformRandomProvider = RandomSource.XO_RO_SHI_RO_128_PP.create();
 
   @Override
   public final String getFieldType() {
@@ -31,15 +34,15 @@ public class LongMapping implements TypeMapping<Long> {
 
   @Override
   public final Long getRandomDefaultValue(final FieldValidations fieldValidations) {
-    final long value;
     if (Objects.nonNull(fieldValidations) && ObjectUtils.anyNotNull(fieldValidations.getMin(), fieldValidations.getMax())) {
-      final long min = Objects.nonNull(fieldValidations.getMin()) ? fieldValidations.getMin() : Long.MIN_VALUE;
-      final long max = Objects.nonNull(fieldValidations.getMax()) ? fieldValidations.getMax() : Long.MIN_VALUE;
-      value = RandomUtils.nextLong(min, max);
-    } else {
-      value = RandomUtils.nextLong(0, Long.MAX_VALUE);
+
+      long minValue = Objects.nonNull(fieldValidations.getMin()) ? fieldValidations.getMin() : Long.MIN_VALUE;
+      long maxValue = Objects.nonNull(fieldValidations.getMax()) ? fieldValidations.getMax() : Long.MIN_VALUE;
+
+      return uniformRandomProvider.nextLong(minValue, maxValue);
     }
-    return value;
+
+    return uniformRandomProvider.nextLong(0, Long.MAX_VALUE);
   }
 
   @Override

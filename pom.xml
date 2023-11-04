@@ -87,6 +87,7 @@
     <sortpom-maven-plugin.version>3.3.0</sortpom-maven-plugin.version>
     <maven-javadoc-plugin.version>3.6.0</maven-javadoc-plugin.version>
     <maven-source-plugin.version>3.0.0</maven-source-plugin.version>
+    <apache-commons-rng.version>1.5</apache-commons-rng.version>
   </properties>
 
   <dependencies>
@@ -126,6 +127,11 @@
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-collections4</artifactId>
       <version>4.4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-rng-simple</artifactId>
+      <version>${apache-commons-rng.version}</version>
     </dependency>
     <dependency>
       <groupId>commons-codec</groupId>
@@ -184,18 +190,6 @@
             <goals>
               <goal>test</goal>
             </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>com.github.ekryd.sortpom</groupId>
-        <artifactId>sortpom-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>sort</goal>
-            </goals>
-            <phase>verify</phase>
           </execution>
         </executions>
       </plugin>
