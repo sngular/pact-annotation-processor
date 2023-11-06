@@ -4,7 +4,7 @@
 
   <groupId>com.sngular</groupId>
   <artifactId>pact-annotation-processor</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
 
   <name>PactDslBuilder - Annotation Processor</name>
   <description>Pact DSL Builder annotation processor.</description>

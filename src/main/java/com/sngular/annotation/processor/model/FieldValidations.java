@@ -17,6 +17,8 @@ public class FieldValidations {
 
   Integer max;
 
+  Integer randomSize;
+
   String regex;
 
 }
