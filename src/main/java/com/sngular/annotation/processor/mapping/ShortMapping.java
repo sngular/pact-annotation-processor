@@ -15,7 +15,7 @@ import org.apache.commons.rng.simple.RandomSource;
 
 public class ShortMapping implements TypeMapping<Integer> {
 
-  UniformRandomProvider uniformRandomProvider = RandomSource.XO_RO_SHI_RO_128_PP.create();
+  private final UniformRandomProvider uniformRandomProvider = RandomSource.XO_RO_SHI_RO_128_PP.create();
 
   @Override
   public final String getFieldType() {
@@ -35,8 +35,8 @@ public class ShortMapping implements TypeMapping<Integer> {
   @Override
   public final Integer getRandomDefaultValue(final FieldValidations fieldValidations) {
     if (Objects.nonNull(fieldValidations) && ObjectUtils.anyNotNull(fieldValidations.getMin(), fieldValidations.getMax())) {
-      int minValue = ObjectUtils.defaultIfNull(fieldValidations.getMin(), (int) Byte.MIN_VALUE);
-      int maxValue = ObjectUtils.defaultIfNull(fieldValidations.getMax(), (int) Byte.MAX_VALUE);
+      final int minValue = ObjectUtils.defaultIfNull(fieldValidations.getMin(), (int) Byte.MIN_VALUE);
+      final int maxValue = ObjectUtils.defaultIfNull(fieldValidations.getMax(), (int) Byte.MAX_VALUE);
 
       return uniformRandomProvider.nextInt(minValue, maxValue);
     }

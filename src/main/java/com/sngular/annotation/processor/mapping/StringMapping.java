@@ -16,7 +16,7 @@ import org.apache.commons.rng.simple.RandomSource;
 
 public class StringMapping implements TypeMapping<String> {
 
-  UniformRandomProvider uniformRandomProvider = RandomSource.XO_RO_SHI_RO_128_PP.create();
+  private final UniformRandomProvider uniformRandomProvider = RandomSource.XO_RO_SHI_RO_128_PP.create();
 
   public static final int DEFAULT_MAX = 15;
 
@@ -39,10 +39,11 @@ public class StringMapping implements TypeMapping<String> {
 
   @Override
   public final String getRandomDefaultValue(final FieldValidations fieldValidations) {
-    int length;
+    final int length;
+
     if (Objects.nonNull(fieldValidations) && ObjectUtils.anyNotNull(fieldValidations.getMin(), fieldValidations.getMax())) {
-      int minLength = ObjectUtils.defaultIfNull(fieldValidations.getMin(), DEFAULT_MIN);
-      int maxLength = ObjectUtils.defaultIfNull(fieldValidations.getMax(), DEFAULT_MAX);
+      final int minLength = ObjectUtils.defaultIfNull(fieldValidations.getMin(), DEFAULT_MIN);
+      final int maxLength = ObjectUtils.defaultIfNull(fieldValidations.getMax(), DEFAULT_MAX);
 
       length = uniformRandomProvider.nextInt(minLength, maxLength);
     } else {

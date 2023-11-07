@@ -12,7 +12,7 @@ import org.apache.commons.rng.simple.RandomSource;
 
 public class BooleanMapping implements TypeMapping<Boolean> {
 
-  UniformRandomProvider uniformRandomProvider = RandomSource.XO_RO_SHI_RO_128_PP.create();
+  private final UniformRandomProvider uniformRandomProvider = RandomSource.XO_RO_SHI_RO_128_PP.create();
 
   @Override
   public final String getFieldType() {
