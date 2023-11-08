@@ -4,7 +4,7 @@
 
   <groupId>com.sngular</groupId>
   <artifactId>pact-annotation-processor</artifactId>
-  <version>1.0.2</version>
+  <version>1.0.3</version>
 
   <name>PactDslBuilder - Annotation Processor</name>
   <description>Pact DSL Builder annotation processor.</description>
@@ -190,6 +190,18 @@
             <goals>
               <goal>test</goal>
             </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>com.github.ekryd.sortpom</groupId>
+        <artifactId>sortpom-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>sort</goal>
+            </goals>
+            <phase>verify</phase>
           </execution>
         </executions>
       </plugin>
