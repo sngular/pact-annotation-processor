@@ -10,9 +10,12 @@ import java.util.Objects;
 
 import com.sngular.annotation.processor.model.FieldValidations;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.rng.UniformRandomProvider;
+import org.apache.commons.rng.simple.RandomSource;
 
 public class ShortMapping implements TypeMapping<Integer> {
+
+  private final UniformRandomProvider uniformRandomProvider = RandomSource.XO_RO_SHI_RO_128_PP.create();
 
   @Override
   public final String getFieldType() {
@@ -32,9 +35,12 @@ public class ShortMapping implements TypeMapping<Integer> {
   @Override
   public final Integer getRandomDefaultValue(final FieldValidations fieldValidations) {
     if (Objects.nonNull(fieldValidations) && ObjectUtils.anyNotNull(fieldValidations.getMin(), fieldValidations.getMax())) {
-      return RandomUtils.nextInt(ObjectUtils.defaultIfNull(fieldValidations.getMin(), (int) Short.MIN_VALUE),
-                                 ObjectUtils.defaultIfNull(fieldValidations.getMax(), (int) Short.MAX_VALUE));
+      final int minValue = ObjectUtils.defaultIfNull(fieldValidations.getMin(), (int) Byte.MIN_VALUE);
+      final int maxValue = ObjectUtils.defaultIfNull(fieldValidations.getMax(), (int) Byte.MAX_VALUE);
+
+      return uniformRandomProvider.nextInt(minValue, maxValue);
     }
-    return RandomUtils.nextInt(0, Integer.MAX_VALUE);
+
+    return uniformRandomProvider.nextInt(0, Integer.MAX_VALUE);
   }
 }
