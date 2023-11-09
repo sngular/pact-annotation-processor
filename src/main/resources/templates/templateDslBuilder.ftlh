@@ -10,7 +10,7 @@
     <#elseif field.defaultValue?is_boolean>
       ${field.fieldType} ${field.name} = ${field.defaultValue?then('true', 'false')};
     <#elseif field.functionByType == "date">
-      ${field.fieldType} ${field.name} = Date.from(Instant.parse("${field.defaultValue?datetime?string.iso}"));
+      ${field.fieldType} ${field.name} = Date.from(Instant.parse("${field.defaultValue}"));
     <#elseif field.functionByType == "datetime" && field.formatValue?has_content>
       ${field.fieldType} ${field.name} = ZonedDateTime.parse("${field.defaultValue?j_string?no_esc}",  DateTimeFormatter.ofPattern("${field.formatValue?no_esc}"));
     <#elseif field.functionByType != "date" && field.functionByType != "datetime">
@@ -27,7 +27,7 @@
     <#elseif value?is_boolean>
       <#return value?then('true', 'false')/>
     <#elseif type == "dateValue">
-      <#return 'Date.from(Instant.parse(\"${value?datetime?string.iso}\"))'?no_esc/>
+      <#return 'Date.from(Instant.parse(\"${value}\"))'?no_esc/>
     <#elseif type == "datetimeValue" && format?has_content>
       <#return 'ZonedDateTime.parse("${value?datetime}", DateTimeFormatter.ofPattern("${format?no_esc}")'?no_esc/>
     <#elseif type != "dateValue" && type != "datetimeValue">
