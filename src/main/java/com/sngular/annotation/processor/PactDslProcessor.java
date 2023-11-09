@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Random;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -245,15 +246,22 @@ public class PactDslProcessor extends AbstractProcessor {
   private FieldValidations extractValidations(final Element element) {
     final var validationBuilder = FieldValidations.builder();
 
+    int minValue = 0;
+    int maxValue = 0;
     final var type = element.asType();
     if (CollectionUtils.isNotEmpty(type.getAnnotationMirrors())) {
       for (var annotation : type.getAnnotationMirrors()) {
         if (annotation.getAnnotationType().toString().toUpperCase().endsWith("MAX")) {
-          validationBuilder.max(((Long) Objects.requireNonNull(getAnnotationValue(annotation, "value")).getValue()).intValue());
+          maxValue = ((Long) Objects.requireNonNull(getAnnotationValue(annotation, "value")).getValue()).intValue();
+          validationBuilder.max(maxValue);
         } else {
-          validationBuilder.min(((Long) Objects.requireNonNull(getAnnotationValue(annotation, "value")).getValue()).intValue());
+          minValue = ((Long) Objects.requireNonNull(getAnnotationValue(annotation, "value")).getValue()).intValue();
+          validationBuilder.min(minValue);
         }
       }
+      //For random size calculation: defaults to +10 elements max if not defined.
+      maxValue = (maxValue == 0) ? (minValue + 10) : maxValue;
+      validationBuilder.randomSize(new Random().nextInt(maxValue - minValue + 1) + minValue);
     }
     return validationBuilder.build();
   }
