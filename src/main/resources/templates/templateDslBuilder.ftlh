@@ -236,7 +236,7 @@ import java.util.List;
 
 public class ${schema.className}Builder {
     <#list schema.fieldList as field>
-    <@writeAttrField field=field/><#if field?is_last>;</#if>
+    <@writeAttrField field=field/>
     </#list>
 
     <#list schema.fieldList as field>
