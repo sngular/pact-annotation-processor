@@ -294,8 +294,10 @@ public class PactDslProcessor extends AbstractProcessor {
                          .fieldValidations(validationBuilder.build());
     if (Objects.nonNull(fieldElement.getAnnotation(Example.class))) {
       simpleFieldBuilder.defaultValue(getDefaultValue(fieldElement, mapping.getFieldType()));
+      simpleFieldBuilder.formatValue(getFormat(fieldElement, mapping.getFieldType()));
     } else {
       simpleFieldBuilder.defaultValue(mapping.getRandomDefaultValue(validationBuilder.build()));
+      simpleFieldBuilder.formatValue(mapping.getFormatValue());
     }
     return simpleFieldBuilder.build();
   }
@@ -322,6 +324,11 @@ public class PactDslProcessor extends AbstractProcessor {
       realValue = value;
     }
     return realValue;
+  }
+
+  private static String getFormat(final Element fieldElement, final String type) {
+    final String value = fieldElement.getAnnotation(Example.class).format();
+    return StringUtils.defaultIfEmpty(value, null);
   }
 
   private Optional<TypeMapping> extractMappingByType(final Element element) {
