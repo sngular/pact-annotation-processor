@@ -62,6 +62,8 @@ import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.collections4.IteratorUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.commons.rng.RestorableUniformRandomProvider;
+import org.apache.commons.rng.simple.RandomSource;
 import org.jetbrains.annotations.NotNull;
 
 @Slf4j
@@ -104,6 +106,8 @@ public class PactDslProcessor extends AbstractProcessor {
 
   private Types typeUtils;
 
+  private RestorableUniformRandomProvider randomSource = RandomSource.XO_RO_SHI_RO_128_PP.create();
+
   @Override
   public final SourceVersion getSupportedSourceVersion() {
     return SourceVersion.latestSupported();
@@ -131,6 +135,10 @@ public class PactDslProcessor extends AbstractProcessor {
           }
         });
     return true;
+  }
+
+  protected final void setRandomSource(final RestorableUniformRandomProvider randomSource) {
+    this.randomSource = randomSource;
   }
 
   private ClassBuilderTemplate composeBuilderTemplate(final Element element) {
@@ -176,12 +184,13 @@ public class PactDslProcessor extends AbstractProcessor {
   }
 
   private AnnotationValue getAnnotationValue(final AnnotationMirror annotationMirror, final String key) {
+    AnnotationValue annotationValue = null;
     for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : annotationMirror.getElementValues().entrySet()) {
       if (entry.getKey().getSimpleName().toString().equals(key)) {
-        return entry.getValue();
+        annotationValue = entry.getValue();
       }
     }
-    return null;
+    return annotationValue;
   }
 
   private DslField composeDslField(final Element fieldElement, final boolean insideCollection) {
@@ -268,12 +277,14 @@ public class PactDslProcessor extends AbstractProcessor {
 
   @NotNull
   private List<DslField> extractTypes(final Element element) {
+    final List<DslField> listOfFields;
     final var listOfCustomMods = new ArrayList<>(CollectionUtils.collect(((DeclaredType) element.asType()).getTypeArguments(), typeUtils::asElement));
     if (listOfCustomMods.size() > 1) {
-      return new ArrayList<>(CollectionUtils.collect(listOfCustomMods, e -> composeDslField(e, true)));
+      listOfFields = new ArrayList<>(CollectionUtils.collect(listOfCustomMods, e -> composeDslField(e, true)));
     } else {
-      return List.of(composeDslSimpleField(listOfCustomMods.get(0), extractMappingByType(listOfCustomMods.get(0)).get(), true));
+      listOfFields = List.of(composeDslSimpleField(listOfCustomMods.get(0), extractMappingByType(listOfCustomMods.get(0)).get(), true));
     }
+    return listOfFields;
   }
 
   private List<String> extractCustomModifiers(final Element element) {
@@ -304,7 +315,7 @@ public class PactDslProcessor extends AbstractProcessor {
       simpleFieldBuilder.defaultValue(getDefaultValue(fieldElement, mapping.getFieldType()));
       simpleFieldBuilder.formatValue(getFormat(fieldElement, mapping.getFieldType()));
     } else {
-      simpleFieldBuilder.defaultValue(mapping.getRandomDefaultValue(validationBuilder.build()));
+      simpleFieldBuilder.defaultValue(mapping.getRandomDefaultValue(validationBuilder.build(), randomSource));
       simpleFieldBuilder.formatValue(mapping.getFormatValue());
     }
     return simpleFieldBuilder.build();

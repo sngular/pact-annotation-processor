@@ -11,11 +11,8 @@ import java.util.Objects;
 import com.sngular.annotation.processor.model.FieldValidations;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.rng.UniformRandomProvider;
-import org.apache.commons.rng.simple.RandomSource;
 
 public class DecimalMapping implements TypeMapping<Number> {
-
-  private final UniformRandomProvider uniformRandomProvider = RandomSource.XO_RO_SHI_RO_128_PP.create();
 
   @Override
   public final String getFieldType() {
@@ -33,15 +30,18 @@ public class DecimalMapping implements TypeMapping<Number> {
   }
 
   @Override
-  public final Number getRandomDefaultValue(final FieldValidations fieldValidations) {
+  public final Number getRandomDefaultValue(final FieldValidations fieldValidations, final UniformRandomProvider uniformRandomProvider) {
+    final double result;
     if (Objects.nonNull(fieldValidations) && ObjectUtils.anyNotNull(fieldValidations.getMin(), fieldValidations.getMax())) {
 
       final int minValue = ObjectUtils.defaultIfNull(fieldValidations.getMin(), (int) Byte.MIN_VALUE);
       final int maxValue = ObjectUtils.defaultIfNull(fieldValidations.getMax(), (int) Byte.MAX_VALUE);
 
-      return uniformRandomProvider.nextDouble(minValue, maxValue);
-    }
+      result = uniformRandomProvider.nextDouble(minValue, maxValue);
+    } else {
 
-    return uniformRandomProvider.nextDouble(0, Double.MAX_VALUE);
+      result = uniformRandomProvider.nextDouble(0, Double.MAX_VALUE);
+    }
+    return result;
   }
 }

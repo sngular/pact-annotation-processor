@@ -8,6 +8,7 @@ package com.sngular.annotation.processor.mapping;
 
 import com.sngular.annotation.processor.model.FieldValidations;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.rng.UniformRandomProvider;
 
 public class CharMapping implements TypeMapping<String> {
 
@@ -27,7 +28,7 @@ public class CharMapping implements TypeMapping<String> {
   }
 
   @Override
-  public final String getRandomDefaultValue(final FieldValidations fieldValidations) {
+  public final String getRandomDefaultValue(final FieldValidations fieldValidations, final UniformRandomProvider uniformRandomProvider) {
     return RandomStringUtils.randomAlphanumeric(1);
   }
 }

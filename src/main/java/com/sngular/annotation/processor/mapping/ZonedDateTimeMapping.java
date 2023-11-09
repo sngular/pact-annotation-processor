@@ -9,6 +9,7 @@ package com.sngular.annotation.processor.mapping;
 import java.time.ZonedDateTime;
 
 import com.sngular.annotation.processor.model.FieldValidations;
+import org.apache.commons.rng.UniformRandomProvider;
 
 public class ZonedDateTimeMapping implements TypeMapping<ZonedDateTime> {
 
@@ -28,7 +29,7 @@ public class ZonedDateTimeMapping implements TypeMapping<ZonedDateTime> {
   }
 
   @Override
-  public final ZonedDateTime getRandomDefaultValue(final FieldValidations fieldValidations) {
+  public final ZonedDateTime getRandomDefaultValue(final FieldValidations fieldValidations, final UniformRandomProvider uniformRandomProvider) {
     return ZonedDateTime.now();
   }
 

@@ -10,6 +10,7 @@ import java.time.Instant;
 import java.util.Date;
 
 import com.sngular.annotation.processor.model.FieldValidations;
+import org.apache.commons.rng.UniformRandomProvider;
 
 public class DateMapping implements TypeMapping<Date> {
 
@@ -29,7 +30,7 @@ public class DateMapping implements TypeMapping<Date> {
   }
 
   @Override
-  public final Date getRandomDefaultValue(final FieldValidations fieldValidations) {
+  public final Date getRandomDefaultValue(final FieldValidations fieldValidations, final UniformRandomProvider uniformRandomProvider) {
     return Date.from(Instant.now());
   }
 

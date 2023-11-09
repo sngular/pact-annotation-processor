@@ -30,7 +30,7 @@ public class BooleanMapping implements TypeMapping<Boolean> {
   }
 
   @Override
-  public final Boolean getRandomDefaultValue(final FieldValidations fieldValidations) {
+  public final Boolean getRandomDefaultValue(final FieldValidations fieldValidations, final UniformRandomProvider uniformRandomProvider) {
     return uniformRandomProvider.nextBoolean();
   }
 }

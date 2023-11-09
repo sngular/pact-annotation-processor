@@ -31,10 +31,10 @@ public class TemplateFactory {
     cfg.setSetting("c_format", "Java");
   }
 
-  public void writeTemplateToFile(final String templateName, final ClassBuilderTemplate classBuilder, final Writer writer) throws IOException, TemplateException {
+  public final void writeTemplateToFile(final String templateName, final ClassBuilderTemplate classBuilder, final Writer writer) throws IOException, TemplateException {
     final Template template = cfg.getTemplate(templateName);
 
-    Map<String, Object> root = new HashMap<>();
+    final Map<String, Object> root = new HashMap<>();
     root.put(SCHEMA_ROOT, classBuilder);
     template.process(root, writer);
     writer.close();
