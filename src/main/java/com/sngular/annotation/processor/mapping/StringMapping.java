@@ -21,7 +21,7 @@ public class StringMapping implements TypeMapping<String> {
 
   @Override
   public final String getFieldType() {
-    return "java.lang.String";
+    return "String";
   }
 
   @Override

@@ -10,7 +10,7 @@
     <#elseif field.defaultValue?is_boolean>
       ${field.fieldType} ${field.name} = ${field.defaultValue?then('true', 'false')};
     <#elseif field.functionByType == "date">
-      ${field.fieldType} ${field.name} = Date.from(Instant.parse("${field.defaultValue?datetime?string.iso}"));
+      ${field.fieldType} ${field.name} = DateFormat.getDateInstance().parse("${field.defaultValue?j_string?no_esc}", new ParsePosition(0));
     <#elseif field.functionByType == "datetime" && field.formatValue?has_content>
       ${field.fieldType} ${field.name} = ZonedDateTime.parse("${field.defaultValue?j_string?no_esc}",  DateTimeFormatter.ofPattern("${field.formatValue?no_esc}"));
     <#elseif field.functionByType != "date" && field.functionByType != "datetime">
@@ -205,6 +205,17 @@
 
 package ${schema.modelPackage};
 
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.text.DateFormat;
+import java.text.ParsePosition;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+
 import au.com.dius.pact.consumer.dsl.DslPart;
 import au.com.dius.pact.consumer.dsl.PactDslJsonArray;
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
@@ -212,15 +223,7 @@ import au.com.dius.pact.consumer.dsl.PactDslJsonRootValue;
 <#if schema.customModifiers??>
 import com.sngular.annotation.processor.mapping.CustomDslModifier;
 </#if>
-import java.util.Objects;
-import java.util.Date;
-import java.time.LocalDate;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.math.BigDecimal;
-import java.time.Instant;
-import java.util.Date;
-import java.util.List;
+
 
 <#function complex(field)>
   <#return field.functionByType??>

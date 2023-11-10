@@ -16,7 +16,7 @@ public class DateMapping implements TypeMapping<Date> {
 
   @Override
   public final String getFieldType() {
-    return "java.util.Date";
+    return "Date";
   }
 
   @Override

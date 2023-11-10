@@ -15,7 +15,7 @@ public class ZonedDateTimeMapping implements TypeMapping<ZonedDateTime> {
 
   @Override
   public final String getFieldType() {
-    return "java.time.ZonedDateTime";
+    return "ZonedDateTime";
   }
 
   @Override

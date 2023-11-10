@@ -1,27 +1,28 @@
 package com.sngular.annotation.examples;
 
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.text.DateFormat;
+import java.text.ParsePosition;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+
 import au.com.dius.pact.consumer.dsl.DslPart;
 import au.com.dius.pact.consumer.dsl.PactDslJsonArray;
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslJsonRootValue;
 import com.sngular.annotation.processor.mapping.CustomDslModifier;
 
-import java.util.Objects;
-import java.util.Date;
-import java.time.LocalDate;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.math.BigDecimal;
-import java.time.Instant;
-import java.util.Date;
-import java.util.List;
-
 public class StudentBuilder {
-  java.lang.String name = "exampleName";
+  String name = "exampleName";
 
   int age = 18;
 
-  public StudentBuilder setName(final java.lang.String name) {
+  public StudentBuilder setName(final String name) {
     this.name = name;
     return this;
   }
