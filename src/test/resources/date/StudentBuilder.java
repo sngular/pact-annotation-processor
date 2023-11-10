@@ -21,6 +21,8 @@ public class StudentBuilder {
 
   java.time.ZonedDateTime age = ZonedDateTime.parse("23/04/2023 12:00",  DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
 
+  java.util.Date join = Date.from(Instant.parse("2023-04-23"));
+
   public StudentBuilder setName(final java.lang.String name) {
     this.name = name;
     return this;
@@ -29,7 +31,10 @@ public class StudentBuilder {
     this.age = age;
     return this;
   }
-
+  public StudentBuilder setJoin(final java.util.Date join) {
+    this.join = join;
+    return this;
+  }
   public DslPart build() {
     PactDslJsonBody pactDslJsonBody = new PactDslJsonBody();
     if (Objects.nonNull(name)) {
@@ -37,6 +42,9 @@ public class StudentBuilder {
     }
     if (Objects.nonNull(age)) {
       pactDslJsonBody.datetime("age", "dd/MM/yyyy HH:mm", age.toInstant());
+    }
+    if (Objects.nonNull(join)) {
+      pactDslJsonBody.date("join", "yyyy-MM-dd['['ZZZ']']", join);
     }
     return pactDslJsonBody;
   }

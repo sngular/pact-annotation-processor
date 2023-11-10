@@ -108,6 +108,13 @@ public class PactDslProcessor extends AbstractProcessor {
 
   private RestorableUniformRandomProvider randomSource = RandomSource.XO_RO_SHI_RO_128_PP.create();
 
+  public PactDslProcessor() {
+  }
+
+  public PactDslProcessor(final RestorableUniformRandomProvider randomSource) {
+    this.randomSource = randomSource;
+  }
+
   @Override
   public final SourceVersion getSupportedSourceVersion() {
     return SourceVersion.latestSupported();
@@ -135,10 +142,6 @@ public class PactDslProcessor extends AbstractProcessor {
           }
         });
     return true;
-  }
-
-  protected final void setRandomSource(final RestorableUniformRandomProvider randomSource) {
-    this.randomSource = randomSource;
   }
 
   private ClassBuilderTemplate composeBuilderTemplate(final Element element) {
@@ -313,7 +316,7 @@ public class PactDslProcessor extends AbstractProcessor {
                          .fieldValidations(validationBuilder.build());
     if (Objects.nonNull(fieldElement.getAnnotation(Example.class))) {
       simpleFieldBuilder.defaultValue(getDefaultValue(fieldElement, mapping.getFieldType()));
-      simpleFieldBuilder.formatValue(getFormat(fieldElement));
+      simpleFieldBuilder.formatValue(getFormat(fieldElement, mapping.getFormatValue()));
     } else {
       simpleFieldBuilder.defaultValue(mapping.getRandomDefaultValue(validationBuilder.build(), randomSource));
       simpleFieldBuilder.formatValue(mapping.getFormatValue());
@@ -345,9 +348,9 @@ public class PactDslProcessor extends AbstractProcessor {
     return realValue;
   }
 
-  private static String getFormat(final Element fieldElement) {
+  private static String getFormat(final Element fieldElement, final String defaultFormat) {
     final String value = fieldElement.getAnnotation(Example.class).format();
-    return StringUtils.defaultIfEmpty(value, null);
+    return StringUtils.defaultIfEmpty(value, defaultFormat);
   }
 
   private Optional<TypeMapping> extractMappingByType(final Element element) {
