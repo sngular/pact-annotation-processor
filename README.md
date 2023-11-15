@@ -71,7 +71,7 @@ We have developed 2 annotations to give support to your needs,
 
 and support 2 standard Java annotations for validation
 
-- `@Min`: From Jakarta or Javax (or other validation tools) to indicate the 
+- `@Min`: From Jakarta or Javax (or other validation tools) to indicate the
 minimum value to be cover for this property.
 - `@Max`: From Jakarta or Javax (or other validation tools) to indicate the
 maximum value to be cover for this property.
@@ -161,9 +161,10 @@ public RequestResponsePact getStudents(PactDslWithProvider builder) {
 - Dates: Regarding Timestamp and Date, we should use keep in mind the default
   formats will be used to parse those values:
   - For Dates, we are using `"yyyy-MM-dd['['ZZZ']']"` as default format
-  - For Timestamps, we are using `"yyyy-MM-dd'T'HH:mm:ss[.SSSSSS][.SSS]XXX['['VV']']"` 
-  as default format for datetime (ZonedDateTime) 
-  If you need and specific format the `@Example` support a format property 
+  - For Timestamps, we are using 
+  `"yyyy-MM-dd'T'HH:mm:ss[.SSSSSS][.SSS]XXX['['VV']']"`
+  as default format for datetime (ZonedDateTime)
+  If you need and specific format the `@Example` support a format property
   to handle them.
 
 ## Roadmap
@@ -176,7 +177,7 @@ See the [open issues](https://github.com/sngular/pact-annotation-processor/issue
 
 Contributions are what makes the open source community special. Any contributions you make are greatly appreciated.
 
-If you have a suggestion that would make this library better, 
+If you have a suggestion that would make this library better,
 please [review our contributing guidelines](https://github.com/sngular/pact-annotation-processor/blob/main/CONTRIBUTING.md).
 
 Or you can simply [open a feature request issue](#https://github.com/sngular/pact-annotation-processor/issues/new/choose).
