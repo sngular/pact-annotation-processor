@@ -36,17 +36,7 @@ import com.sngular.annotation.pact.Example;
 import com.sngular.annotation.pact.PactDslBodyBuilder;
 import com.sngular.annotation.processor.exception.TemplateFactoryException;
 import com.sngular.annotation.processor.exception.TemplateGenerationException;
-import com.sngular.annotation.processor.mapping.BooleanMapping;
-import com.sngular.annotation.processor.mapping.ByteMapping;
-import com.sngular.annotation.processor.mapping.CharMapping;
-import com.sngular.annotation.processor.mapping.DateMapping;
-import com.sngular.annotation.processor.mapping.DecimalMapping;
-import com.sngular.annotation.processor.mapping.IntegerMapping;
-import com.sngular.annotation.processor.mapping.LongMapping;
-import com.sngular.annotation.processor.mapping.ShortMapping;
-import com.sngular.annotation.processor.mapping.StringMapping;
-import com.sngular.annotation.processor.mapping.TypeMapping;
-import com.sngular.annotation.processor.mapping.ZonedDateTimeMapping;
+import com.sngular.annotation.processor.mapping.*;
 import com.sngular.annotation.processor.model.ClassBuilderTemplate;
 import com.sngular.annotation.processor.model.DslComplexField;
 import com.sngular.annotation.processor.model.DslComplexTypeEnum;
@@ -70,33 +60,35 @@ import org.jetbrains.annotations.NotNull;
 public class PactDslProcessor extends AbstractProcessor {
 
   static final Map<String, TypeMapping> TYPE_MAPPING = ImmutableMap.<String, TypeMapping>builder()
-                                                                   .put("int", new IntegerMapping())
-                                                                   .put("java.lang.Integer", new IntegerMapping())
-                                                                   .put("Integer", new IntegerMapping())
-                                                                   .put("short", new ShortMapping())
-                                                                   .put("java.lang.Short", new ShortMapping())
-                                                                   .put("Short", new ShortMapping())
-                                                                   .put("byte", new ByteMapping())
-                                                                   .put("long", new LongMapping())
-                                                                   .put("java.lang.Long", new LongMapping())
-                                                                   .put("Long", new LongMapping())
-                                                                  .put("char", new CharMapping())
-                                                                  .put("java.lang.String", new StringMapping())
-                                                                  .put("String", new StringMapping())
-                                                                  .put("double", new DecimalMapping())
-                                                                  .put("java.lang.Double", new DecimalMapping())
-                                                                  .put("Double", new DecimalMapping())
-                                                                  .put("java.math.BigDecimal", new DecimalMapping())
-                                                                  .put("BigDecimal", new DecimalMapping())
-                                                                  .put("boolean", new BooleanMapping())
-                                                                  .put("Boolean", new BooleanMapping())
-                                                                  .put("java.lang.Boolean", new BooleanMapping())
-                                                                  .put("date", new DateMapping())
-                                                                  .put("java.time.ZonedDateTime", new ZonedDateTimeMapping())
-                                                                  .put("ZonedDateTime", new ZonedDateTimeMapping())
-                                                                  .put("java.util.Date", new DateMapping())
-                                                                  .put("Date", new DateMapping())
-                                                                  .build();
+      .put("int", new IntegerMapping())
+      .put("java.lang.Integer", new IntegerMapping())
+      .put("Integer", new IntegerMapping())
+      .put("short", new ShortMapping())
+      .put("java.lang.Short", new ShortMapping())
+      .put("Short", new ShortMapping())
+      .put("byte", new ByteMapping())
+      .put("long", new LongMapping())
+      .put("java.lang.Long", new LongMapping())
+      .put("Long", new LongMapping())
+      .put("char", new CharMapping())
+      .put("java.lang.String", new StringMapping())
+      .put("String", new StringMapping())
+      .put("float", new DecimalMapping())
+      .put("Float", new DecimalMapping())
+      .put("double", new DecimalMapping())
+      .put("java.lang.Double", new DecimalMapping())
+      .put("Double", new DecimalMapping())
+      .put("java.math.BigDecimal", new DecimalMapping())
+      .put("BigDecimal", new DecimalMapping())
+      .put("boolean", new BooleanMapping())
+      .put("Boolean", new BooleanMapping())
+      .put("java.lang.Boolean", new BooleanMapping())
+      .put("date", new DateMapping())
+      .put("java.time.ZonedDateTime", new ZonedDateTimeMapping())
+      .put("ZonedDateTime", new ZonedDateTimeMapping())
+      .put("java.util.Date", new DateMapping())
+      .put("Date", new DateMapping())
+      .build();
 
   private static final String CUSTOM_MODIFIERS = "customModifiers";
 
@@ -314,7 +306,7 @@ public class PactDslProcessor extends AbstractProcessor {
   private static Object getDefaultValue(final Element fieldElement, final String type) {
     final Object realValue;
     final String value = fieldElement.getAnnotation(Example.class).value();
-    if (StringUtils.isNumeric(value)) {
+    if (NumberUtils.isCreatable(value)) {
       realValue = switch (type.toLowerCase()) {
         case "integer", "int" -> NumberUtils.toInt(value);
         case "long" -> NumberUtils.toLong(value);
@@ -322,7 +314,7 @@ public class PactDslProcessor extends AbstractProcessor {
         case "byte" -> NumberUtils.toByte(value);
         case "float" -> NumberUtils.toFloat(value);
         case "double" -> NumberUtils.toDouble(value);
-        case "bigdecimal" -> NumberUtils.createNumber(value);
+        case "bigdecimal", "java.math.bigdecimal" -> NumberUtils.createNumber(value);
         default -> throw new IllegalStateException("Unexpected value: " + type);
       };
     } else {
