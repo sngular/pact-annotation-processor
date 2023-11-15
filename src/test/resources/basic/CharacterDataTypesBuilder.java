@@ -17,11 +17,12 @@ import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslJsonRootValue;
 import com.sngular.annotation.processor.mapping.CustomDslModifier;
 
+
+
 public class CharacterDataTypesBuilder {
+  String name = "nameExample";
 
-  java.lang.String name = "nameExample";
-
-  public CharacterDataTypesBuilder setName(final java.lang.String name) {
+  public CharacterDataTypesBuilder setName(final String name) {
     this.name = name;
     return this;
   }

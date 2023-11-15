@@ -4,10 +4,7 @@ import com.sngular.annotation.pact.Example;
 import com.sngular.annotation.pact.PactDslBodyBuilder;
 
 @PactDslBodyBuilder
-public class Student {
-
-  @Example("exampleName")
-  private String name;
+public class NumericDataTypes {
 
   private int age;
 

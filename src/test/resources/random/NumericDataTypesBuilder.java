@@ -17,36 +17,22 @@ import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslJsonRootValue;
 import com.sngular.annotation.processor.mapping.CustomDslModifier;
 
-public class StudentBuilder {
-  String name = "exampleName";
 
-  ZonedDateTime age = ZonedDateTime.parse("23/04/2023 12:00",  DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
 
-  Date join = DateFormat.getDateInstance().parse("2023-04-23", new ParsePosition(0));
+public class NumericDataTypesBuilder {
+  int age = 18;
 
-  public StudentBuilder setName(final String name) {
-    this.name = name;
-    return this;
-  }
-  public StudentBuilder setAge(final ZonedDateTime age) {
+  public NumericDataTypesBuilder setAge(final int age) {
     this.age = age;
     return this;
   }
-  public StudentBuilder setJoin(final Date join) {
-    this.join = join;
-    return this;
-  }
+
   public DslPart build() {
     PactDslJsonBody pactDslJsonBody = new PactDslJsonBody();
-    if (Objects.nonNull(name)) {
-      pactDslJsonBody.stringType("name", name);
-    }
     if (Objects.nonNull(age)) {
-      pactDslJsonBody.datetime("age", "dd/MM/yyyy HH:mm", age.toInstant());
+      pactDslJsonBody.integerType("age", age);
     }
-    if (Objects.nonNull(join)) {
-      pactDslJsonBody.date("join", "yyyy-MM-dd['['ZZZ']']", join);
-    }
+
     return pactDslJsonBody;
   }
 

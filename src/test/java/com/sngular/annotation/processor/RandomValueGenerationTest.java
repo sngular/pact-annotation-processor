@@ -11,13 +11,13 @@ import org.mockito.Mockito;
 public class RandomValueGenerationTest {
 
   @Test
-  public void test() {
+  public void numericDataTypes() {
     var theMock = Mockito.mock(RestorableUniformRandomProvider.class);
     Mockito.when(theMock.nextInt(0, Integer.MAX_VALUE)).thenReturn(18);
-    Compilation compilation = Compiler.javac().withProcessors( new PactDslProcessor(theMock)).compile(JavaFileObjects.forResource("random/Student.java"));
+    Compilation compilation = Compiler.javac().withProcessors( new PactDslProcessor(theMock)).compile(JavaFileObjects.forResource("random/NumericDataTypes.java"));
     CompilationSubject.assertThat(compilation).succeeded();
-    CompilationSubject.assertThat(compilation).generatedSourceFile("com/sngular/annotation/examples/StudentBuilder")
-                      .hasSourceEquivalentTo(JavaFileObjects.forResource("random/StudentBuilder.java"));
+    CompilationSubject.assertThat(compilation).generatedSourceFile("com/sngular/annotation/examples/NumericDataTypesBuilder")
+                      .hasSourceEquivalentTo(JavaFileObjects.forResource("random/NumericDataTypesBuilder.java"));
 
   }
 }
