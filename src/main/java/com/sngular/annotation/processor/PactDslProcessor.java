@@ -33,6 +33,7 @@ import javax.lang.model.util.Types;
 import com.google.auto.service.AutoService;
 import com.google.common.collect.ImmutableMap;
 import com.sngular.annotation.pact.Example;
+import com.sngular.annotation.pact.DslExclude;
 import com.sngular.annotation.pact.PactDslBodyBuilder;
 import com.sngular.annotation.processor.exception.TemplateFactoryException;
 import com.sngular.annotation.processor.exception.TemplateGenerationException;
@@ -299,7 +300,9 @@ public class PactDslProcessor extends AbstractProcessor {
                          .suffixValue(mapping.getSuffixValue())
                          .formatValue(mapping.getFormatValue())
                          .fieldValidations(validationBuilder.build());
-    if (Objects.nonNull(fieldElement.getAnnotation(Example.class))) {
+    if (Objects.nonNull(fieldElement.getAnnotation(DslExclude.class))) {
+      simpleFieldBuilder.defaultValue(null);
+    } else if (Objects.nonNull(fieldElement.getAnnotation(Example.class))) {
       simpleFieldBuilder.defaultValue(getDefaultValue(fieldElement, mapping.getFieldType()));
     } else {
       simpleFieldBuilder.defaultValue(mapping.getRandomDefaultValue(validationBuilder.build()));
