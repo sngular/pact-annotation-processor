@@ -60,6 +60,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.collections4.IteratorUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.rng.RestorableUniformRandomProvider;
 import org.apache.commons.rng.simple.RandomSource;
@@ -71,35 +72,35 @@ import org.jetbrains.annotations.NotNull;
 public class PactDslProcessor extends AbstractProcessor {
 
   static final Map<String, TypeMapping> TYPE_MAPPING = ImmutableMap.<String, TypeMapping>builder()
-      .put("int", new IntegerMapping())
-      .put("java.lang.Integer", new IntegerMapping())
-      .put("Integer", new IntegerMapping())
-      .put("short", new ShortMapping())
-      .put("java.lang.Short", new ShortMapping())
-      .put("Short", new ShortMapping())
-      .put("byte", new ByteMapping())
-      .put("long", new LongMapping())
-      .put("java.lang.Long", new LongMapping())
-      .put("Long", new LongMapping())
-      .put("char", new CharMapping())
-      .put("java.lang.String", new StringMapping())
-      .put("String", new StringMapping())
-      .put("float", new DecimalMapping())
-      .put("Float", new DecimalMapping())
-      .put("double", new DecimalMapping())
-      .put("java.lang.Double", new DecimalMapping())
-      .put("Double", new DecimalMapping())
-      .put("java.math.BigDecimal", new DecimalMapping())
-      .put("BigDecimal", new DecimalMapping())
-      .put("boolean", new BooleanMapping())
-      .put("Boolean", new BooleanMapping())
-      .put("java.lang.Boolean", new BooleanMapping())
-      .put("date", new DateMapping())
-      .put("java.time.ZonedDateTime", new ZonedDateTimeMapping())
-      .put("ZonedDateTime", new ZonedDateTimeMapping())
-      .put("java.util.Date", new DateMapping())
-      .put("Date", new DateMapping())
-      .build();
+                                                                   .put("int", new IntegerMapping())
+                                                                   .put("java.lang.Integer", new IntegerMapping())
+                                                                   .put("Integer", new IntegerMapping())
+                                                                   .put("short", new ShortMapping())
+                                                                   .put("java.lang.Short", new ShortMapping())
+                                                                   .put("Short", new ShortMapping())
+                                                                   .put("byte", new ByteMapping())
+                                                                   .put("long", new LongMapping())
+                                                                   .put("java.lang.Long", new LongMapping())
+                                                                   .put("Long", new LongMapping())
+                                                                   .put("char", new CharMapping())
+                                                                   .put("java.lang.String", new StringMapping())
+                                                                   .put("String", new StringMapping())
+                                                                   .put("float", new DecimalMapping())
+                                                                   .put("Float", new DecimalMapping())
+                                                                   .put("double", new DecimalMapping())
+                                                                   .put("java.lang.Double", new DecimalMapping())
+                                                                   .put("Double", new DecimalMapping())
+                                                                   .put("java.math.BigDecimal", new DecimalMapping())
+                                                                   .put("BigDecimal", new DecimalMapping())
+                                                                   .put("boolean", new BooleanMapping())
+                                                                   .put("Boolean", new BooleanMapping())
+                                                                   .put("java.lang.Boolean", new BooleanMapping())
+                                                                   .put("date", new DateMapping())
+                                                                   .put("java.time.ZonedDateTime", new ZonedDateTimeMapping())
+                                                                   .put("ZonedDateTime", new ZonedDateTimeMapping())
+                                                                   .put("java.util.Date", new DateMapping())
+                                                                   .put("Date", new DateMapping())
+                                                                   .build();
 
   private static final String CUSTOM_MODIFIERS = "customModifiers";
 
@@ -114,6 +115,36 @@ public class PactDslProcessor extends AbstractProcessor {
 
   public PactDslProcessor(final RestorableUniformRandomProvider randomSource) {
     this.randomSource = randomSource;
+  }
+
+  @NotNull
+  private static List<? extends Element> getFieldElements(final Element element) {
+    return IterableUtils.toList(IterableUtils.filteredIterable(element.getEnclosedElements(), elt -> elt.getKind().isField()));
+  }
+
+  private static Object getDefaultValue(final Element fieldElement, final String type) {
+    final Object realValue;
+    final String value = fieldElement.getAnnotation(Example.class).value();
+    if (NumberUtils.isCreatable(value)) {
+      realValue = switch (type.toLowerCase()) {
+        case "integer", "int" -> NumberUtils.toInt(value);
+        case "long" -> NumberUtils.toLong(value);
+        case "short" -> NumberUtils.toShort(value);
+        case "byte" -> NumberUtils.toByte(value);
+        case "float" -> NumberUtils.toFloat(value);
+        case "double" -> NumberUtils.toDouble(value);
+        case "bigdecimal", "java.math.bigdecimal" -> NumberUtils.createNumber(value);
+        default -> throw new IllegalStateException("Unexpected value: " + type);
+      };
+    } else {
+      realValue = value;
+    }
+    return realValue;
+  }
+
+  private static String getFormat(final Element fieldElement, final String defaultFormat) {
+    final String value = fieldElement.getAnnotation(Example.class).format();
+    return StringUtils.defaultIfEmpty(value, defaultFormat);
   }
 
   @Override
@@ -166,11 +197,6 @@ public class PactDslProcessor extends AbstractProcessor {
   }
 
   @NotNull
-  private static List<? extends Element> getFieldElements(final Element element) {
-    return IterableUtils.toList(IterableUtils.filteredIterable(element.getEnclosedElements(), elt -> elt.getKind().isField()));
-  }
-
-  @NotNull
   private List<DslField> getFields(final List<? extends Element> fieldElements) {
     return IterableUtils.toList(IterableUtils.transformedIterable(fieldElements, fieldElement -> composeDslField(fieldElement, false)));
   }
@@ -180,9 +206,9 @@ public class PactDslProcessor extends AbstractProcessor {
     final var annotationValue = getAnnotationValue(annotationMirror, key);
     if (annotationValue != null) {
       valueAsTypeList.addAll(List.of(annotationValue.toString()
-                                         .replace(" ", "").replace("{", "")
-                                         .replace("}", "").replace("\"", "")
-                                         .split(",")));
+                                                    .replace(" ", "").replace("{", "")
+                                                    .replace("}", "").replace("\"", "")
+                                                    .split(",")));
     }
     return valueAsTypeList;
   }
@@ -230,12 +256,12 @@ public class PactDslProcessor extends AbstractProcessor {
   private DslComplexField composeCollection(final Element element) {
     final var typeStr = cleanType(element);
     return DslComplexField.builder()
-                            .name(element.getSimpleName().toString())
-                            .fieldType(typeStr)
-                            .fields(extractTypes(element))
-                            .fieldValidations(extractValidations(element))
-                            .complexType(DslComplexTypeEnum.COLLECTION)
-                            .build();
+                          .name(element.getSimpleName().toString())
+                          .fieldType(typeStr)
+                          .fields(extractTypes(element))
+                          .fieldValidations(extractValidations(element))
+                          .complexType(DslComplexTypeEnum.COLLECTION)
+                          .build();
   }
 
   private boolean checkIfOwn(final Element element) {
@@ -308,13 +334,13 @@ public class PactDslProcessor extends AbstractProcessor {
       }
     }
     final var simpleFieldBuilder = DslSimpleField.builder()
-                         .name(getNameOrNull(fieldElement.getSimpleName()))
-                         .fieldType(mapping.getFieldType())
-                         .functionByType(insideCollection ? mapping.getFunctionOnlyValue() : mapping.getFunctionType())
-                         .onlyValueFunction(insideCollection)
-                         .suffixValue(mapping.getSuffixValue())
-                         .formatValue(mapping.getFormatValue())
-                         .fieldValidations(validationBuilder.build());
+                                                 .name(getNameOrNull(fieldElement.getSimpleName()))
+                                                 .fieldType(mapping.getFieldType())
+                                                 .functionByType(insideCollection ? mapping.getFunctionOnlyValue() : mapping.getFunctionType())
+                                                 .onlyValueFunction(insideCollection)
+                                                 .suffixValue(mapping.getSuffixValue())
+                                                 .formatValue(mapping.getFormatValue())
+                                                 .fieldValidations(validationBuilder.build());
     if (Objects.nonNull(fieldElement.getAnnotation(Example.class))) {
       simpleFieldBuilder.defaultValue(getDefaultValue(fieldElement, mapping.getFieldType()));
       simpleFieldBuilder.formatValue(getFormat(fieldElement, mapping.getFormatValue()));
@@ -327,31 +353,6 @@ public class PactDslProcessor extends AbstractProcessor {
 
   private String getNameOrNull(final Name simpleName) {
     return simpleName.toString().matches("[A-Z].*") ? null : simpleName.toString();
-  }
-
-  private static Object getDefaultValue(final Element fieldElement, final String type) {
-    final Object realValue;
-    final String value = fieldElement.getAnnotation(Example.class).value();
-    if (NumberUtils.isCreatable(value)) {
-      realValue = switch (type.toLowerCase()) {
-        case "integer", "int" -> NumberUtils.toInt(value);
-        case "long" -> NumberUtils.toLong(value);
-        case "short" -> NumberUtils.toShort(value);
-        case "byte" -> NumberUtils.toByte(value);
-        case "float" -> NumberUtils.toFloat(value);
-        case "double" -> NumberUtils.toDouble(value);
-        case "bigdecimal", "java.math.bigdecimal" -> NumberUtils.createNumber(value);
-        default -> throw new IllegalStateException("Unexpected value: " + type);
-      };
-    } else {
-      realValue = value;
-    }
-    return realValue;
-  }
-
-  private static String getFormat(final Element fieldElement, final String defaultFormat) {
-    final String value = fieldElement.getAnnotation(Example.class).format();
-    return StringUtils.defaultIfEmpty(value, defaultFormat);
   }
 
   private Optional<TypeMapping> extractMappingByType(final Element element) {
