@@ -161,7 +161,7 @@ public RequestResponsePact getStudents(PactDslWithProvider builder) {
 - Dates: Regarding Timestamp and Date, we should use keep in mind the default
   formats will be used to parse those values:
   - For Dates, we are using `"yyyy-MM-dd['['ZZZ']']"` as default format
-  - For Timestamps, we are using 
+  - For Timestamps, we are using
   `"yyyy-MM-dd'T'HH:mm:ss[.SSSSSS][.SSS]XXX['['VV']']"`
   as default format for datetime (ZonedDateTime)
   If you need and specific format the `@Example` support a format property
