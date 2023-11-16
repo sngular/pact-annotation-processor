@@ -2,7 +2,7 @@
 <#macro writeAttrField field>
   <#if field.functionByType??>
     <#if field.fieldType == "char">
-      ${field.fieldType} ${field.name} = '${field.defaultValue}';
+      String ${field.name} = "${field.defaultValue}";
     <#elseif field.defaultValue?is_number>
       <#if field.functionByType == "decimalType">
         ${field.fieldType} ${field.name} = new BigDecimal("${field.defaultValue?c}");
@@ -39,7 +39,11 @@
 
 <#macro writeSetterField field builderName>
 <#if field.functionByType??>
-  public ${builderName}Builder set${field.name?cap_first}(final ${field.fieldType?no_esc} ${field.name}) {
+  <#if field.fieldType == "char">
+      public ${builderName}Builder set${field.name?cap_first}(final String ${field.name}) {
+  <#else>
+    public ${builderName}Builder set${field.name?cap_first}(final ${field.fieldType?no_esc} ${field.name}) {
+  </#if>
 <#elseif field.complexType??>
 <#if field.complexType.name() == "COLLECTION">
   public ${builderName}Builder set${field.name?cap_first}(final ${field.fieldType?no_esc} ${field.name}) {
