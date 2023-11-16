@@ -211,6 +211,7 @@ public class PactDslProcessor extends AbstractProcessor {
                           .needBuilder(checkIfOwn(element))
                           .complexType(DslComplexTypeEnum.OBJECT)
                           .fieldValidations(extractValidations(element))
+                          .empty(false)
                           .build();
   }
 
@@ -222,6 +223,7 @@ public class PactDslProcessor extends AbstractProcessor {
                             .fields(extractTypes(element))
                             .fieldValidations(extractValidations(element))
                             .complexType(DslComplexTypeEnum.COLLECTION)
+                            .empty(Objects.nonNull(element.getAnnotation(DslExclude.class)))
                             .build();
   }
 
@@ -299,14 +301,17 @@ public class PactDslProcessor extends AbstractProcessor {
                          .onlyValueFunction(insideCollection)
                          .suffixValue(mapping.getSuffixValue())
                          .formatValue(mapping.getFormatValue())
-                         .fieldValidations(validationBuilder.build());
+                         .fieldValidations(validationBuilder.build())
+                         .empty(false);
+
     if (Objects.nonNull(fieldElement.getAnnotation(DslExclude.class))) {
-      simpleFieldBuilder.defaultValue(null);
+      simpleFieldBuilder.empty(true);
     } else if (Objects.nonNull(fieldElement.getAnnotation(Example.class))) {
       simpleFieldBuilder.defaultValue(getDefaultValue(fieldElement, mapping.getFieldType()));
     } else {
       simpleFieldBuilder.defaultValue(mapping.getRandomDefaultValue(validationBuilder.build()));
     }
+
     return simpleFieldBuilder.build();
   }
 

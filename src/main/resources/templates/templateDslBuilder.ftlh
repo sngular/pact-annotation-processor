@@ -1,7 +1,7 @@
 
 <#macro writeAttrField field>
   <#if field.functionByType??>
-    <#if !field.defaultValue??>
+    <#if field.empty>
       ${field.fieldType} ${field.name};
     <#elseif field.defaultValue?is_number>
       <#if field.functionByType == "decimalType">
@@ -63,14 +63,15 @@
 </#function>
 
 <#macro writeComplexAttrField complexField>
-    <#if complexField.complexType.name() == "COLLECTION">
-    ${complexField.fieldType?no_esc} ${complexField.name} = List.of(${writeDefaultsList(complexField.fields)});
+    <#if complexField.empty>
+        ${complexField.fieldType?no_esc} ${complexField.name};
+    <#elseif complexField.complexType.name() == "COLLECTION">
+        ${complexField.fieldType?no_esc} ${complexField.name} = List.of(${writeDefaultsList(complexField.fields)});
     <#elseif complexField.needBuilder>
-    ${complexField.fieldType?no_esc}Builder ${complexField.name} = new ${complexField.fieldType?no_esc}Builder();
+        ${complexField.fieldType?no_esc}Builder ${complexField.name} = new ${complexField.fieldType?no_esc}Builder();
     <#else >
-    ${complexField.fieldType?no_esc} ${complexField.name};
+        ${complexField.fieldType?no_esc} ${complexField.name};
     </#if>
-
 </#macro>
 
 <#macro writeBuilderField field>
