@@ -1,7 +1,9 @@
 
 <#macro writeAttrField field>
   <#if field.functionByType??>
-    <#if field.defaultValue?is_number>
+    <#if field.fieldType == "char">
+      ${field.fieldType} ${field.name} = '${field.defaultValue}';
+    <#elseif field.defaultValue?is_number>
       <#if field.functionByType == "decimalType">
         ${field.fieldType} ${field.name} = new BigDecimal("${field.defaultValue?c}");
       <#else>
