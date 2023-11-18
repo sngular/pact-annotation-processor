@@ -211,7 +211,7 @@ public class PactDslProcessor extends AbstractProcessor {
                           .needBuilder(checkIfOwn(element))
                           .complexType(DslComplexTypeEnum.OBJECT)
                           .fieldValidations(extractValidations(element))
-                          .empty(false)
+                          .empty(Objects.nonNull(element.getAnnotation(DslExclude.class)))
                           .build();
   }
 

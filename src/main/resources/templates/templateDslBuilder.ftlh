@@ -1,9 +1,7 @@
 
 <#macro writeAttrField field>
   <#if field.functionByType??>
-    <#if field.empty>
-      ${field.fieldType} ${field.name};
-    <#elseif field.defaultValue?is_number>
+    <#if field.defaultValue?is_number>
       <#if field.functionByType == "decimalType">
         ${field.fieldType} ${field.name} = new BigDecimal("${field.defaultValue?c}");
       <#else>
@@ -64,7 +62,7 @@
 
 <#macro writeComplexAttrField complexField>
     <#if complexField.empty>
-        ${complexField.fieldType?no_esc} ${complexField.name};
+        <#-- Empty field there is the need to be initialized -->
     <#elseif complexField.complexType.name() == "COLLECTION">
         ${complexField.fieldType?no_esc} ${complexField.name} = List.of(${writeDefaultsList(complexField.fields)});
     <#elseif complexField.needBuilder>
@@ -77,7 +75,10 @@
 <#macro writeBuilderField field>
   <#if field.functionByType??>
     <#if field.name?has_content>
-      if (Objects.nonNull(${field.name})) {
+      <#if field.empty>
+        pactDslJsonBody.${field.functionByType}("${field.name}");
+      <#else>
+        if (Objects.nonNull(${field.name})) {
         <#if field.formatValue??>
          <#if field.functionByType != "datetime">
           pactDslJsonBody.${field.functionByType}("${field.name}", "${field.formatValue?no_esc}", ${field.name});
@@ -87,17 +88,35 @@
         <#else>
           pactDslJsonBody.${field.functionByType}("${field.name}", ${field.name});
         </#if>
-      }
+        }
+      </#if>
+
     <#else>
       <#if field.formatValue??>
         <#if field.functionByType == "dateValue">
-          pactDslJsonBody.eachLike(PactDslJsonRootValue.date("${field.formatValue?no_esc}", Date.from(Instant.now())));
+          <#if field.empty>
+            pactDslJsonBody.eachLike(PactDslJsonRootValue.date("${field.formatValue?no_esc}");
+          <#else>
+            pactDslJsonBody.eachLike(PactDslJsonRootValue.date("${field.formatValue?no_esc}", Date.from(Instant.now())));
+          </#if>
         <#elseif field.functionByType == "datetimeValue">
-          pactDslJsonBody.eachLike(PactDslJsonRootValue.datetime("${field.formatValue?no_esc}", ZonedDateTime.now()));
+          <#if field.empty>
+            pactDslJsonBody.eachLike(PactDslJsonRootValue.datetime("${field.formatValue?no_esc}");
+          <#else>
+            pactDslJsonBody.eachLike(PactDslJsonRootValue.datetime("${field.formatValue?no_esc}", ZonedDateTime.now()));
+          </#if>
         <#elseif field.functionByType == "integerValue">
-          pactDslJsonBody.eachLike(PactDslJsonRootValue.integerMatching("${field.formatValue?no_esc}", ${field.defaultValue?int});
+          <#if field.empty>
+            pactDslJsonBody.eachLike(PactDslJsonRootValue.integerMatching("${field.formatValue?no_esc}");
+          <#else>
+            pactDslJsonBody.eachLike(PactDslJsonRootValue.integerMatching("${field.formatValue?no_esc}", ${field.defaultValue?int});
+          </#if>
         <#elseif field.functionByType == "decimalValue">
-          pactDslJsonBody.eachLike(PactDslJsonRootValue.decimalMatching("${field.formatValue?no_esc}", ${field.defaultValue?float});
+          <#if field.empty>
+            pactDslJsonBody.eachLike(PactDslJsonRootValue.decimalMatching("${field.formatValue?no_esc}",);
+          <#else>
+            pactDslJsonBody.eachLike(PactDslJsonRootValue.decimalMatching("${field.formatValue?no_esc}", ${field.defaultValue?float});
+          </#if>
         </#if>
       </#if>
     </#if>
@@ -187,8 +206,10 @@
     } else {
       pactDslJsonBody.maxArrayLike("${complexField.name}", ${max}, <@writeBuilderLambdaField fieldList=complexField.fields/>, ${randomSize});
     }
-    <#else >
-    pactDslJsonBody.eachLike("${complexField.name}", <@writeBuilderLambdaField fieldList=complexField.fields/>, 1);
+    <#elseif complexField.empty>
+       pactDslJsonBody.eachLike("${complexField.name}");
+    <#else>
+      pactDslJsonBody.eachLike("${complexField.name}", <@writeBuilderLambdaField fieldList=complexField.fields/>, 1);
     </#if>
   <#else>
     pactDslJsonBody.array("${complexField.name}");
@@ -198,10 +219,15 @@
     pactDslJsonBody.closeArray();
   </#if>
   <#elseif complexField.needBuilder>
-  pactDslJsonBody.object("${complexField.name}", ${complexField.name}.build());
-  pactDslJsonBody.closeObject();
+    <#if complexField.empty>
+      pactDslJsonBody.object("${complexField.name}");
+    <#else>
+      pactDslJsonBody.object("${complexField.name}", ${complexField.name}.build());
+    </#if>
+
+    pactDslJsonBody.closeObject();
   <#else>
-  <@writeBuilderField field=complexField/>
+    <@writeBuilderField field=complexField/>
   </#if>
 
 </#macro>
@@ -239,17 +265,26 @@ import java.util.List;
 
 public class ${schema.className}Builder {
     <#list schema.fieldList as field>
-    <@writeAttrField field=field/><#if field?is_last>;</#if>
+      <#if !field.empty>
+        <@writeAttrField field=field/>
+      </#if>
     </#list>
 
     <#list schema.fieldList as field>
-    <@writeSetterField field=field builderName=schema.className?cap_first/>
+      <#if !field.empty>
+        <@writeSetterField field=field builderName=schema.className?cap_first/>
+      </#if>
     </#list>
 
     public DslPart build() {
         PactDslJsonBody pactDslJsonBody = new PactDslJsonBody();
-        <#list schema.fieldList?filter(complex) as field><@writeBuilderField field=field/></#list>
-        <#list schema.fieldList?filter(nocomplex) as field><@writeBuilderComplexField complexField=field /></#list>
+        <#list schema.fieldList?filter(complex) as field>
+          <@writeBuilderField field=field/>
+        </#list>
+
+        <#list schema.fieldList?filter(nocomplex) as field>
+          <@writeBuilderComplexField complexField=field />
+        </#list>
 
         <#-- if schema.customModifiers??>
         try {
