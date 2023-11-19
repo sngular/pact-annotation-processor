@@ -70,6 +70,7 @@ That is the only requirement, all other annotations are optional and used for cu
 |            `@Example` |  false   | Field | Used to provide an specific value for a field. If not present in a field, the value created will be random.                                 |
 |                `@Min` |  false   | Field | Defines the maximum value for numeric fields, or number of elements if applied to collections. Will be ignored if an `@Example` is present. |
 |                `@Max` |  false   | Field | Defines the minimum value for numeric fields, or number of elements if applied to collections. Will be ignored if an `@Example` is present. |
+|         `@DslExclude` |  false   | Field | Ignore de generation of example values.                                                                                                     |
 
 `@Example` values are always provided as String. For Dates and ZonedDateTime the only format supported in this version is the one shown in the example below.
 Support for custom date formats will be included in following releases.
