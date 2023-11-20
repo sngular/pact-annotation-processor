@@ -50,6 +50,16 @@
       </roles>
       <timezone>America/New_York</timezone>
     </developer>
+    <developer>
+      <id>tfdsimoes</id>
+      <name>Tiago Filipe Domingues Simoes</name>
+      <email>tfdsimoes+github@gmail.com</email>
+      <organizationUrl></organizationUrl>
+      <roles>
+        <role>Software Engineer</role>
+      </roles>
+      <timezone>Europe/Madrid</timezone>
+    </developer>
   </developers>
 
   <scm>
