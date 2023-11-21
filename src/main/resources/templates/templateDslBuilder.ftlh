@@ -60,6 +60,14 @@
   }
 </#macro>
 
+<#macro writeExpectedInstanceSetters field>
+  <#if field.fieldType == "char">
+        object.set${field.name?cap_first}(this.${field.name}.charAt(0));
+  <#else>
+        object.set${field.name?cap_first}(this.${field.name});
+  </#if>
+</#macro>
+
 <#function writeDefaultsList fieldList>
     <#list fieldList as internalField>
         ${writeRightValue(internalField.defaultValue, internalField.functionByType, internalField.format)}<#if internalField?is_last>, </#if>
@@ -257,6 +265,8 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
+import ${schema.modelPackage}.${schema.className};
+
 <#function complex(field)>
   <#return field.functionByType??>
 </#function>
@@ -300,6 +310,14 @@ public class ${schema.className}Builder {
         }
         </#if -->
         return pactDslJsonBody;
+    }
+
+    public ${schema.className} buildExpectedInstance() {
+        ${schema.className} object = new ${schema.className}();
+        <#list schema.fieldList as field>
+          <@writeExpectedInstanceSetters field=field/>
+        </#list>
+        return object;
     }
 
     <#if schema.customModifiers??>
