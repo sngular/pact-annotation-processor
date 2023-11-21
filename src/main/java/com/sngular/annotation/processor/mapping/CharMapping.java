@@ -19,12 +19,12 @@ public class CharMapping implements TypeMapping<String> {
 
   @Override
   public final String getFunctionType() {
-    return "charType";
+    return "stringType";
   }
 
   @Override
   public final String getFunctionOnlyValue() {
-    return "charValue";
+    return "stringValue";
   }
 
   @Override

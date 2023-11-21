@@ -4,7 +4,7 @@
 
   <groupId>com.sngular</groupId>
   <artifactId>pact-annotation-processor</artifactId>
-  <version>1.1.0</version>
+  <version>1.1.5</version>
 
   <name>PactDslBuilder - Annotation Processor</name>
   <description>Pact DSL Builder annotation processor.</description>
@@ -49,6 +49,16 @@
         <role>Team Leader</role>
       </roles>
       <timezone>America/New_York</timezone>
+    </developer>
+    <developer>
+      <id>tfdsimoes</id>
+      <name>Tiago Filipe Domingues Simoes</name>
+      <email>tfdsimoes+github@gmail.com</email>
+      <organizationUrl></organizationUrl>
+      <roles>
+        <role>Software Engineer</role>
+      </roles>
+      <timezone>Europe/Madrid</timezone>
     </developer>
   </developers>
 
@@ -252,7 +262,7 @@
         <artifactId>maven-checkstyle-plugin</artifactId>
         <configuration>
 
-          <configLocation>checkstyle.xml</configLocation>
+          <configLocation>styles/checkstyle.xml</configLocation>
         </configuration>
         <dependencies>
           <dependency>

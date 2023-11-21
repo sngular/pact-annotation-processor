@@ -1,7 +1,9 @@
 
 <#macro writeAttrField field>
   <#if field.functionByType??>
-    <#if field.defaultValue?is_number>
+    <#if field.fieldType == "char">
+      String ${field.name} = "${field.defaultValue}";
+    <#elseif field.defaultValue?is_number>
       <#if field.functionByType == "decimalType">
         ${field.fieldType} ${field.name} = new BigDecimal("${field.defaultValue?c}");
       <#else>
@@ -37,7 +39,11 @@
 
 <#macro writeSetterField field builderName>
 <#if field.functionByType??>
-  public ${builderName}Builder set${field.name?cap_first}(final ${field.fieldType?no_esc} ${field.name}) {
+  <#if field.fieldType == "char">
+      public ${builderName}Builder set${field.name?cap_first}(final String ${field.name}) {
+  <#else>
+    public ${builderName}Builder set${field.name?cap_first}(final ${field.fieldType?no_esc} ${field.name}) {
+  </#if>
 <#elseif field.complexType??>
 <#if field.complexType.name() == "COLLECTION">
   public ${builderName}Builder set${field.name?cap_first}(final ${field.fieldType?no_esc} ${field.name}) {
@@ -52,6 +58,14 @@
     this.${field.name} = ${field.name};
     return this;
   }
+</#macro>
+
+<#macro writeExpectedInstanceSetters field>
+  <#if field.fieldType == "char">
+        object.set${field.name?cap_first}(this.${field.name}.charAt(0));
+  <#else>
+        object.set${field.name?cap_first}(this.${field.name});
+  </#if>
 </#macro>
 
 <#function writeDefaultsList fieldList>
@@ -225,6 +239,8 @@ import com.sngular.annotation.processor.mapping.CustomDslModifier;
 </#if>
 
 
+import ${schema.modelPackage}.${schema.className};
+
 <#function complex(field)>
   <#return field.functionByType??>
 </#function>
@@ -259,6 +275,14 @@ public class ${schema.className}Builder {
         }
         </#if -->
         return pactDslJsonBody;
+    }
+
+    public ${schema.className} buildExpectedInstance() {
+        ${schema.className} object = new ${schema.className}();
+        <#list schema.fieldList as field>
+          <@writeExpectedInstanceSetters field=field/>
+        </#list>
+        return object;
     }
 
     <#if schema.customModifiers??>
