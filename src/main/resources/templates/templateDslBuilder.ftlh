@@ -61,10 +61,12 @@
 </#macro>
 
 <#macro writeExpectedInstanceSetters field>
-  <#if field.fieldType == "char">
-        object.set${field.name?cap_first}(this.${field.name}.charAt(0));
-  <#else>
-        object.set${field.name?cap_first}(this.${field.name});
+  <#if !field.empty>
+    <#if field.fieldType == "char">
+          object.set${field.name?cap_first}(this.${field.name}.charAt(0));
+    <#else>
+          object.set${field.name?cap_first}(this.${field.name});
+    </#if>
   </#if>
 </#macro>
 
@@ -87,49 +89,30 @@
 </#macro>
 
 <#macro writeBuilderField field>
-  <#if field.functionByType??>
-    <#if field.name?has_content>
-      <#if field.empty>
-        pactDslJsonBody.${field.functionByType}("${field.name}");
+  <#if !field.empty>
+    <#if field.functionByType??>
+      <#if field.name?has_content>
+          if (Objects.nonNull(${field.name})) {
+          <#if field.formatValue??>
+           <#if field.functionByType != "datetime">
+            pactDslJsonBody.${field.functionByType}("${field.name}", "${field.formatValue?no_esc}", ${field.name});
+           <#else>
+            pactDslJsonBody.${field.functionByType}("${field.name}", "${field.formatValue?no_esc}", ${field.name}.toInstant());
+           </#if>
+          <#else>
+            pactDslJsonBody.${field.functionByType}("${field.name}", ${field.name});
+          </#if>
+          }
       <#else>
-        if (Objects.nonNull(${field.name})) {
         <#if field.formatValue??>
-         <#if field.functionByType != "datetime">
-          pactDslJsonBody.${field.functionByType}("${field.name}", "${field.formatValue?no_esc}", ${field.name});
-         <#else>
-          pactDslJsonBody.${field.functionByType}("${field.name}", "${field.formatValue?no_esc}", ${field.name}.toInstant());
-         </#if>
-        <#else>
-          pactDslJsonBody.${field.functionByType}("${field.name}", ${field.name});
-        </#if>
-        }
-      </#if>
-
-    <#else>
-      <#if field.formatValue??>
-        <#if field.functionByType == "dateValue">
-          <#if field.empty>
-            pactDslJsonBody.eachLike(PactDslJsonRootValue.date("${field.formatValue?no_esc}");
-          <#else>
-            pactDslJsonBody.eachLike(PactDslJsonRootValue.date("${field.formatValue?no_esc}", Date.from(Instant.now())));
-          </#if>
-        <#elseif field.functionByType == "datetimeValue">
-          <#if field.empty>
-            pactDslJsonBody.eachLike(PactDslJsonRootValue.datetime("${field.formatValue?no_esc}");
-          <#else>
-            pactDslJsonBody.eachLike(PactDslJsonRootValue.datetime("${field.formatValue?no_esc}", ZonedDateTime.now()));
-          </#if>
-        <#elseif field.functionByType == "integerValue">
-          <#if field.empty>
-            pactDslJsonBody.eachLike(PactDslJsonRootValue.integerMatching("${field.formatValue?no_esc}");
-          <#else>
-            pactDslJsonBody.eachLike(PactDslJsonRootValue.integerMatching("${field.formatValue?no_esc}", ${field.defaultValue?int});
-          </#if>
-        <#elseif field.functionByType == "decimalValue">
-          <#if field.empty>
-            pactDslJsonBody.eachLike(PactDslJsonRootValue.decimalMatching("${field.formatValue?no_esc}",);
-          <#else>
-            pactDslJsonBody.eachLike(PactDslJsonRootValue.decimalMatching("${field.formatValue?no_esc}", ${field.defaultValue?float});
+          <#if field.functionByType == "dateValue">
+              pactDslJsonBody.eachLike(PactDslJsonRootValue.date("${field.formatValue?no_esc}", Date.from(Instant.now())));
+          <#elseif field.functionByType == "datetimeValue">
+              pactDslJsonBody.eachLike(PactDslJsonRootValue.datetime("${field.formatValue?no_esc}", ZonedDateTime.now()));
+          <#elseif field.functionByType == "integerValue">
+              pactDslJsonBody.eachLike(PactDslJsonRootValue.integerMatching("${field.formatValue?no_esc}", ${field.defaultValue?int});
+          <#elseif field.functionByType == "decimalValue">
+              pactDslJsonBody.eachLike(PactDslJsonRootValue.decimalMatching("${field.formatValue?no_esc}", ${field.defaultValue?float});
           </#if>
         </#if>
       </#if>
@@ -185,65 +168,61 @@
 </#macro>
 
 <#macro writeBuilderComplexField complexField>
-  <#if complexField.complexType.name() == "COLLECTION">
-      <#if complexField.fieldValidations??>
-          <#if complexField.fieldValidations.randomSize??>
-                <#assign randomSize = "${complexField.fieldValidations.randomSize}"/>
-          <#else >
-                <#assign randomSize = ""/>
-          </#if>
-          <#if complexField.fieldValidations.max??>
-              <#assign max = "${complexField.fieldValidations.max}"/>
-          <#else >
-              <#assign max = ""/>
-          </#if>
-          <#if complexField.fieldValidations.min??>
-              <#assign min = "${complexField.fieldValidations.min}"/>
-          <#else >
-              <#assign min = ""/>
-          </#if>
-  <#if max?has_content && min?has_content>
-    if (${complexField.name}.isEmpty()) {
-      pactDslJsonBody.minMaxArrayLike("${complexField.name}", ${min}, ${max});
-    } else {
-      pactDslJsonBody.minMaxArrayLike("${complexField.name}", ${min}, ${max}, <@writeBuilderLambdaField fieldList=complexField.fields/>, ${randomSize});
-    }
-  <#elseif min?has_content>
-    if (${complexField.name}.isEmpty()) {
-      pactDslJsonBody.minArrayLike("${complexField.name}", ${min});
-    } else {
-      pactDslJsonBody.minArrayLike("${complexField.name}", ${min}, <@writeBuilderLambdaField fieldList=complexField.fields/>, ${randomSize});
-    }
-  <#elseif max?has_content>
-    if (${complexField.name}.isEmpty()) {
-      pactDslJsonBody.maxArrayLike("${complexField.name}", ${max});
-    } else {
-      pactDslJsonBody.maxArrayLike("${complexField.name}", ${max}, <@writeBuilderLambdaField fieldList=complexField.fields/>, ${randomSize});
-    }
-    <#elseif complexField.empty>
-       pactDslJsonBody.eachLike("${complexField.name}");
+  <#if !complexField.empty>
+    <#if complexField.complexType.name() == "COLLECTION">
+        <#if complexField.fieldValidations??>
+            <#if complexField.fieldValidations.randomSize??>
+                  <#assign randomSize = "${complexField.fieldValidations.randomSize}"/>
+            <#else >
+                  <#assign randomSize = ""/>
+            </#if>
+            <#if complexField.fieldValidations.max??>
+                <#assign max = "${complexField.fieldValidations.max}"/>
+            <#else >
+                <#assign max = ""/>
+            </#if>
+            <#if complexField.fieldValidations.min??>
+                <#assign min = "${complexField.fieldValidations.min}"/>
+            <#else >
+                <#assign min = ""/>
+            </#if>
+    <#if max?has_content && min?has_content>
+      if (${complexField.name}.isEmpty()) {
+        pactDslJsonBody.minMaxArrayLike("${complexField.name}", ${min}, ${max});
+      } else {
+        pactDslJsonBody.minMaxArrayLike("${complexField.name}", ${min}, ${max}, <@writeBuilderLambdaField fieldList=complexField.fields/>, ${randomSize});
+      }
+    <#elseif min?has_content>
+      if (${complexField.name}.isEmpty()) {
+        pactDslJsonBody.minArrayLike("${complexField.name}", ${min});
+      } else {
+        pactDslJsonBody.minArrayLike("${complexField.name}", ${min}, <@writeBuilderLambdaField fieldList=complexField.fields/>, ${randomSize});
+      }
+    <#elseif max?has_content>
+      if (${complexField.name}.isEmpty()) {
+        pactDslJsonBody.maxArrayLike("${complexField.name}", ${max});
+      } else {
+        pactDslJsonBody.maxArrayLike("${complexField.name}", ${max}, <@writeBuilderLambdaField fieldList=complexField.fields/>, ${randomSize});
+      }
+      <#elseif complexField.empty>
+         pactDslJsonBody.eachLike("${complexField.name}");
+      <#else>
+        pactDslJsonBody.eachLike("${complexField.name}", <@writeBuilderLambdaField fieldList=complexField.fields/>, 1);
+      </#if>
     <#else>
-      pactDslJsonBody.eachLike("${complexField.name}", <@writeBuilderLambdaField fieldList=complexField.fields/>, 1);
+      pactDslJsonBody.array("${complexField.name}");
+        <#list complexField.fields as internalField>
+            <@writeBuilderField field=internalField/>
+        </#list>
+      pactDslJsonBody.closeArray();
     </#if>
-  <#else>
-    pactDslJsonBody.array("${complexField.name}");
-      <#list complexField.fields as internalField>
-          <@writeBuilderField field=internalField/>
-      </#list>
-    pactDslJsonBody.closeArray();
-  </#if>
-  <#elseif complexField.needBuilder>
-    <#if complexField.empty>
-      pactDslJsonBody.object("${complexField.name}");
+    <#elseif complexField.needBuilder>
+        pactDslJsonBody.object("${complexField.name}", ${complexField.name}.build());
+        pactDslJsonBody.closeObject();
     <#else>
-      pactDslJsonBody.object("${complexField.name}", ${complexField.name}.build());
+      <@writeBuilderField field=complexField/>
     </#if>
-
-    pactDslJsonBody.closeObject();
-  <#else>
-    <@writeBuilderField field=complexField/>
   </#if>
-
 </#macro>
 
 package ${schema.modelPackage};
