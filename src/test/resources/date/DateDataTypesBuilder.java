@@ -16,7 +16,7 @@ import au.com.dius.pact.consumer.dsl.PactDslJsonArray;
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslJsonRootValue;
 import com.sngular.annotation.processor.mapping.CustomDslModifier;
-
+import com.sngular.annotation.examples.DateDataTypes;
 
 
 public class DateDataTypesBuilder {
@@ -59,7 +59,14 @@ public class DateDataTypesBuilder {
 
     return pactDslJsonBody;
   }
-
+  public DateDataTypes buildExpectedInstance() {
+    DateDataTypes object = new DateDataTypes();
+    object.setFormattedZoneDateTime(this.formattedZoneDateTime);
+    object.setDefaultFormatZoneDateTime(this.defaultFormatZoneDateTime);
+    object.setDefaultFormatDate(this.defaultFormatDate);
+    object.setFormattedDate(this.formattedDate);
+    return object;
+  }
   private static void applyCustomModifiers(PactDslJsonBody pactDslJsonBody) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
   }
 

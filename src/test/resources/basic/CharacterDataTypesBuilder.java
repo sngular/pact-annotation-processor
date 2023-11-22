@@ -16,8 +16,7 @@ import au.com.dius.pact.consumer.dsl.PactDslJsonArray;
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslJsonRootValue;
 import com.sngular.annotation.processor.mapping.CustomDslModifier;
-
-
+import com.sngular.resources.basic.CharacterDataTypes;
 
 public class CharacterDataTypesBuilder {
   String name = "nameExample";
@@ -35,7 +34,11 @@ public class CharacterDataTypesBuilder {
 
     return pactDslJsonBody;
   }
-
+  public CharacterDataTypes buildExpectedInstance() {
+    CharacterDataTypes object = new CharacterDataTypes();
+    object.setName(this.name);
+    return object;
+  }
   private static void applyCustomModifiers(PactDslJsonBody pactDslJsonBody) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
   }
 

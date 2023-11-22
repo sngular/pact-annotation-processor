@@ -21,4 +21,35 @@ public class DateDataTypes {
   @Example(value = "23-04-2023", format = "dd-MM-yyyy")
   private Date formattedDate;
 
+  protected ZonedDateTime getFormattedZoneDateTime() {
+    return formattedZoneDateTime;
+  }
+
+  protected void setFormattedZoneDateTime(final ZonedDateTime formattedZoneDateTime) {
+    this.formattedZoneDateTime = formattedZoneDateTime;
+  }
+
+  protected ZonedDateTime getDefaultFormatZoneDateTime() {
+    return defaultFormatZoneDateTime;
+  }
+
+  protected void setDefaultFormatZoneDateTime(final ZonedDateTime defaultFormatZoneDateTime) {
+    this.defaultFormatZoneDateTime = defaultFormatZoneDateTime;
+  }
+
+  protected Date getDefaultFormatDate() {
+    return defaultFormatDate;
+  }
+
+  protected void setDefaultFormatDate(final Date defaultFormatDate) {
+    this.defaultFormatDate = defaultFormatDate;
+  }
+
+  protected Date getFormattedDate() {
+    return formattedDate;
+  }
+
+  protected void setFormattedDate(final Date formattedDate) {
+    this.formattedDate = formattedDate;
+  }
 }

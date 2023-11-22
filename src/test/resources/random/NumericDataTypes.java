@@ -8,4 +8,11 @@ public class NumericDataTypes {
 
   private int age;
 
+  protected int getAge() {
+    return age;
+  }
+
+  protected void setAge(final int age) {
+    this.age = age;
+  }
 }

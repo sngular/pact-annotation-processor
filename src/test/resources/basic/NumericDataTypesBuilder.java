@@ -16,7 +16,7 @@ import au.com.dius.pact.consumer.dsl.PactDslJsonArray;
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslJsonRootValue;
 import com.sngular.annotation.processor.mapping.CustomDslModifier;
-
+import com.sngular.resources.basic.NumericDataTypes;
 
 public class NumericDataTypesBuilder {
   int integer = 10;
@@ -64,7 +64,14 @@ public class NumericDataTypesBuilder {
 
     return pactDslJsonBody;
   }
-
+  public NumericDataTypes buildExpectedInstance() {
+    NumericDataTypes object = new NumericDataTypes();
+    object.setInteger(this.integer);
+    object.setPrimitiveInt(this.primitiveInt);
+    object.setLongObject(this.longObject);
+    object.setPrimitiveLong(this.primitiveLong);
+    return object;
+  }
   private static void applyCustomModifiers(PactDslJsonBody pactDslJsonBody) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
   }
 

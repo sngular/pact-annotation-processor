@@ -54,7 +54,7 @@
       <id>tfdsimoes</id>
       <name>Tiago Filipe Domingues Simoes</name>
       <email>tfdsimoes+github@gmail.com</email>
-      <organizationUrl></organizationUrl>
+      <organizationUrl />
       <roles>
         <role>Software Engineer</role>
       </roles>
@@ -262,7 +262,7 @@
         <artifactId>maven-checkstyle-plugin</artifactId>
         <configuration>
 
-          <configLocation>styles/checkstyle.xml</configLocation>
+          <configLocation>checkstyle.xml</configLocation>
         </configuration>
         <dependencies>
           <dependency>

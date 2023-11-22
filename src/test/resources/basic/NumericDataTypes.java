@@ -29,4 +29,36 @@ public class NumericDataTypes {
   //
   //  @Example("80")
   //  private BigDecimal bigDecimal;
+
+  protected Integer getInteger() {
+    return integer;
+  }
+
+  protected void setInteger(final Integer integer) {
+    this.integer = integer;
+  }
+
+  protected int getPrimitiveInt() {
+    return primitiveInt;
+  }
+
+  protected void setPrimitiveInt(final int primitiveInt) {
+    this.primitiveInt = primitiveInt;
+  }
+
+  protected Long getLongObject() {
+    return longObject;
+  }
+
+  protected void setLongObject(final Long longObject) {
+    this.longObject = longObject;
+  }
+
+  protected long getPrimitiveLong() {
+    return primitiveLong;
+  }
+
+  protected void setPrimitiveLong(final long primitiveLong) {
+    this.primitiveLong = primitiveLong;
+  }
 }

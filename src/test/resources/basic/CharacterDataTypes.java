@@ -15,4 +15,11 @@ public class CharacterDataTypes {
   //  @Example("charArray")
   //  private char[] charArrayField;
 
+  protected String getName() {
+    return name;
+  }
+
+  protected void setName(final String name) {
+    this.name = name;
+  }
 }

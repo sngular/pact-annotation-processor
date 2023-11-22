@@ -16,8 +16,7 @@ import au.com.dius.pact.consumer.dsl.PactDslJsonArray;
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslJsonRootValue;
 import com.sngular.annotation.processor.mapping.CustomDslModifier;
-
-
+import com.sngular.annotation.examples.NumericDataTypes;
 
 public class NumericDataTypesBuilder {
   int age = 18;
@@ -35,7 +34,11 @@ public class NumericDataTypesBuilder {
 
     return pactDslJsonBody;
   }
-
+  public NumericDataTypes buildExpectedInstance() {
+    NumericDataTypes object = new NumericDataTypes();
+    object.setAge(this.age);
+    return object;
+  }
   private static void applyCustomModifiers(PactDslJsonBody pactDslJsonBody) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
   }
 
