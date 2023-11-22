@@ -16,11 +16,11 @@ import org.apache.commons.rng.simple.RandomSource;
 
 public class StringMapping implements TypeMapping<String> {
 
-  private final UniformRandomProvider uniformRandomProvider = RandomSource.XO_RO_SHI_RO_128_PP.create();
-
   public static final int DEFAULT_MAX = 15;
 
   public static final int DEFAULT_MIN = 1;
+
+  private final UniformRandomProvider uniformRandomProvider = RandomSource.XO_RO_SHI_RO_128_PP.create();
 
   @Override
   public final String getFieldType() {

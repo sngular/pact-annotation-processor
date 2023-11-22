@@ -4,7 +4,7 @@
 
   <groupId>com.sngular</groupId>
   <artifactId>pact-annotation-processor</artifactId>
-  <version>1.1.4</version>
+  <version>1.1.5</version>
 
   <name>PactDslBuilder - Annotation Processor</name>
   <description>Pact DSL Builder annotation processor.</description>
@@ -220,7 +220,7 @@
         <artifactId>maven-checkstyle-plugin</artifactId>
         <configuration>
 
-          <configLocation>styles/checkstyle.xml</configLocation>
+          <configLocation>checkstyle.xml</configLocation>
         </configuration>
         <dependencies>
           <dependency>

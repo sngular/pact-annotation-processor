@@ -34,15 +34,18 @@ public class LongMapping implements TypeMapping<Long> {
 
   @Override
   public final Long getRandomDefaultValue(final FieldValidations fieldValidations) {
-    if (Objects.nonNull(fieldValidations) && ObjectUtils.anyNotNull(fieldValidations.getMin(), fieldValidations.getMax())) {
+    final long randomDefaultValue;
 
+    if (Objects.nonNull(fieldValidations) && ObjectUtils.anyNotNull(fieldValidations.getMin(), fieldValidations.getMax())) {
       final long minValue = Objects.nonNull(fieldValidations.getMin()) ? fieldValidations.getMin() : Long.MIN_VALUE;
       final long maxValue = Objects.nonNull(fieldValidations.getMax()) ? fieldValidations.getMax() : Long.MIN_VALUE;
 
-      return uniformRandomProvider.nextLong(minValue, maxValue);
+      randomDefaultValue = uniformRandomProvider.nextLong(minValue, maxValue);
+    } else {
+      randomDefaultValue = uniformRandomProvider.nextLong(0, Long.MAX_VALUE);
     }
 
-    return uniformRandomProvider.nextLong(0, Long.MAX_VALUE);
+    return randomDefaultValue;
   }
 
   @Override
