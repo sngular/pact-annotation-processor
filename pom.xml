@@ -220,7 +220,7 @@
         <artifactId>maven-checkstyle-plugin</artifactId>
         <configuration>
 
-          <configLocation>styles/checkstyle.xml</configLocation>
+          <configLocation>checkstyle.xml</configLocation>
         </configuration>
         <dependencies>
           <dependency>
