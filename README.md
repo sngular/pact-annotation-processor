@@ -25,9 +25,13 @@ Specially useful when defining body validations for interactions with complex mo
 - [Contact](#contact)
 
 ## Getting Started
+
 ### Requirements
+
 - JDK +17
+
 - Having inside your project a verification library of your choice to have the `@Max` and `@Min` annotations available, such as [Jakarta](https://central.sonatype.com/artifact/jakarta.validation/jakarta.validation-api), [Spring Boot](https://central.sonatype.com/artifact/org.springframework.boot/spring-boot-starter-validation) or similar.
+
 ### Compatibility with pact-jvm
 
 |                                      Pact Builder DSL                                      |  Pact JVM  |
@@ -41,6 +45,7 @@ Specially useful when defining body validations for interactions with complex mo
 The only configuration needed for starting using the library is adding the dependency to your build automation tool:
 
 Maven
+
 ```xml
   <dependencies>
     ...
@@ -52,6 +57,7 @@ Maven
     ...
   </dependencies>
 ```
+
 Gradle
 
 ```groovy
@@ -86,8 +92,12 @@ maximum value to be cover for this property.
 |                `@Max` |  false   | Field | Defines the minimum value for numeric fields, or number of elements if applied to collections. Will be ignored if an `@Example` is present. |
 |         `@DslExclude` |  false   | Field | Ignore de generation of example values.                                                                                                     |
 
-> `@Example` values are always provided as String. If an specific format is required lets say for date and datetime properties, then a format field should be provide, otherwise it will fall back to default format. For date and datetime default format are:
+> `@Example` values are always provided as String. If an specific format is required lets say for date
+> and datetime properties, then a format field should be provide, otherwise it will fall back to default
+> format. For date and datetime default format are:
+>
 > - `yyyy-MM-dd['['ZZZ']']` : for dates
+>
 > - `yyyy-MM-dd'T'HH:mm:ss[.SSSSSS][.SSS]XXX['['VV']']` : for datetimes. Zone should be provided with this format.
 
 #### Example
@@ -184,7 +194,7 @@ Contributions are what makes the open source community special. Any contribution
 If you have a suggestion that would make this library better,
 please [review our contributing guidelines](https://github.com/sngular/pact-annotation-processor/blob/main/CONTRIBUTING.md).
 
-Or you can simply [open a feature request issue](#https://github.com/sngular/pact-annotation-processor/issues/new/choose).
+Or you can simply [open a feature request issue](https://github.com/sngular/pact-annotation-processor/issues/new/choose).
 
 ## License
 
@@ -196,5 +206,4 @@ OS3 team: [os3@sngular.com](mailto:os3@sngular.com)
 
 Sngular - [GitHub Org](https://github.com/sngular)
 
-https://www.sngular.com
-
+<https://www.sngular.com>
