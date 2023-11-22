@@ -30,10 +30,11 @@ Specially useful when defining body validations for interactions with complex mo
 - Having inside your project a verification library of your choice to have the `@Max` and `@Min` annotations available, such as [Jakarta](https://central.sonatype.com/artifact/jakarta.validation/jakarta.validation-api), [Spring Boot](https://central.sonatype.com/artifact/org.springframework.boot/spring-boot-starter-validation) or similar.
 ### Compatibility with pact-jvm
 
-|                                       Pact Builder DSL                                       |  Pact JVM  |
-|:--------------------------------------------------------------------------------------------:|:----------:|
-|  [1.0.0](https://central.sonatype.com/artifact/com.sngular/pact-annotation-processor/1.0.0)  |   +4.6.3   |
-|  [1.1.0](https://central.sonatype.com/artifact/com.sngular/pact-annotation-processor/1.1.0)  |   +4.6.3   |
+|                                      Pact Builder DSL                                      |  Pact JVM  |
+|:------------------------------------------------------------------------------------------:|:----------:|
+| [1.0.0](https://central.sonatype.com/artifact/com.sngular/pact-annotation-processor/1.0.0) |   +4.6.3   |
+| [1.1.0](https://central.sonatype.com/artifact/com.sngular/pact-annotation-processor/1.1.0) |   +4.6.3   |
+| [1.2.0](https://central.sonatype.com/artifact/com.sngular/pact-annotation-processor/1.1.0) |   +4.6.3   |
 
 ### Configuration
 
@@ -46,7 +47,7 @@ Maven
     <dependency>
       <groupId>com.sngular</groupId>
       <artifactId>pact-annotation-processor</artifactId>
-      <version>1.1.0</version>
+      <version>1.2.0</version>
     </dependency>
     ...
   </dependencies>
@@ -54,7 +55,7 @@ Maven
 Gradle
 
 ```groovy
-implementation('com.sngular:pact-annotation-processor:1.0.0')
+implementation('com.sngular:pact-annotation-processor:1.2.0')
 ```
 
 ## Usage
@@ -64,10 +65,11 @@ That is the only requirement, all other annotations are optional and used for cu
 
 ### Annotations
 
-We have developed 2 annotations to give support to your needs,
+We have developed 3 annotations to give support to your needs,
 
 - `@PactDslBodyBuilder` : To indicate which class you need to generate pact to.
 - `@Example`: To define constants values to set in your Pact Body.
+- `DslExclude`: To Exclude some property to be included in the builder.
 
 and support 2 standard Java annotations for validation
 
@@ -84,8 +86,9 @@ maximum value to be cover for this property.
 |                `@Max` |  false   | Field | Defines the minimum value for numeric fields, or number of elements if applied to collections. Will be ignored if an `@Example` is present. |
 |         `@DslExclude` |  false   | Field | Ignore de generation of example values.                                                                                                     |
 
-`@Example` values are always provided as String. For Dates and ZonedDateTime the only format supported in this version is the one shown in the example below.
-Support for custom date formats will be included in following releases.
+> `@Example` values are always provided as String. If an specific format is required lets say for date and datetime properties, then a format field should be provide, otherwise it will fall back to default format. For date and datetime default format are:
+> - `yyyy-MM-dd['['ZZZ']']` : for dates
+> - `yyyy-MM-dd'T'HH:mm:ss[.SSSSSS][.SSS]XXX['['VV']']` : for datetimes. Zone should be provided with this format.
 
 #### Example
 

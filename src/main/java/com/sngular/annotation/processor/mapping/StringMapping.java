@@ -19,8 +19,6 @@ public class StringMapping implements TypeMapping<String> {
 
   public static final int DEFAULT_MIN = 1;
 
-  private final UniformRandomProvider uniformRandomProvider = RandomSource.XO_RO_SHI_RO_128_PP.create();
-
   @Override
   public final String getFieldType() {
     return "String";
