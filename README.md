@@ -92,8 +92,10 @@ maximum value to be cover for this property.
 |                `@Max` |  false   | Field | Defines the minimum value for numeric fields, or number of elements if applied to collections. Will be ignored if an `@Example` is present. |
 |         `@DslExclude` |  false   | Field | Ignore de generation of example values.                                                                                                     |
 
-> `@Example` values are always provided as String. If an specific format is required lets say for date
-> and datetime properties, then a format field should be provide, otherwise it will fall back to default
+> `@Example` values are always provided as String. If a specific format is
+ required lets say for date
+> and datetime properties, then a format field should be provided,
+ otherwise it will fall back to default
 > format. For date and datetime default format are:
 >
 > - `yyyy-MM-dd['['ZZZ']']` : for dates
