@@ -28,6 +28,8 @@ public class DslSimpleField extends DslField {
   FieldValidations fieldValidations;
 
   boolean onlyValueFunction;
+
+  boolean empty;
 }
 
 
