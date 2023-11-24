@@ -145,6 +145,51 @@ public RequestResponsePact getStudents(PactDslWithProvider builder) {
 }
 ```
 
+### Expected Instance Builder
+
+In certain situations, especially when using the `@Example` annotation in all
+of your model data objects, you may prefer to perform classic manual
+instance creation for your validations in the `@Test` methods:
+
+```java
+@Test
+@PactTestFor(pactMethod = "getAddressTest")
+void getAddressTest(MockServer mockServer) {
+        RestTemplate restTemplate = new RestTemplateBuilder().rootUri(mockServer.getUrl()).build();
+        Address response = new BasicService(restTemplate).getAdress("...");
+
+        // Manual instance creation for validation
+        Address expectedAddress = new Address();
+        expectedAddress.setName("Jose");
+        expectedAddress.setNumber(12);
+        // ...
+
+        assertEquals(expectedAddress, response);
+        }
+```
+
+However, in many situations, especially when dealing with random values being generated,
+you may prefer to delegate the instance creation to the library itself.
+This is the purpose of the `buildExpectedInstance()` method, which generates an
+instance of the model object initialized with the values generated (or set
+by you with `@Example`) for the given object:
+
+```java
+
+@Test
+@PactTestFor(pactMethod = "getAddressTest")
+void getAddressTest(MockServer mockServer) {
+        RestTemplate restTemplate = new RestTemplateBuilder().rootUri(mockServer.getUrl()).build();
+        Address response = new BasicService(restTemplate).getAdress("...");
+
+        // Using buildExpectedInstance() for instance creation
+        Address expectedAddress = new AddressBuilder().buildExpectedInstance();
+
+        assertEquals(expectedAddress, response);
+        }
+
+```
+
 ## Roadmap
 
 Roadmap available under [GitHub Projects section](https://github.com/orgs/sngular/projects/2).
