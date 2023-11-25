@@ -99,6 +99,8 @@
            <#else>
             pactDslJsonBody.${field.functionByType}("${field.name}", "${field.formatValue?no_esc}", ${field.name}.toInstant());
            </#if>
+          <#elseif field.fieldType == "short">
+            pactDslJsonBody.${field.functionByType}("${field.name}", (int) ${field.name});
           <#else>
             pactDslJsonBody.${field.functionByType}("${field.name}", ${field.name});
           </#if>
