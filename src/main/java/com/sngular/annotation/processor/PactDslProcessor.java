@@ -70,35 +70,37 @@ import org.jetbrains.annotations.NotNull;
 public class PactDslProcessor extends AbstractProcessor {
 
   static final Map<String, TypeMapping> TYPE_MAPPING = ImmutableMap.<String, TypeMapping>builder()
-      .put("int", new IntegerMapping())
-      .put("java.lang.Integer", new IntegerMapping())
-      .put("Integer", new IntegerMapping())
-      .put("short", new ShortMapping())
-      .put("java.lang.Short", new ShortMapping())
-      .put("Short", new ShortMapping())
-      .put("byte", new ByteMapping())
-      .put("long", new LongMapping())
-      .put("java.lang.Long", new LongMapping())
-      .put("Long", new LongMapping())
-      .put("char", new CharMapping())
-      .put("java.lang.String", new StringMapping())
-      .put("String", new StringMapping())
-      .put("float", new DecimalMapping())
-      .put("Float", new DecimalMapping())
-      .put("double", new DecimalMapping())
-      .put("java.lang.Double", new DecimalMapping())
-      .put("Double", new DecimalMapping())
-      .put("java.math.BigDecimal", new DecimalMapping())
-      .put("BigDecimal", new DecimalMapping())
-      .put("boolean", new BooleanMapping())
-      .put("Boolean", new BooleanMapping())
-      .put("java.lang.Boolean", new BooleanMapping())
-      .put("date", new DateMapping())
-      .put("java.time.ZonedDateTime", new ZonedDateTimeMapping())
-      .put("ZonedDateTime", new ZonedDateTimeMapping())
-      .put("java.util.Date", new DateMapping())
-      .put("Date", new DateMapping())
-      .build();
+                                                                   .put("int", new IntegerMapping())
+                                                                   .put("java.lang.Integer", new IntegerMapping())
+                                                                   .put("Integer", new IntegerMapping())
+                                                                   .put("short", new ShortMapping())
+                                                                   .put("java.lang.Short", new ShortMapping())
+                                                                   .put("Short", new ShortMapping())
+                                                                   .put("byte", new ByteMapping())
+                                                                   .put("long", new LongMapping())
+                                                                   .put("java.lang.Long", new LongMapping())
+                                                                   .put("Long", new LongMapping())
+                                                                   .put("char", new CharMapping())
+                                                                   .put("Character", new CharMapping())
+                                                                   .put("java.lang.Character", new CharMapping())
+                                                                   .put("java.lang.String", new StringMapping())
+                                                                   .put("String", new StringMapping())
+                                                                   .put("float", new DecimalMapping())
+                                                                   .put("Float", new DecimalMapping())
+                                                                   .put("double", new DecimalMapping())
+                                                                   .put("java.lang.Double", new DecimalMapping())
+                                                                   .put("Double", new DecimalMapping())
+                                                                   .put("java.math.BigDecimal", new DecimalMapping())
+                                                                   .put("BigDecimal", new DecimalMapping())
+                                                                   .put("boolean", new BooleanMapping())
+                                                                   .put("Boolean", new BooleanMapping())
+                                                                   .put("java.lang.Boolean", new BooleanMapping())
+                                                                   .put("date", new DateMapping())
+                                                                   .put("java.time.ZonedDateTime", new ZonedDateTimeMapping())
+                                                                   .put("ZonedDateTime", new ZonedDateTimeMapping())
+                                                                   .put("java.util.Date", new DateMapping())
+                                                                   .put("Date", new DateMapping())
+                                                                   .build();
 
   private static final String CUSTOM_MODIFIERS = "customModifiers";
 
@@ -169,9 +171,9 @@ public class PactDslProcessor extends AbstractProcessor {
     final var annotationValue = getAnnotationValue(annotationMirror, key);
     if (annotationValue != null) {
       valueAsTypeList.addAll(List.of(annotationValue.toString()
-                                         .replace(" ", "").replace("{", "")
-                                         .replace("}", "").replace("\"", "")
-                                         .split(",")));
+                                                    .replace(" ", "").replace("{", "")
+                                                    .replace("}", "").replace("\"", "")
+                                                    .split(",")));
     }
     return valueAsTypeList;
   }
@@ -219,13 +221,13 @@ public class PactDslProcessor extends AbstractProcessor {
   private DslComplexField composeCollection(final Element element) {
     final var typeStr = cleanType(element);
     return DslComplexField.builder()
-                            .name(element.getSimpleName().toString())
-                            .fieldType(typeStr)
-                            .fields(extractTypes(element))
-                            .fieldValidations(extractValidations(element))
-                            .complexType(DslComplexTypeEnum.COLLECTION)
-                            .empty(Objects.nonNull(element.getAnnotation(DslExclude.class)))
-                            .build();
+                          .name(element.getSimpleName().toString())
+                          .fieldType(typeStr)
+                          .fields(extractTypes(element))
+                          .fieldValidations(extractValidations(element))
+                          .complexType(DslComplexTypeEnum.COLLECTION)
+                          .empty(Objects.nonNull(element.getAnnotation(DslExclude.class)))
+                          .build();
   }
 
   private boolean checkIfOwn(final Element element) {
@@ -296,14 +298,14 @@ public class PactDslProcessor extends AbstractProcessor {
       }
     }
     final var simpleFieldBuilder = DslSimpleField.builder()
-                         .name(getNameOrNull(fieldElement.getSimpleName()))
-                         .fieldType(mapping.getFieldType())
-                         .functionByType(insideCollection ? mapping.getFunctionOnlyValue() : mapping.getFunctionType())
-                         .onlyValueFunction(insideCollection)
-                         .suffixValue(mapping.getSuffixValue())
-                         .formatValue(mapping.getFormatValue())
-                         .fieldValidations(validationBuilder.build())
-                         .empty(false);
+                                                 .name(getNameOrNull(fieldElement.getSimpleName()))
+                                                 .fieldType(mapping.getFieldType())
+                                                 .functionByType(insideCollection ? mapping.getFunctionOnlyValue() : mapping.getFunctionType())
+                                                 .onlyValueFunction(insideCollection)
+                                                 .suffixValue(mapping.getSuffixValue())
+                                                 .formatValue(mapping.getFormatValue())
+                                                 .fieldValidations(validationBuilder.build())
+                                                 .empty(false);
 
     if (Objects.nonNull(fieldElement.getAnnotation(DslExclude.class))) {
       simpleFieldBuilder.empty(true);
