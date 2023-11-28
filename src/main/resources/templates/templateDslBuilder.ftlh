@@ -6,6 +6,8 @@
     <#elseif field.defaultValue?is_number>
       <#if field.functionByType == "decimalType">
         ${field.fieldType} ${field.name} = new BigDecimal("${field.defaultValue?c}");
+      <#elseif field.fieldType == "BigInteger">
+        ${field.fieldType} ${field.name} = new BigInteger("${field.defaultValue?c}");
       <#else>
         ${field.fieldType} ${field.name} = ${field.defaultValue?c}<#if field.suffixValue?has_content && field.suffixValue == "L">L</#if>;
       </#if>
@@ -101,6 +103,8 @@
            </#if>
           <#elseif field.fieldType == "short">
             pactDslJsonBody.${field.functionByType}("${field.name}", (int) ${field.name});
+          <#elseif field.fieldType == "BigInteger">
+            pactDslJsonBody.${field.functionByType}("${field.name}", ${field.name}.intValue());
           <#else>
             pactDslJsonBody.${field.functionByType}("${field.name}", ${field.name});
           </#if>
@@ -242,6 +246,7 @@ import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
