@@ -24,7 +24,7 @@ public class ShortMapping implements TypeMapping<Integer> {
 
   @Override
   public final String getFunctionType() {
-    return "shortType";
+    return "integerType";
   }
 
   @Override
@@ -36,12 +36,15 @@ public class ShortMapping implements TypeMapping<Integer> {
   public final Integer getRandomDefaultValue(final FieldValidations fieldValidations) {
     final int randomDefaultValue;
     if (Objects.nonNull(fieldValidations) && ObjectUtils.anyNotNull(fieldValidations.getMin(), fieldValidations.getMax())) {
-      final int minValue = ObjectUtils.defaultIfNull(fieldValidations.getMin(), (int) Byte.MIN_VALUE);
-      final int maxValue = ObjectUtils.defaultIfNull(fieldValidations.getMax(), (int) Byte.MAX_VALUE);
+      int minValue = ObjectUtils.defaultIfNull(fieldValidations.getMin(), (int) Short.MIN_VALUE);
+      minValue = minValue < Short.MIN_VALUE ? minValue : Short.MIN_VALUE;
+
+      int maxValue = ObjectUtils.defaultIfNull(fieldValidations.getMax(), (int) Short.MAX_VALUE);
+      maxValue = maxValue > Short.MAX_VALUE ? maxValue : Short.MAX_VALUE;
 
       randomDefaultValue = uniformRandomProvider.nextInt(minValue, maxValue);
     } else {
-      randomDefaultValue = uniformRandomProvider.nextInt(0, Integer.MAX_VALUE);
+      randomDefaultValue = uniformRandomProvider.nextInt(Short.MIN_VALUE, Short.MAX_VALUE);
     }
 
     return randomDefaultValue;
