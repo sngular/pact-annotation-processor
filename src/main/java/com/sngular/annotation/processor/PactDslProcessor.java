@@ -37,6 +37,7 @@ import com.sngular.annotation.pact.Example;
 import com.sngular.annotation.pact.PactDslBodyBuilder;
 import com.sngular.annotation.processor.exception.TemplateFactoryException;
 import com.sngular.annotation.processor.exception.TemplateGenerationException;
+import com.sngular.annotation.processor.mapping.BigIntegerMapping;
 import com.sngular.annotation.processor.mapping.BooleanMapping;
 import com.sngular.annotation.processor.mapping.ByteMapping;
 import com.sngular.annotation.processor.mapping.CharMapping;
@@ -73,6 +74,9 @@ public class PactDslProcessor extends AbstractProcessor {
                                                                    .put("int", new IntegerMapping())
                                                                    .put("java.lang.Integer", new IntegerMapping())
                                                                    .put("Integer", new IntegerMapping())
+                                                                   .put("java.math.BigInteger", new BigIntegerMapping())
+                                                                   .put("BigInteger", new BigIntegerMapping())
+                                                                   .put("biginteger", new BigIntegerMapping())
                                                                    .put("short", new ShortMapping())
                                                                    .put("java.lang.Short", new ShortMapping())
                                                                    .put("Short", new ShortMapping())
@@ -328,6 +332,7 @@ public class PactDslProcessor extends AbstractProcessor {
     if (NumberUtils.isCreatable(value)) {
       realValue = switch (type.toLowerCase()) {
         case "integer", "int" -> NumberUtils.toInt(value);
+        case "biginteger" -> NumberUtils.createBigInteger(value);
         case "long" -> NumberUtils.toLong(value);
         case "short" -> NumberUtils.toShort(value);
         case "byte" -> NumberUtils.toByte(value);
