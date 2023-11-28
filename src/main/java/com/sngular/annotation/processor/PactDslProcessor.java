@@ -85,6 +85,8 @@ public class PactDslProcessor extends AbstractProcessor {
                                                                    .put("java.lang.Long", new LongMapping())
                                                                    .put("Long", new LongMapping())
                                                                    .put("char", new CharMapping())
+                                                                   .put("Character", new CharMapping())
+                                                                   .put("java.lang.Character", new CharMapping())
                                                                    .put("java.lang.String", new StringMapping())
                                                                    .put("String", new StringMapping())
                                                                    .put("float", new DecimalMapping())
