@@ -11,12 +11,15 @@ import java.util.Objects;
 import com.sngular.annotation.processor.model.FieldValidations;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.rng.UniformRandomProvider;
+import org.apache.commons.rng.simple.RandomSource;
 
-public class ShortMapping implements TypeMapping<Integer> {
+public class BigIntegerMapping implements TypeMapping<Integer> {
+
+  private final UniformRandomProvider uniformRandomProvider = RandomSource.XO_RO_SHI_RO_128_PP.create();
 
   @Override
   public final String getFieldType() {
-    return "short";
+    return "BigInteger";
   }
 
   @Override
@@ -26,21 +29,22 @@ public class ShortMapping implements TypeMapping<Integer> {
 
   @Override
   public final String getFunctionOnlyValue() {
-    return "shortValue";
+    return "integerValue";
   }
 
   @Override
-  public final Integer getRandomDefaultValue(final FieldValidations fieldValidations, final UniformRandomProvider uniformRandomProvider) {
-    final int result;
+  public final Integer getRandomDefaultValue(final FieldValidations fieldValidations) {
+    final int randomDefaultValue;
+
     if (Objects.nonNull(fieldValidations) && ObjectUtils.anyNotNull(fieldValidations.getMin(), fieldValidations.getMax())) {
       final int minValue = ObjectUtils.defaultIfNull(fieldValidations.getMin(), (int) Byte.MIN_VALUE);
       final int maxValue = ObjectUtils.defaultIfNull(fieldValidations.getMax(), (int) Byte.MAX_VALUE);
 
-      result = uniformRandomProvider.nextInt(minValue, maxValue);
+      randomDefaultValue = uniformRandomProvider.nextInt(minValue, maxValue);
     } else {
-
-      result = uniformRandomProvider.nextInt(0, Integer.MAX_VALUE);
+      randomDefaultValue = uniformRandomProvider.nextInt(0, Integer.MAX_VALUE);
     }
-    return result;
+
+    return randomDefaultValue;
   }
 }

@@ -37,6 +37,7 @@ import com.sngular.annotation.pact.Example;
 import com.sngular.annotation.pact.PactDslBodyBuilder;
 import com.sngular.annotation.processor.exception.TemplateFactoryException;
 import com.sngular.annotation.processor.exception.TemplateGenerationException;
+import com.sngular.annotation.processor.mapping.BigIntegerMapping;
 import com.sngular.annotation.processor.mapping.BooleanMapping;
 import com.sngular.annotation.processor.mapping.ByteMapping;
 import com.sngular.annotation.processor.mapping.CharMapping;
@@ -73,35 +74,40 @@ import org.jetbrains.annotations.NotNull;
 public class PactDslProcessor extends AbstractProcessor {
 
   static final Map<String, TypeMapping> TYPE_MAPPING = ImmutableMap.<String, TypeMapping>builder()
-      .put("int", new IntegerMapping())
-      .put("java.lang.Integer", new IntegerMapping())
-      .put("Integer", new IntegerMapping())
-      .put("short", new ShortMapping())
-      .put("java.lang.Short", new ShortMapping())
-      .put("Short", new ShortMapping())
-      .put("byte", new ByteMapping())
-      .put("long", new LongMapping())
-      .put("java.lang.Long", new LongMapping())
-      .put("Long", new LongMapping())
-      .put("char", new CharMapping())
-      .put("java.lang.String", new StringMapping())
-      .put("String", new StringMapping())
-      .put("float", new DecimalMapping())
-      .put("Float", new DecimalMapping())
-      .put("double", new DecimalMapping())
-      .put("java.lang.Double", new DecimalMapping())
-      .put("Double", new DecimalMapping())
-      .put("java.math.BigDecimal", new DecimalMapping())
-      .put("BigDecimal", new DecimalMapping())
-      .put("boolean", new BooleanMapping())
-      .put("Boolean", new BooleanMapping())
-      .put("java.lang.Boolean", new BooleanMapping())
-      .put("date", new DateMapping())
-      .put("java.time.ZonedDateTime", new ZonedDateTimeMapping())
-      .put("ZonedDateTime", new ZonedDateTimeMapping())
-      .put("java.util.Date", new DateMapping())
-      .put("Date", new DateMapping())
-      .build();
+                                                                   .put("int", new IntegerMapping())
+                                                                   .put("java.lang.Integer", new IntegerMapping())
+                                                                   .put("Integer", new IntegerMapping())
+                                                                   .put("java.math.BigInteger", new BigIntegerMapping())
+                                                                   .put("BigInteger", new BigIntegerMapping())
+                                                                   .put("biginteger", new BigIntegerMapping())
+                                                                   .put("short", new ShortMapping())
+                                                                   .put("java.lang.Short", new ShortMapping())
+                                                                   .put("Short", new ShortMapping())
+                                                                   .put("byte", new ByteMapping())
+                                                                   .put("long", new LongMapping())
+                                                                   .put("java.lang.Long", new LongMapping())
+                                                                   .put("Long", new LongMapping())
+                                                                   .put("char", new CharMapping())
+                                                                   .put("Character", new CharMapping())
+                                                                   .put("java.lang.Character", new CharMapping())
+                                                                   .put("java.lang.String", new StringMapping())
+                                                                   .put("String", new StringMapping())
+                                                                   .put("float", new DecimalMapping())
+                                                                   .put("Float", new DecimalMapping())
+                                                                   .put("double", new DecimalMapping())
+                                                                   .put("java.lang.Double", new DecimalMapping())
+                                                                   .put("Double", new DecimalMapping())
+                                                                   .put("java.math.BigDecimal", new DecimalMapping())
+                                                                   .put("BigDecimal", new DecimalMapping())
+                                                                   .put("boolean", new BooleanMapping())
+                                                                   .put("Boolean", new BooleanMapping())
+                                                                   .put("java.lang.Boolean", new BooleanMapping())
+                                                                   .put("date", new DateMapping())
+                                                                   .put("java.time.ZonedDateTime", new ZonedDateTimeMapping())
+                                                                   .put("ZonedDateTime", new ZonedDateTimeMapping())
+                                                                   .put("java.util.Date", new DateMapping())
+                                                                   .put("Date", new DateMapping())
+                                                                   .build();
 
   private static final String CUSTOM_MODIFIERS = "customModifiers";
 
@@ -121,26 +127,6 @@ public class PactDslProcessor extends AbstractProcessor {
   @NotNull
   private static List<? extends Element> getFieldElements(final Element element) {
     return IterableUtils.toList(IterableUtils.filteredIterable(element.getEnclosedElements(), elt -> elt.getKind().isField()));
-  }
-
-  private static Object getDefaultValue(final Element fieldElement, final String type) {
-    final Object realValue;
-    final String value = fieldElement.getAnnotation(Example.class).value();
-    if (NumberUtils.isCreatable(value)) {
-      realValue = switch (type.toLowerCase()) {
-        case "integer", "int" -> NumberUtils.toInt(value);
-        case "long" -> NumberUtils.toLong(value);
-        case "short" -> NumberUtils.toShort(value);
-        case "byte" -> NumberUtils.toByte(value);
-        case "float" -> NumberUtils.toFloat(value);
-        case "double" -> NumberUtils.toDouble(value);
-        case "bigdecimal", "java.math.bigdecimal" -> NumberUtils.createNumber(value);
-        default -> throw new IllegalStateException("Unexpected value: " + type);
-      };
-    } else {
-      realValue = value;
-    }
-    return realValue;
   }
 
   private static String getFormat(final Element fieldElement, final String defaultFormat) {
@@ -258,13 +244,13 @@ public class PactDslProcessor extends AbstractProcessor {
   private DslComplexField composeCollection(final Element element) {
     final var typeStr = cleanType(element);
     return DslComplexField.builder()
-                            .name(element.getSimpleName().toString())
-                            .fieldType(typeStr)
-                            .fields(extractTypes(element))
-                            .fieldValidations(extractValidations(element))
-                            .complexType(DslComplexTypeEnum.COLLECTION)
-                            .empty(Objects.nonNull(element.getAnnotation(DslExclude.class)))
-                            .build();
+                          .name(element.getSimpleName().toString())
+                          .fieldType(typeStr)
+                          .fields(extractTypes(element))
+                          .fieldValidations(extractValidations(element))
+                          .complexType(DslComplexTypeEnum.COLLECTION)
+                          .empty(Objects.nonNull(element.getAnnotation(DslExclude.class)))
+                          .build();
   }
 
   private boolean checkIfOwn(final Element element) {
@@ -337,14 +323,14 @@ public class PactDslProcessor extends AbstractProcessor {
       }
     }
     final var simpleFieldBuilder = DslSimpleField.builder()
-                         .name(getNameOrNull(fieldElement.getSimpleName()))
-                         .fieldType(mapping.getFieldType())
-                         .functionByType(insideCollection ? mapping.getFunctionOnlyValue() : mapping.getFunctionType())
-                         .onlyValueFunction(insideCollection)
-                         .suffixValue(mapping.getSuffixValue())
-                         .formatValue(mapping.getFormatValue())
-                         .fieldValidations(validationBuilder.build())
-                         .empty(false);
+                                                 .name(getNameOrNull(fieldElement.getSimpleName()))
+                                                 .fieldType(mapping.getFieldType())
+                                                 .functionByType(insideCollection ? mapping.getFunctionOnlyValue() : mapping.getFunctionType())
+                                                 .onlyValueFunction(insideCollection)
+                                                 .suffixValue(mapping.getSuffixValue())
+                                                 .formatValue(mapping.getFormatValue())
+                                                 .fieldValidations(validationBuilder.build())
+                                                 .empty(false);
 
     if (Objects.nonNull(fieldElement.getAnnotation(DslExclude.class))) {
       simpleFieldBuilder.empty(true);
@@ -361,6 +347,27 @@ public class PactDslProcessor extends AbstractProcessor {
 
   private String getNameOrNull(final Name simpleName) {
     return simpleName.toString().matches("[A-Z].*") ? null : simpleName.toString();
+  }
+
+  private static Object getDefaultValue(final Element fieldElement, final String type) {
+    final Object realValue;
+    final String value = fieldElement.getAnnotation(Example.class).value();
+    if (NumberUtils.isCreatable(value)) {
+      realValue = switch (type.toLowerCase()) {
+        case "integer", "int" -> NumberUtils.toInt(value);
+        case "biginteger" -> NumberUtils.createBigInteger(value);
+        case "long" -> NumberUtils.toLong(value);
+        case "short" -> NumberUtils.toShort(value);
+        case "byte" -> NumberUtils.toByte(value);
+        case "float" -> NumberUtils.toFloat(value);
+        case "double" -> NumberUtils.toDouble(value);
+        case "bigdecimal", "java.math.bigdecimal" -> NumberUtils.createNumber(value);
+        default -> throw new IllegalStateException("Unexpected value: " + type);
+      };
+    } else {
+      realValue = value;
+    }
+    return realValue;
   }
 
   private Optional<TypeMapping> extractMappingByType(final Element element) {

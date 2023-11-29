@@ -1,4 +1,4 @@
-# Pact Builder DSL
+# Pact DSL Builder
 
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/67f7406f9b79477faae81cc93ed79395)](https://app.codacy.com/gh/sngular/pact-annotation-processor/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)[![Maven Central](https://img.shields.io/maven-central/v/com.sngular/pact-annotation-processor?label=Maven%20Central)](https://central.sonatype.com/artifact/com.sngular/pact-annotation-processor)
 
@@ -11,7 +11,7 @@ Specially useful when defining body validations for interactions with complex mo
 
 ## Table of Contents
 
-- [Pact Builder DSL](#pact-builder-dsl)
+- [Pact DSL Builder](#pact-dsl-builder)
 - [Getting Started](#getting-started)
   - [Requirements](#requirements)
   - [Compatibility with pact-jvm](#compatibility-with-pact-jvm)
@@ -34,12 +34,11 @@ Specially useful when defining body validations for interactions with complex mo
 
 ### Compatibility with pact-jvm
 
-|                                      Pact Builder DSL                                      |  Pact JVM  |
-|:------------------------------------------------------------------------------------------:|:----------:|
-| [1.0.0](https://central.sonatype.com/artifact/com.sngular/pact-annotation-processor/1.0.0) |   +4.6.3   |
+|                                   Pact DSL Builder                                   |  Pact JVM  |
+|:------------------------------------------------------------------------------------:|:----------:|
 | [1.1.0](https://central.sonatype.com/artifact/com.sngular/pact-annotation-processor/1.1.0) |   +4.6.3   |
+| [1.1.7](https://central.sonatype.com/artifact/com.sngular/pact-annotation-processor) |   +4.6.3   |
 | [1.2.0](https://central.sonatype.com/artifact/com.sngular/pact-annotation-processor/1.1.0) |   +4.6.3   |
-
 ### Configuration
 
 The only configuration needed for starting using the library is adding the dependency to your build automation tool:
