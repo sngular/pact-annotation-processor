@@ -36,6 +36,6 @@ public class DateMapping implements TypeMapping<Date> {
 
   @Override
   public final String getFormatValue() {
-    return "yyyy-MM-dd['['ZZZ']']";
+    return "yyyy-MM-dd";
   }
 }

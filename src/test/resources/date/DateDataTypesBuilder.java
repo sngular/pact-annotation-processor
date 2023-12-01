@@ -1,16 +1,17 @@
 package com.sngular.annotation.examples;
 
 import java.math.BigDecimal;
-import java.math.BigInteger
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.math.BigInteger;
 import java.text.DateFormat;
-import java.text.ParsePosition;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 import au.com.dius.pact.consumer.dsl.DslPart;
 import au.com.dius.pact.consumer.dsl.PactDslJsonArray;
@@ -23,8 +24,10 @@ import com.sngular.annotation.examples.DateDataTypes;
 public class DateDataTypesBuilder {
   ZonedDateTime formattedZoneDateTime = ZonedDateTime.parse("23/04/2023 12:00",  DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
   ZonedDateTime defaultFormatZoneDateTime = ZonedDateTime.parse("2023-12-03T10:15:30+01:00[Europe/Madrid]",  DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss[.SSSSSS][.SSS]XXX['['VV']']"));
-  Date defaultFormatDate = DateFormat.getDateInstance().parse("2023-04-23", new ParsePosition(0));
-  Date formattedDate = DateFormat.getDateInstance().parse("23-04-2023", new ParsePosition(0));
+  Date defaultFormatDate = new SimpleDateFormat("yyyy-MM-dd").parse("2023-04-23");
+  Date formattedDate = new SimpleDateFormat("dd-MM-yyyy").parse("23-04-2023");
+
+  public DateDataTypesBuilder() throws ParseException {}
 
   public DateDataTypesBuilder setFormattedZoneDateTime(final ZonedDateTime formattedZoneDateTime) {
     this.formattedZoneDateTime = formattedZoneDateTime;
@@ -52,7 +55,7 @@ public class DateDataTypesBuilder {
       pactDslJsonBody.datetime("defaultFormatZoneDateTime", "yyyy-MM-dd'T'HH:mm:ss[.SSSSSS][.SSS]XXX['['VV']']", defaultFormatZoneDateTime.toInstant());
     }
     if (Objects.nonNull(defaultFormatDate)) {
-      pactDslJsonBody.date("defaultFormatDate", "yyyy-MM-dd['['ZZZ']']", defaultFormatDate);
+      pactDslJsonBody.date("defaultFormatDate", "yyyy-MM-dd", defaultFormatDate);
     }
     if (Objects.nonNull(formattedDate)) {
       pactDslJsonBody.date("formattedDate", "dd-MM-yyyy", formattedDate);

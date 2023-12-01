@@ -1,4 +1,4 @@
-
+<#assign constructor = false>
 <#macro writeAttrField field>
   <#if field.functionByType??>
     <#if field.fieldType == "char">
@@ -14,7 +14,8 @@
     <#elseif field.defaultValue?is_boolean>
       ${field.fieldType} ${field.name} = ${field.defaultValue?then('true', 'false')};
     <#elseif field.functionByType == "date">
-      ${field.fieldType} ${field.name} = DateFormat.getDateInstance().parse("${field.defaultValue?j_string?no_esc}", new ParsePosition(0));
+    <#assign constructor = true>
+       ${field.fieldType} ${field.name} = new SimpleDateFormat("${field.formatValue?no_esc}").parse("${field.defaultValue?j_string?no_esc}");
     <#elseif field.functionByType == "datetime" && field.formatValue?has_content>
       ${field.fieldType} ${field.name} = ZonedDateTime.parse("${field.defaultValue?j_string?no_esc}",  DateTimeFormatter.ofPattern("${field.formatValue?no_esc}"));
     <#elseif field.functionByType != "date" && field.functionByType != "datetime">
@@ -235,15 +236,16 @@ package ${schema.modelPackage};
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
 import java.text.DateFormat;
-import java.text.ParsePosition;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 import au.com.dius.pact.consumer.dsl.DslPart;
 import au.com.dius.pact.consumer.dsl.PactDslJsonArray;
@@ -274,6 +276,10 @@ public class ${schema.className}Builder {
         <@writeAttrField field=field/>
       </#if>
     </#list>
+
+  <#if constructor == true>
+    public ${schema.className}Builder() throws ParseException {}
+  </#if>
 
     <#list schema.fieldList as field>
       <#if !field.empty>
