@@ -34,8 +34,8 @@ public class DecimalMapping implements TypeMapping<Number> {
     final double result;
     if (Objects.nonNull(fieldValidations) && ObjectUtils.anyNotNull(fieldValidations.getMin(), fieldValidations.getMax())) {
 
-      final int minValue = ObjectUtils.defaultIfNull(fieldValidations.getMin(), (int) Byte.MIN_VALUE);
-      final int maxValue = ObjectUtils.defaultIfNull(fieldValidations.getMax(), (int) Byte.MAX_VALUE);
+      final int minValue = ObjectUtils.defaultIfNull(fieldValidations.getMin(), (int) Double.MIN_VALUE);
+      final int maxValue = ObjectUtils.defaultIfNull(fieldValidations.getMax(), (int) Double.MAX_VALUE);
 
       result = uniformRandomProvider.nextDouble(minValue, maxValue);
     } else {

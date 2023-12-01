@@ -181,7 +181,9 @@ public RequestResponsePact getStudents(PactDslWithProvider builder) {
   as default format for datetime (ZonedDateTime)
   If you need and specific format the `@Example` support a format property
   to handle them.
+
 =======
+
 ### Expected Instance Builder
 
 In certain situations, especially when using the `@Example` annotation in all
@@ -202,7 +204,7 @@ void getAddressTest(MockServer mockServer) {
         // ...
 
         assertEquals(expectedAddress, response);
-        }
+}
 ```
 
 However, in many situations, especially when dealing with random values being generated,
