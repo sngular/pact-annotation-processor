@@ -29,7 +29,7 @@ public class ShortMapping implements TypeMapping<Integer> {
 
   @Override
   public final String getFunctionOnlyValue() {
-    return "shortValue";
+    return "integerValue";
   }
 
   @Override

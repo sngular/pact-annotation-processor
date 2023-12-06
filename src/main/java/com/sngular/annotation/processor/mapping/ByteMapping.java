@@ -24,12 +24,12 @@ public class ByteMapping implements TypeMapping<Integer> {
 
   @Override
   public final String getFunctionType() {
-    return "numberType";
+    return "integerType";
   }
 
   @Override
   public final String getFunctionOnlyValue() {
-    return "byteValue";
+    return "integerType";
   }
 
   @Override

@@ -109,6 +109,8 @@
             pactDslJsonBody.${field.functionByType}("${field.name}", ${field.name}.intValue());
           <#elseif field.fieldType == "float">
             pactDslJsonBody.${field.functionByType}("${field.name}", (double) ${field.name});
+          <#elseif field.fieldType == "byte">
+            pactDslJsonBody.${field.functionByType}("${field.name}", (int) ${field.name});
           <#else>
             pactDslJsonBody.${field.functionByType}("${field.name}", ${field.name});
           </#if>
