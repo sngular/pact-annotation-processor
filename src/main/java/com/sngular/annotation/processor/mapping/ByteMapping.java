@@ -24,7 +24,7 @@ public class ByteMapping implements TypeMapping<Integer> {
 
   @Override
   public final String getFunctionType() {
-    return "byteType";
+    return "numberType";
   }
 
   @Override
@@ -42,7 +42,7 @@ public class ByteMapping implements TypeMapping<Integer> {
 
       randomDefaultValue = uniformRandomProvider.nextInt(minValue, maxValue);
     } else {
-      randomDefaultValue = uniformRandomProvider.nextInt(0, Integer.MAX_VALUE);
+      randomDefaultValue = uniformRandomProvider.nextInt(Byte.MIN_VALUE, Byte.MAX_VALUE);
     }
 
     return randomDefaultValue;

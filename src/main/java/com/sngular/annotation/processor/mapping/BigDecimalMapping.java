@@ -13,43 +13,38 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.rng.UniformRandomProvider;
 import org.apache.commons.rng.simple.RandomSource;
 
-public class LongMapping implements TypeMapping<Long> {
+public class BigDecimalMapping implements TypeMapping<Number> {
 
   private final UniformRandomProvider uniformRandomProvider = RandomSource.XO_RO_SHI_RO_128_PP.create();
 
   @Override
   public final String getFieldType() {
-    return "long";
+    return "BigDecimal";
   }
 
   @Override
   public final String getFunctionType() {
-    return "integerType";
+    return "decimalType";
   }
 
   @Override
   public final String getFunctionOnlyValue() {
-    return "integerValue";
+    return "decimalValue";
   }
 
   @Override
-  public final Long getRandomDefaultValue(final FieldValidations fieldValidations) {
-    final long randomDefaultValue;
+  public final Number getRandomDefaultValue(final FieldValidations fieldValidations) {
+    final Number randomDefaultValue;
 
     if (Objects.nonNull(fieldValidations) && ObjectUtils.anyNotNull(fieldValidations.getMin(), fieldValidations.getMax())) {
-      final long minValue = Objects.nonNull(fieldValidations.getMin()) ? fieldValidations.getMin() : Long.MIN_VALUE;
-      final long maxValue = Objects.nonNull(fieldValidations.getMax()) ? fieldValidations.getMax() : Long.MIN_VALUE;
+      final int minValue = ObjectUtils.defaultIfNull(fieldValidations.getMin(), 0);
+      final int maxValue = ObjectUtils.defaultIfNull(fieldValidations.getMax(), (int) Double.MAX_VALUE);
 
-      randomDefaultValue = uniformRandomProvider.nextLong(minValue, maxValue);
+      randomDefaultValue = uniformRandomProvider.nextDouble(minValue, maxValue);
     } else {
-      randomDefaultValue = uniformRandomProvider.nextLong(Long.MIN_VALUE, Long.MAX_VALUE);
+      randomDefaultValue = uniformRandomProvider.nextDouble(Double.MIN_VALUE, Double.MAX_VALUE);
     }
 
     return randomDefaultValue;
-  }
-
-  @Override
-  public final String getSuffixValue() {
-    return "L";
   }
 }
