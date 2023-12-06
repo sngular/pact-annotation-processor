@@ -36,8 +36,8 @@ public class ShortMapping implements TypeMapping<Integer> {
   public final Integer getRandomDefaultValue(final FieldValidations fieldValidations) {
     final int randomDefaultValue;
     if (Objects.nonNull(fieldValidations) && ObjectUtils.anyNotNull(fieldValidations.getMin(), fieldValidations.getMax())) {
-      int minValue = ObjectUtils.defaultIfNull(fieldValidations.getMin(), (int) Short.MIN_VALUE);
-      int maxValue = ObjectUtils.defaultIfNull(fieldValidations.getMax(), (int) Short.MAX_VALUE);
+      final int minValue = ObjectUtils.defaultIfNull(fieldValidations.getMin(), (int) Short.MIN_VALUE);
+      final int maxValue = ObjectUtils.defaultIfNull(fieldValidations.getMax(), (int) Short.MAX_VALUE);
 
       randomDefaultValue = uniformRandomProvider.nextInt(minValue, maxValue);
     } else {
