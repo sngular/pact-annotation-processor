@@ -37,12 +37,14 @@ import com.sngular.annotation.pact.Example;
 import com.sngular.annotation.pact.PactDslBodyBuilder;
 import com.sngular.annotation.processor.exception.TemplateFactoryException;
 import com.sngular.annotation.processor.exception.TemplateGenerationException;
+import com.sngular.annotation.processor.mapping.BigDecimalMapping;
 import com.sngular.annotation.processor.mapping.BigIntegerMapping;
 import com.sngular.annotation.processor.mapping.BooleanMapping;
 import com.sngular.annotation.processor.mapping.ByteMapping;
 import com.sngular.annotation.processor.mapping.CharMapping;
 import com.sngular.annotation.processor.mapping.DateMapping;
-import com.sngular.annotation.processor.mapping.DecimalMapping;
+import com.sngular.annotation.processor.mapping.DoubleMapping;
+import com.sngular.annotation.processor.mapping.FloatMapping;
 import com.sngular.annotation.processor.mapping.IntegerMapping;
 import com.sngular.annotation.processor.mapping.LongMapping;
 import com.sngular.annotation.processor.mapping.ShortMapping;
@@ -72,33 +74,24 @@ public class PactDslProcessor extends AbstractProcessor {
 
   static final Map<String, TypeMapping> TYPE_MAPPING = ImmutableMap.<String, TypeMapping>builder()
                                                                    .put("int", new IntegerMapping())
-                                                                   .put("java.lang.Integer", new IntegerMapping())
                                                                    .put("Integer", new IntegerMapping())
-                                                                   .put("java.math.BigInteger", new BigIntegerMapping())
                                                                    .put("BigInteger", new BigIntegerMapping())
-                                                                   .put("biginteger", new BigIntegerMapping())
                                                                    .put("short", new ShortMapping())
-                                                                   .put("java.lang.Short", new ShortMapping())
                                                                    .put("Short", new ShortMapping())
                                                                    .put("byte", new ByteMapping())
+                                                                   .put("Byte", new ByteMapping())
                                                                    .put("long", new LongMapping())
-                                                                   .put("java.lang.Long", new LongMapping())
                                                                    .put("Long", new LongMapping())
                                                                    .put("char", new CharMapping())
                                                                    .put("Character", new CharMapping())
-                                                                   .put("java.lang.Character", new CharMapping())
-                                                                   .put("java.lang.String", new StringMapping())
                                                                    .put("String", new StringMapping())
-                                                                   .put("float", new DecimalMapping())
-                                                                   .put("Float", new DecimalMapping())
-                                                                   .put("double", new DecimalMapping())
-                                                                   .put("java.lang.Double", new DecimalMapping())
-                                                                   .put("Double", new DecimalMapping())
-                                                                   .put("java.math.BigDecimal", new DecimalMapping())
-                                                                   .put("BigDecimal", new DecimalMapping())
+                                                                   .put("float", new FloatMapping())
+                                                                   .put("Float", new FloatMapping())
+                                                                   .put("double", new DoubleMapping())
+                                                                   .put("Double", new DoubleMapping())
+                                                                   .put("BigDecimal", new BigDecimalMapping())
                                                                    .put("boolean", new BooleanMapping())
                                                                    .put("Boolean", new BooleanMapping())
-                                                                   .put("java.lang.Boolean", new BooleanMapping())
                                                                    .put("date", new DateMapping())
                                                                    .put("java.time.ZonedDateTime", new ZonedDateTimeMapping())
                                                                    .put("ZonedDateTime", new ZonedDateTimeMapping())
@@ -330,15 +323,15 @@ public class PactDslProcessor extends AbstractProcessor {
     final Object realValue;
     final String value = fieldElement.getAnnotation(Example.class).value();
     if (NumberUtils.isCreatable(value)) {
-      realValue = switch (type.toLowerCase()) {
-        case "integer", "int" -> NumberUtils.toInt(value);
-        case "biginteger" -> NumberUtils.createBigInteger(value);
-        case "long" -> NumberUtils.toLong(value);
-        case "short" -> NumberUtils.toShort(value);
-        case "byte" -> NumberUtils.toByte(value);
-        case "float" -> NumberUtils.toFloat(value);
-        case "double" -> NumberUtils.toDouble(value);
-        case "bigdecimal", "java.math.bigdecimal" -> NumberUtils.createNumber(value);
+      realValue = switch (type) {
+        case "int", "Integer" -> NumberUtils.toInt(value);
+        case "BigInteger" -> NumberUtils.createBigInteger(value);
+        case "long", "Long" -> NumberUtils.toLong(value);
+        case "short", "Short" -> NumberUtils.toShort(value);
+        case "byte", "Byte" -> NumberUtils.toByte(value);
+        case "float", "Float" -> NumberUtils.toFloat(value);
+        case "double", "Double" -> NumberUtils.toDouble(value);
+        case "BigDecimal" -> NumberUtils.createBigDecimal(value);
         default -> throw new IllegalStateException("Unexpected value: " + type);
       };
     } else {

@@ -13,13 +13,13 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.rng.UniformRandomProvider;
 import org.apache.commons.rng.simple.RandomSource;
 
-public class DecimalMapping implements TypeMapping<Number> {
+public class FloatMapping implements TypeMapping<Number> {
 
   private final UniformRandomProvider uniformRandomProvider = RandomSource.XO_RO_SHI_RO_128_PP.create();
 
   @Override
   public final String getFieldType() {
-    return "java.math.BigDecimal";
+    return "float";
   }
 
   @Override
@@ -37,14 +37,19 @@ public class DecimalMapping implements TypeMapping<Number> {
     final Number randomDefaultValue;
 
     if (Objects.nonNull(fieldValidations) && ObjectUtils.anyNotNull(fieldValidations.getMin(), fieldValidations.getMax())) {
-      final int minValue = ObjectUtils.defaultIfNull(fieldValidations.getMin(), (int) Byte.MIN_VALUE);
-      final int maxValue = ObjectUtils.defaultIfNull(fieldValidations.getMax(), (int) Byte.MAX_VALUE);
+      final int minValue = ObjectUtils.defaultIfNull(fieldValidations.getMin(), 0);
+      final int maxValue = ObjectUtils.defaultIfNull(fieldValidations.getMax(), (int) Float.MAX_VALUE);
 
       randomDefaultValue = uniformRandomProvider.nextDouble(minValue, maxValue);
     } else {
-      randomDefaultValue = uniformRandomProvider.nextDouble(0, Double.MAX_VALUE);
+      randomDefaultValue = uniformRandomProvider.nextDouble(0, Float.MAX_VALUE);
     }
 
     return randomDefaultValue;
+  }
+
+  @Override
+  public final String getSuffixValue() {
+    return "F";
   }
 }
