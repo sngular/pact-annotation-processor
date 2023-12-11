@@ -35,6 +35,7 @@ import com.google.common.collect.ImmutableMap;
 import com.sngular.annotation.pact.DslExclude;
 import com.sngular.annotation.pact.Example;
 import com.sngular.annotation.pact.PactDslBodyBuilder;
+import com.sngular.annotation.processor.exception.PactProcessorException;
 import com.sngular.annotation.processor.exception.TemplateFactoryException;
 import com.sngular.annotation.processor.exception.TemplateGenerationException;
 import com.sngular.annotation.processor.mapping.BigIntegerMapping;
@@ -73,7 +74,7 @@ import org.jetbrains.annotations.NotNull;
 @SupportedAnnotationTypes("com.sngular.annotation.pact.PactDslBodyBuilder")
 public class PactDslProcessor extends AbstractProcessor {
 
-  static final Map<String, TypeMapping> TYPE_MAPPING = ImmutableMap.<String, TypeMapping>builder()
+  static final Map<String, TypeMapping<?>> TYPE_MAPPING = ImmutableMap.<String, TypeMapping<?>>builder()
                                                                    .put("int", new IntegerMapping())
                                                                    .put("java.lang.Integer", new IntegerMapping())
                                                                    .put("Integer", new IntegerMapping())
@@ -212,7 +213,7 @@ public class PactDslProcessor extends AbstractProcessor {
 
   private DslField composeDslField(final Element fieldElement, final boolean insideCollection) {
     final DslField result;
-    final Optional<TypeMapping> mappingOp = extractMappingByType(fieldElement);
+    final Optional<TypeMapping<?>> mappingOp = extractMappingByType(fieldElement);
     if (mappingOp.isEmpty()) {
       if (checkIfOwn(fieldElement)) {
         result = composeDslComplexField(fieldElement);
@@ -301,7 +302,11 @@ public class PactDslProcessor extends AbstractProcessor {
     if (listOfCustomMods.size() > 1) {
       listOfFields = new ArrayList<>(CollectionUtils.collect(listOfCustomMods, e -> composeDslField(e, true)));
     } else {
-      listOfFields = List.of(composeDslSimpleField(listOfCustomMods.get(0), extractMappingByType(listOfCustomMods.get(0)).get(), true));
+      listOfFields = List.of(
+          composeDslSimpleField(listOfCustomMods.get(0),
+                                extractMappingByType(listOfCustomMods.get(0))
+                                    .orElseThrow(() -> new PactProcessorException(listOfCustomMods.get(0).getSimpleName().toString())),
+                                true));
     }
     return listOfFields;
   }
@@ -313,8 +318,16 @@ public class PactDslProcessor extends AbstractProcessor {
     return customModList;
   }
 
-  private DslSimpleField composeDslSimpleField(final Element fieldElement, final TypeMapping mapping, final boolean insideCollection) {
+  private DslSimpleField composeDslSimpleField(final Element fieldElement, final TypeMapping<?> mapping, final boolean insideCollection) {
+    final var validationBuilder = createValidationBuilder(fieldElement);
+    final var simpleFieldBuilder = createSimpleFieldBuilder(fieldElement, mapping, insideCollection, validationBuilder);
+
+    return simpleFieldBuilder.build();
+  }
+
+  private FieldValidations.FieldValidationsBuilder createValidationBuilder(final Element fieldElement) {
     final var validationBuilder = FieldValidations.builder();
+
     for (var annotation : fieldElement.asType().getAnnotationMirrors()) {
       if (annotation.getAnnotationType().toString().toUpperCase().endsWith("MAX")) {
         validationBuilder.max(((Long) Objects.requireNonNull(getAnnotationValue(annotation, "value")).getValue()).intValue());
@@ -322,6 +335,12 @@ public class PactDslProcessor extends AbstractProcessor {
         validationBuilder.min(((Long) Objects.requireNonNull(getAnnotationValue(annotation, "value")).getValue()).intValue());
       }
     }
+
+    return validationBuilder;
+  }
+
+  private DslSimpleField.DslSimpleFieldBuilder createSimpleFieldBuilder(final Element fieldElement, final TypeMapping<?> mapping,
+      final boolean insideCollection, final FieldValidations.FieldValidationsBuilder validationBuilder) {
     final var simpleFieldBuilder = DslSimpleField.builder()
                                                  .name(getNameOrNull(fieldElement.getSimpleName()))
                                                  .fieldType(mapping.getFieldType())
@@ -342,7 +361,7 @@ public class PactDslProcessor extends AbstractProcessor {
       simpleFieldBuilder.formatValue(mapping.getFormatValue());
     }
 
-    return simpleFieldBuilder.build();
+    return simpleFieldBuilder;
   }
 
   private String getNameOrNull(final Name simpleName) {
@@ -370,7 +389,7 @@ public class PactDslProcessor extends AbstractProcessor {
     return realValue;
   }
 
-  private Optional<TypeMapping> extractMappingByType(final Element element) {
+  private Optional<TypeMapping<?>> extractMappingByType(final Element element) {
 
     final var type = element.asType();
     return switch (type.getKind()) {
