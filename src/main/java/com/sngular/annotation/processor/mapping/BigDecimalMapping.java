@@ -11,10 +11,9 @@ import java.util.Objects;
 import com.sngular.annotation.processor.model.FieldValidations;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.rng.UniformRandomProvider;
-import org.apache.commons.rng.simple.RandomSource;
 
 public class BigDecimalMapping implements TypeMapping<Number> {
-  
+
   @Override
   public final String getFieldType() {
     return "BigDecimal";
