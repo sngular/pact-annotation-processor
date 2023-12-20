@@ -38,10 +38,10 @@ public class LongMapping implements TypeMapping<Long> {
 
       result = uniformRandomProvider.nextLong(minValue, maxValue);
     } else {
-      randomDefaultValue = uniformRandomProvider.nextLong(Long.MIN_VALUE, Long.MAX_VALUE);
+      result = uniformRandomProvider.nextLong(Long.MIN_VALUE, Long.MAX_VALUE);
     }
 
-    return randomDefaultValue;
+    return result;
   }
 
   @Override

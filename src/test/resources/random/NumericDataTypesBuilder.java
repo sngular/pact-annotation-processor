@@ -21,7 +21,7 @@ import com.sngular.annotation.processor.mapping.CustomDslModifier;
 import com.sngular.annotation.examples.NumericDataTypes;
 
 public class NumericDataTypesBuilder {
-  int age = 18;
+  int age = 0;
 
   public NumericDataTypesBuilder setAge(final int age) {
     this.age = age;

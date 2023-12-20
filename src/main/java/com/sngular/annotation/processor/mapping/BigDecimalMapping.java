@@ -14,9 +14,7 @@ import org.apache.commons.rng.UniformRandomProvider;
 import org.apache.commons.rng.simple.RandomSource;
 
 public class BigDecimalMapping implements TypeMapping<Number> {
-
-  private final UniformRandomProvider uniformRandomProvider = RandomSource.XO_RO_SHI_RO_128_PP.create();
-
+  
   @Override
   public final String getFieldType() {
     return "BigDecimal";
@@ -33,7 +31,7 @@ public class BigDecimalMapping implements TypeMapping<Number> {
   }
 
   @Override
-  public final Number getRandomDefaultValue(final FieldValidations fieldValidations) {
+  public final Number getRandomDefaultValue(final FieldValidations fieldValidations, final UniformRandomProvider uniformRandomProvider) {
     final Number randomDefaultValue;
 
     if (Objects.nonNull(fieldValidations) && ObjectUtils.anyNotNull(fieldValidations.getMin(), fieldValidations.getMax())) {
