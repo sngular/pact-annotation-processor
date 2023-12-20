@@ -26,7 +26,7 @@ public class ShortMapping implements TypeMapping<Integer> {
 
   @Override
   public final String getFunctionOnlyValue() {
-    return "shortValue";
+    return "integerValue";
   }
 
   @Override
@@ -39,7 +39,7 @@ public class ShortMapping implements TypeMapping<Integer> {
       result = uniformRandomProvider.nextInt(minValue, maxValue);
     } else {
 
-      result = uniformRandomProvider.nextInt(0, Short.MAX_VALUE);
+      result = uniformRandomProvider.nextInt(Short.MIN_VALUE, Short.MAX_VALUE);
     }
     return result;
   }

@@ -34,12 +34,12 @@ public class BigIntegerMapping implements TypeMapping<Integer> {
     final int randomDefaultValue;
 
     if (Objects.nonNull(fieldValidations) && ObjectUtils.anyNotNull(fieldValidations.getMin(), fieldValidations.getMax())) {
-      final int minValue = ObjectUtils.defaultIfNull(fieldValidations.getMin(), (int) Byte.MIN_VALUE);
-      final int maxValue = ObjectUtils.defaultIfNull(fieldValidations.getMax(), (int) Byte.MAX_VALUE);
+      final int minValue = ObjectUtils.defaultIfNull(fieldValidations.getMin(), Integer.MIN_VALUE);
+      final int maxValue = ObjectUtils.defaultIfNull(fieldValidations.getMax(), Integer.MAX_VALUE);
 
       randomDefaultValue = uniformRandomProvider.nextInt(minValue, maxValue);
     } else {
-      randomDefaultValue = uniformRandomProvider.nextInt(0, Integer.MAX_VALUE);
+      randomDefaultValue = uniformRandomProvider.nextInt(Integer.MIN_VALUE, Integer.MAX_VALUE);
     }
 
     return randomDefaultValue;

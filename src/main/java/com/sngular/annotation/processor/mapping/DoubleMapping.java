@@ -12,34 +12,40 @@ import com.sngular.annotation.processor.model.FieldValidations;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.rng.UniformRandomProvider;
 
-public class IntegerMapping implements TypeMapping<Integer> {
+public class DoubleMapping implements TypeMapping<Number> {
 
   @Override
   public final String getFieldType() {
-    return "int";
+    return "double";
   }
 
   @Override
   public final String getFunctionType() {
-    return "integerType";
+    return "decimalType";
   }
 
   @Override
   public final String getFunctionOnlyValue() {
-    return "integerValue";
+    return "decimalValue";
   }
 
   @Override
-  public final Integer getRandomDefaultValue(final FieldValidations fieldValidations, final UniformRandomProvider uniformRandomProvider) {
-    final int result;
+  public final Number getRandomDefaultValue(final FieldValidations fieldValidations, final UniformRandomProvider uniformRandomProvider) {
+    final double result;
     if (Objects.nonNull(fieldValidations) && ObjectUtils.anyNotNull(fieldValidations.getMin(), fieldValidations.getMax())) {
-      final int minValue = ObjectUtils.defaultIfNull(fieldValidations.getMin(), Integer.MIN_VALUE);
-      final int maxValue = ObjectUtils.defaultIfNull(fieldValidations.getMax(), Integer.MAX_VALUE);
+      final int minValue = ObjectUtils.defaultIfNull(fieldValidations.getMin(), 0);
+      final int maxValue = ObjectUtils.defaultIfNull(fieldValidations.getMax(), (int) Double.MAX_VALUE);
 
-      result = uniformRandomProvider.nextInt(minValue, maxValue);
+      result = uniformRandomProvider.nextDouble(minValue, maxValue);
     } else {
-      result = uniformRandomProvider.nextInt(Integer.MIN_VALUE, Integer.MAX_VALUE);
+      result = uniformRandomProvider.nextDouble(0, Double.MAX_VALUE);
     }
+
     return result;
+  }
+
+  @Override
+  public final String getSuffixValue() {
+    return "D";
   }
 }

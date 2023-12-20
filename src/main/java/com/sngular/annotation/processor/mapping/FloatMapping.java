@@ -11,34 +11,38 @@ import java.util.Objects;
 import com.sngular.annotation.processor.model.FieldValidations;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.rng.UniformRandomProvider;
+import org.apache.commons.rng.simple.RandomSource;
 
-public class LongMapping implements TypeMapping<Long> {
+public class FloatMapping implements TypeMapping<Number> {
+
+  private final UniformRandomProvider uniformRandomProvider = RandomSource.XO_RO_SHI_RO_128_PP.create();
 
   @Override
   public final String getFieldType() {
-    return "long";
+    return "float";
   }
 
   @Override
   public final String getFunctionType() {
-    return "integerType";
+    return "decimalType";
   }
 
   @Override
   public final String getFunctionOnlyValue() {
-    return "integerValue";
+    return "decimalValue";
   }
 
   @Override
-  public final Long getRandomDefaultValue(final FieldValidations fieldValidations, final UniformRandomProvider uniformRandomProvider) {
-    final long result;
-    if (Objects.nonNull(fieldValidations) && ObjectUtils.anyNotNull(fieldValidations.getMin(), fieldValidations.getMax())) {
-      final long minValue = Objects.nonNull(fieldValidations.getMin()) ? fieldValidations.getMin() : Long.MIN_VALUE;
-      final long maxValue = Objects.nonNull(fieldValidations.getMax()) ? fieldValidations.getMax() : Long.MIN_VALUE;
+  public final Number getRandomDefaultValue(final FieldValidations fieldValidations) {
+    final Number randomDefaultValue;
 
-      result = uniformRandomProvider.nextLong(minValue, maxValue);
+    if (Objects.nonNull(fieldValidations) && ObjectUtils.anyNotNull(fieldValidations.getMin(), fieldValidations.getMax())) {
+      final int minValue = ObjectUtils.defaultIfNull(fieldValidations.getMin(), 0);
+      final int maxValue = ObjectUtils.defaultIfNull(fieldValidations.getMax(), (int) Float.MAX_VALUE);
+
+      randomDefaultValue = uniformRandomProvider.nextDouble(minValue, maxValue);
     } else {
-      randomDefaultValue = uniformRandomProvider.nextLong(Long.MIN_VALUE, Long.MAX_VALUE);
+      randomDefaultValue = uniformRandomProvider.nextDouble(0, Float.MAX_VALUE);
     }
 
     return randomDefaultValue;
@@ -46,6 +50,6 @@ public class LongMapping implements TypeMapping<Long> {
 
   @Override
   public final String getSuffixValue() {
-    return "L";
+    return "F";
   }
 }

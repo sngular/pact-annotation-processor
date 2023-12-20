@@ -21,12 +21,12 @@ public class ByteMapping implements TypeMapping<Integer> {
 
   @Override
   public final String getFunctionType() {
-    return "byteType";
+    return "integerType";
   }
 
   @Override
   public final String getFunctionOnlyValue() {
-    return "byteValue";
+    return "integerType";
   }
 
   @Override
@@ -39,9 +39,9 @@ public class ByteMapping implements TypeMapping<Integer> {
 
       result = uniformRandomProvider.nextInt(minValue, maxValue);
     } else {
-
-      result = uniformRandomProvider.nextInt(0, Byte.MAX_VALUE);
+      result = uniformRandomProvider.nextInt(Byte.MIN_VALUE, Byte.MAX_VALUE);
     }
+
     return result;
   }
 }

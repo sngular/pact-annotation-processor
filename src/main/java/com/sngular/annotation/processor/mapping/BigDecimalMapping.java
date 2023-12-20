@@ -11,12 +11,15 @@ import java.util.Objects;
 import com.sngular.annotation.processor.model.FieldValidations;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.rng.UniformRandomProvider;
+import org.apache.commons.rng.simple.RandomSource;
 
-public class DecimalMapping implements TypeMapping<Number> {
+public class BigDecimalMapping implements TypeMapping<Number> {
+
+  private final UniformRandomProvider uniformRandomProvider = RandomSource.XO_RO_SHI_RO_128_PP.create();
 
   @Override
   public final String getFieldType() {
-    return "java.math.BigDecimal";
+    return "BigDecimal";
   }
 
   @Override
@@ -30,18 +33,18 @@ public class DecimalMapping implements TypeMapping<Number> {
   }
 
   @Override
-  public final Number getRandomDefaultValue(final FieldValidations fieldValidations, final UniformRandomProvider uniformRandomProvider) {
-    final double result;
-    if (Objects.nonNull(fieldValidations) && ObjectUtils.anyNotNull(fieldValidations.getMin(), fieldValidations.getMax())) {
+  public final Number getRandomDefaultValue(final FieldValidations fieldValidations) {
+    final Number randomDefaultValue;
 
-      final int minValue = ObjectUtils.defaultIfNull(fieldValidations.getMin(), (int) Double.MIN_VALUE);
+    if (Objects.nonNull(fieldValidations) && ObjectUtils.anyNotNull(fieldValidations.getMin(), fieldValidations.getMax())) {
+      final int minValue = ObjectUtils.defaultIfNull(fieldValidations.getMin(), 0);
       final int maxValue = ObjectUtils.defaultIfNull(fieldValidations.getMax(), (int) Double.MAX_VALUE);
 
-      result = uniformRandomProvider.nextDouble(minValue, maxValue);
+      randomDefaultValue = uniformRandomProvider.nextDouble(minValue, maxValue);
     } else {
-
-      result = uniformRandomProvider.nextDouble(0, Double.MAX_VALUE);
+      randomDefaultValue = uniformRandomProvider.nextDouble(Double.MIN_VALUE, Double.MAX_VALUE);
     }
-    return result;
+
+    return randomDefaultValue;
   }
 }

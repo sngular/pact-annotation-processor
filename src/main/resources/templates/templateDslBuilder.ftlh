@@ -1,15 +1,17 @@
 <#assign constructor = false>
 <#macro writeAttrField field>
   <#if field.functionByType??>
-    <#if field.fieldType == "char">
+    <#if field.fieldType == "boolean">
+      ${field.fieldType} ${field.name} = ${field.defaultValue?string};
+    <#elseif field.fieldType == "char">
       String ${field.name} = "${field.defaultValue}";
     <#elseif field.defaultValue?is_number>
-      <#if field.functionByType == "decimalType">
-        ${field.fieldType} ${field.name} = new BigDecimal("${field.defaultValue?c}");
-      <#elseif field.fieldType == "BigInteger">
-        ${field.fieldType} ${field.name} = new BigInteger("${field.defaultValue?c}");
+      <#if field.fieldType == "BigInteger">
+        BigInteger ${field.name} = new BigInteger("${field.defaultValue?c}");
+      <#elseif field.fieldType == "BigDecimal">
+        BigDecimal ${field.name} = new BigDecimal("${field.defaultValue?c}");
       <#else>
-        ${field.fieldType} ${field.name} = ${field.defaultValue?c}<#if field.suffixValue?has_content && field.suffixValue == "L">L</#if>;
+        ${field.fieldType} ${field.name} = ${field.defaultValue?c}<#if field.suffixValue?has_content>${field.suffixValue}</#if>;
       </#if>
     <#elseif field.defaultValue?is_boolean>
       ${field.fieldType} ${field.name} = ${field.defaultValue?then('true', 'false')};
@@ -22,7 +24,7 @@
       ${field.fieldType} ${field.name} = "${field.defaultValue}";
     </#if>
   <#else>
-  <@writeComplexAttrField complexField=field/>
+    <@writeComplexAttrField complexField=field/>
   </#if>
 </#macro>
 
@@ -106,6 +108,10 @@
             pactDslJsonBody.${field.functionByType}("${field.name}", (int) ${field.name});
           <#elseif field.fieldType == "BigInteger">
             pactDslJsonBody.${field.functionByType}("${field.name}", ${field.name}.intValue());
+          <#elseif field.fieldType == "float">
+            pactDslJsonBody.${field.functionByType}("${field.name}", (double) ${field.name});
+          <#elseif field.fieldType == "byte">
+            pactDslJsonBody.${field.functionByType}("${field.name}", (int) ${field.name});
           <#else>
             pactDslJsonBody.${field.functionByType}("${field.name}", ${field.name});
           </#if>
