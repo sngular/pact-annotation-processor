@@ -11,7 +11,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Value;
 
 @Value
-@Builder
 @EqualsAndHashCode(callSuper = true)
 public class DslSimpleField extends DslField {
 
@@ -30,6 +29,22 @@ public class DslSimpleField extends DslField {
   boolean onlyValueFunction;
 
   boolean empty;
+
+  @Builder
+  private DslSimpleField(
+      final String name, final String fieldType, final String functionByType, final Object defaultValue, final String suffixValue, final String formatValue,
+      final FieldValidations fieldValidations,
+      final boolean onlyValueFunction, final boolean empty) {
+    super(name);
+    this.fieldType = fieldType;
+    this.functionByType = functionByType;
+    this.defaultValue = defaultValue;
+    this.suffixValue = suffixValue;
+    this.formatValue = formatValue;
+    this.fieldValidations = fieldValidations;
+    this.onlyValueFunction = onlyValueFunction;
+    this.empty = empty;
+  }
 
   public static class DslSimpleFieldBuilder {}
 }

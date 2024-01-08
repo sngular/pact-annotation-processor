@@ -6,11 +6,11 @@
 
 package com.sngular.annotation.processor.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.experimental.SuperBuilder;
 
 @Getter
-@SuperBuilder
+@AllArgsConstructor
 public class DslField {
 
   private String name;
