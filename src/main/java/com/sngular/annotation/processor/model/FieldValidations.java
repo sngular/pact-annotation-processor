@@ -21,4 +21,6 @@ public class FieldValidations {
 
   String regex;
 
+  public static class FieldValidationsBuilder {}
+
 }

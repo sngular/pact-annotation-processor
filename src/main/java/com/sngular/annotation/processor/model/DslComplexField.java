@@ -8,13 +8,12 @@ package com.sngular.annotation.processor.model;
 
 import java.util.List;
 
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.Value;
-import lombok.experimental.SuperBuilder;
 
 @Value
-@SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 public class DslComplexField extends DslField {
 
@@ -29,4 +28,19 @@ public class DslComplexField extends DslField {
   boolean needBuilder;
 
   boolean empty;
+
+  @Builder
+  private DslComplexField(
+      final String name, @NonNull final DslComplexTypeEnum complexType, final List<DslField> fields, final String fieldType, final FieldValidations fieldValidations,
+      final boolean needBuilder, final boolean empty) {
+    super(name);
+    this.complexType = complexType;
+    this.fields = fields;
+    this.fieldType = fieldType;
+    this.fieldValidations = fieldValidations;
+    this.needBuilder = needBuilder;
+    this.empty = empty;
+  }
+
+  public static class DslComplexFieldBuilder {}
 }
