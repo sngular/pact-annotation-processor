@@ -6,12 +6,12 @@
 
 package com.sngular.annotation.processor.model;
 
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
-import lombok.experimental.SuperBuilder;
 
 @Value
-@SuperBuilder
+@Builder
 @EqualsAndHashCode(callSuper = true)
 public class DslSimpleField extends DslField {
 
@@ -30,6 +30,8 @@ public class DslSimpleField extends DslField {
   boolean onlyValueFunction;
 
   boolean empty;
+
+  public static class DslSimpleFieldBuilder {}
 }
 
 
