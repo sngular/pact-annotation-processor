@@ -11,11 +11,8 @@ import java.util.Objects;
 import com.sngular.annotation.processor.model.FieldValidations;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.rng.UniformRandomProvider;
-import org.apache.commons.rng.simple.RandomSource;
 
 public class BigIntegerMapping implements TypeMapping<Integer> {
-
-  private final UniformRandomProvider uniformRandomProvider = RandomSource.XO_RO_SHI_RO_128_PP.create();
 
   @Override
   public final String getFieldType() {
@@ -33,7 +30,7 @@ public class BigIntegerMapping implements TypeMapping<Integer> {
   }
 
   @Override
-  public final Integer getRandomDefaultValue(final FieldValidations fieldValidations) {
+  public final Integer getRandomDefaultValue(final FieldValidations fieldValidations, final UniformRandomProvider uniformRandomProvider) {
     final int randomDefaultValue;
 
     if (Objects.nonNull(fieldValidations) && ObjectUtils.anyNotNull(fieldValidations.getMin(), fieldValidations.getMax())) {

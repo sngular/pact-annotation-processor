@@ -4,7 +4,7 @@
 
   <groupId>com.sngular</groupId>
   <artifactId>pact-annotation-processor</artifactId>
-  <version>1.1.9</version>
+  <version>1.2.0</version>
 
   <name>PactDslBuilder - Annotation Processor</name>
   <description>Pact DSL Builder annotation processor.</description>
@@ -54,7 +54,7 @@
       <id>tfdsimoes</id>
       <name>Tiago Filipe Domingues Simoes</name>
       <email>tfdsimoes+github@gmail.com</email>
-      <organizationUrl></organizationUrl>
+      <organizationUrl />
       <roles>
         <role>Software Engineer</role>
       </roles>
@@ -98,6 +98,10 @@
     <maven-javadoc-plugin.version>3.6.0</maven-javadoc-plugin.version>
     <maven-source-plugin.version>3.0.0</maven-source-plugin.version>
     <apache-commons-rng.version>1.5</apache-commons-rng.version>
+
+    <assertj-core.version>3.24.2</assertj-core.version>
+    <junit-jupiter-engine.version>5.9.2</junit-jupiter-engine.version>
+    <mockito.version>5.3.1</mockito.version>
   </properties>
 
   <dependencies>
@@ -158,6 +162,49 @@
       <artifactId>guava</artifactId>
       <version>${google-guava.version}</version>
     </dependency>
+    <!-- TESTING DEPENDENCIES -->
+    <dependency>
+      <groupId>com.google.testing.compile</groupId>
+      <artifactId>compile-testing</artifactId>
+      <version>0.21.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <version>${assertj-core.version}</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.assertj</groupId>
+          <artifactId>assertj-core</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <version>${junit-jupiter-engine.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-params</artifactId>
+      <version>${junit-jupiter-engine.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>${mockito.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-junit-jupiter</artifactId>
+      <version>${mockito.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -194,6 +241,13 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>3.1.2</version>
+        <configuration>
+          <argLine>
+            --add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED
+            --add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED
+            --add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED
+          </argLine>
+        </configuration>
         <executions>
           <execution>
             <id>default-test</id>
@@ -204,22 +258,9 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>com.github.ekryd.sortpom</groupId>
-        <artifactId>sortpom-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>sort</goal>
-            </goals>
-            <phase>verify</phase>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
         <configuration>
-
           <configLocation>checkstyle.xml</configLocation>
         </configuration>
         <dependencies>

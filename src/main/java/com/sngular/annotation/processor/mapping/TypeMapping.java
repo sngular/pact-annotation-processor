@@ -7,6 +7,7 @@
 package com.sngular.annotation.processor.mapping;
 
 import com.sngular.annotation.processor.model.FieldValidations;
+import org.apache.commons.rng.UniformRandomProvider;
 
 public interface TypeMapping<T> {
 
@@ -16,7 +17,7 @@ public interface TypeMapping<T> {
 
   String getFunctionOnlyValue();
 
-  T getRandomDefaultValue(final FieldValidations fieldValidations);
+  T getRandomDefaultValue(FieldValidations fieldValidations, UniformRandomProvider uniformRandomProvider);
 
   default String getSuffixValue() {
     return null;

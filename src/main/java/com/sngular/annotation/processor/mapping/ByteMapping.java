@@ -11,11 +11,8 @@ import java.util.Objects;
 import com.sngular.annotation.processor.model.FieldValidations;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.rng.UniformRandomProvider;
-import org.apache.commons.rng.simple.RandomSource;
 
 public class ByteMapping implements TypeMapping<Integer> {
-
-  private final UniformRandomProvider uniformRandomProvider = RandomSource.XO_RO_SHI_RO_128_PP.create();
 
   @Override
   public final String getFieldType() {
@@ -33,18 +30,18 @@ public class ByteMapping implements TypeMapping<Integer> {
   }
 
   @Override
-  public final Integer getRandomDefaultValue(final FieldValidations fieldValidations) {
-    final int randomDefaultValue;
-
+  public final Integer getRandomDefaultValue(final FieldValidations fieldValidations, final UniformRandomProvider uniformRandomProvider) {
+    final int result;
     if (Objects.nonNull(fieldValidations) && ObjectUtils.anyNotNull(fieldValidations.getMin(), fieldValidations.getMax())) {
+
       final int minValue = ObjectUtils.defaultIfNull(fieldValidations.getMin(), (int) Byte.MIN_VALUE);
       final int maxValue = ObjectUtils.defaultIfNull(fieldValidations.getMax(), (int) Byte.MAX_VALUE);
 
-      randomDefaultValue = uniformRandomProvider.nextInt(minValue, maxValue);
+      result = uniformRandomProvider.nextInt(minValue, maxValue);
     } else {
-      randomDefaultValue = uniformRandomProvider.nextInt(Byte.MIN_VALUE, Byte.MAX_VALUE);
+      result = uniformRandomProvider.nextInt(Byte.MIN_VALUE, Byte.MAX_VALUE);
     }
 
-    return randomDefaultValue;
+    return result;
   }
 }

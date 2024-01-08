@@ -12,15 +12,12 @@ import com.sngular.annotation.processor.model.FieldValidations;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.rng.UniformRandomProvider;
-import org.apache.commons.rng.simple.RandomSource;
 
 public class StringMapping implements TypeMapping<String> {
 
   public static final int DEFAULT_MAX = 15;
 
   public static final int DEFAULT_MIN = 1;
-
-  private final UniformRandomProvider uniformRandomProvider = RandomSource.XO_RO_SHI_RO_128_PP.create();
 
   @Override
   public final String getFieldType() {
@@ -38,7 +35,7 @@ public class StringMapping implements TypeMapping<String> {
   }
 
   @Override
-  public final String getRandomDefaultValue(final FieldValidations fieldValidations) {
+  public final String getRandomDefaultValue(final FieldValidations fieldValidations, final UniformRandomProvider uniformRandomProvider) {
     final int length;
 
     if (Objects.nonNull(fieldValidations) && ObjectUtils.anyNotNull(fieldValidations.getMin(), fieldValidations.getMax())) {
