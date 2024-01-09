@@ -23,8 +23,36 @@ import com.sngular.resources.basic.CharacterDataTypes;
 public class CharacterDataTypesBuilder {
   String name = "nameExample";
 
+  String primitiveChar = "a";
+
+  String charObject = "b";
+
+  boolean primitiveBoolean = true;
+
+  boolean booleanObject = false;
+
   public CharacterDataTypesBuilder setName(final String name) {
     this.name = name;
+    return this;
+  }
+
+  public CharacterDataTypesBuilder setPrimitiveChar(final String primitiveChar) {
+    this.primitiveChar = primitiveChar;
+    return this;
+  }
+
+  public CharacterDataTypesBuilder setCharObject(final String charObject) {
+    this.charObject = charObject;
+    return this;
+  }
+
+  public CharacterDataTypesBuilder setPrimitiveBoolean(final boolean primitiveBoolean) {
+    this.primitiveBoolean = primitiveBoolean;
+    return this;
+  }
+
+  public CharacterDataTypesBuilder setBooleanObject(final boolean booleanObject) {
+    this.booleanObject = booleanObject;
     return this;
   }
 
@@ -34,15 +62,36 @@ public class CharacterDataTypesBuilder {
       pactDslJsonBody.stringType("name", name);
     }
 
+    if (Objects.nonNull(primitiveChar)) {
+      pactDslJsonBody.stringType("primitiveChar", primitiveChar);
+    }
+
+    if (Objects.nonNull(charObject)) {
+      pactDslJsonBody.stringType("charObject", charObject);
+    }
+
+    if (Objects.nonNull(primitiveBoolean)) {
+      pactDslJsonBody.booleanType("primitiveBoolean", primitiveBoolean);
+    }
+
+    if (Objects.nonNull(booleanObject)) {
+      pactDslJsonBody.booleanType("booleanObject", booleanObject);
+    }
+
     return pactDslJsonBody;
   }
+
   public CharacterDataTypes buildExpectedInstance() {
     CharacterDataTypes object = new CharacterDataTypes();
     object.setName(this.name);
+    object.setPrimitiveChar(this.primitiveChar.charAt(0));
+    object.setCharObject(this.charObject.charAt(0));
+    object.setPrimitiveBoolean(this.primitiveBoolean);
+    object.setBooleanObject(this.booleanObject);
     return object;
   }
+
   private static void applyCustomModifiers(PactDslJsonBody pactDslJsonBody) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
   }
-
 }
 
