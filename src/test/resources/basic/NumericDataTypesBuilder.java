@@ -193,6 +193,7 @@ public class NumericDataTypesBuilder {
     object.setPrimitiveByte(this.primitiveByte);
     object.setBigIntegerObject(this.bigIntegerObject);
     object.setBigDecimalObject(this.bigDecimalObject);
+
     return object;
   }
   private static void applyCustomModifiers(PactDslJsonBody pactDslJsonBody) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
