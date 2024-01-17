@@ -4,7 +4,7 @@
 
   <groupId>com.sngular</groupId>
   <artifactId>pact-annotation-processor</artifactId>
-  <version>1.2.1</version>
+  <version>1.2.2</version>
 
   <name>PactDslBuilder - Annotation Processor</name>
   <description>Pact DSL Builder annotation processor.</description>
@@ -59,6 +59,16 @@
         <role>Software Engineer</role>
       </roles>
       <timezone>Europe/Madrid</timezone>
+    </developer>
+    <developer>
+      <id>MiguelSngularGithub</id>
+      <name>Miguel Angel Escobar Perez</name>
+      <email>miguel.escobar@sngular.com</email>
+      <organizationUrl />
+      <roles>
+        <role>Software Engineer</role>
+      </roles>
+      <timezone>America/CDMX</timezone>
     </developer>
   </developers>
 
