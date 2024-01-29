@@ -1,7 +1,11 @@
 <#assign constructor = false>
 <#macro writeAttrField field>
   <#if field.functionByType??>
-    <#if field.fieldType == "boolean">
+    <#if field.fieldType == "String[]">
+          ${field.fieldType} ${field.name} = {"${field.defaultValue?string}"};
+          String ${field.name}Name = "${field.name}";
+          String ${field.name}Value = "${field.defaultValue?string}";
+    <#elseif field.fieldType == "boolean">
       ${field.fieldType} ${field.name} = ${field.defaultValue?string};
     <#elseif field.fieldType == "char">
       String ${field.name} = "${field.defaultValue}";
@@ -112,6 +116,8 @@
             pactDslJsonBody.${field.functionByType}("${field.name}", (double) ${field.name});
           <#elseif field.fieldType == "byte">
             pactDslJsonBody.${field.functionByType}("${field.name}", (int) ${field.name});
+          <#elseif field.fieldType == "String[]">
+            pactDslJsonBody.array(${field.name}Name).stringValue(${field.name}Value).closeArray();
           <#else>
             pactDslJsonBody.${field.functionByType}("${field.name}", ${field.name});
           </#if>

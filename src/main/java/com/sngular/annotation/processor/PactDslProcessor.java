@@ -38,20 +38,7 @@ import com.sngular.annotation.pact.PactDslBodyBuilder;
 import com.sngular.annotation.processor.exception.PactProcessorException;
 import com.sngular.annotation.processor.exception.TemplateFactoryException;
 import com.sngular.annotation.processor.exception.TemplateGenerationException;
-import com.sngular.annotation.processor.mapping.BigDecimalMapping;
-import com.sngular.annotation.processor.mapping.BigIntegerMapping;
-import com.sngular.annotation.processor.mapping.BooleanMapping;
-import com.sngular.annotation.processor.mapping.ByteMapping;
-import com.sngular.annotation.processor.mapping.CharMapping;
-import com.sngular.annotation.processor.mapping.DateMapping;
-import com.sngular.annotation.processor.mapping.DoubleMapping;
-import com.sngular.annotation.processor.mapping.FloatMapping;
-import com.sngular.annotation.processor.mapping.IntegerMapping;
-import com.sngular.annotation.processor.mapping.LongMapping;
-import com.sngular.annotation.processor.mapping.ShortMapping;
-import com.sngular.annotation.processor.mapping.StringMapping;
-import com.sngular.annotation.processor.mapping.TypeMapping;
-import com.sngular.annotation.processor.mapping.ZonedDateTimeMapping;
+import com.sngular.annotation.processor.mapping.*;
 import com.sngular.annotation.processor.model.ClassBuilderTemplate;
 import com.sngular.annotation.processor.model.DslComplexField;
 import com.sngular.annotation.processor.model.DslComplexTypeEnum;
@@ -101,6 +88,8 @@ public class PactDslProcessor extends AbstractProcessor {
                                                                    .put("ZonedDateTime", new ZonedDateTimeMapping())
                                                                    .put("java.util.Date", new DateMapping())
                                                                    .put("Date", new DateMapping())
+                                                                    .put("String[]", new StringArrayMapping())
+                                                                    .put("java.lang.String[]", new StringArrayMapping())
                                                                    .build();
 
   private static final String CUSTOM_MODIFIERS = "customModifiers";
@@ -385,6 +374,9 @@ public class PactDslProcessor extends AbstractProcessor {
   private Optional<TypeMapping<?>> extractMappingByType(final Element element) {
 
     final var type = element.asType();
+
+    //Object cont = TYPE_MAPPING.get(this.typeUtils.asElement(type).getSimpleName().toString());
+
     return switch (type.getKind()) {
       case BOOLEAN -> Optional.of(TYPE_MAPPING.get("boolean"));
       case BYTE -> Optional.of(TYPE_MAPPING.get("byte"));
@@ -394,6 +386,7 @@ public class PactDslProcessor extends AbstractProcessor {
       case CHAR -> Optional.of(TYPE_MAPPING.get("char"));
       case FLOAT -> Optional.of(TYPE_MAPPING.get("float"));
       case DOUBLE -> Optional.of(TYPE_MAPPING.get("double"));
+      case ARRAY -> Optional.of(TYPE_MAPPING.get("String[]"));
       case DECLARED -> Optional.ofNullable(TYPE_MAPPING.get(this.typeUtils.asElement(type).getSimpleName().toString()));
       default -> Optional.empty();
     };
