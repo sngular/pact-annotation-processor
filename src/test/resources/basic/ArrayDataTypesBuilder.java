@@ -19,49 +19,34 @@ import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslJsonRootValue;
 import com.sngular.annotation.processor.mapping.CustomDslModifier;
 import com.sngular.resources.basic.ArrayDataTypes;
+import java.util.Arrays;
 
 public class ArrayDataTypesBuilder {
 
-  String[] stringArray = {"stringArrayExample"};
-  String stringArrayName = "stringArray";
-  String stringArrayValue = "stringArrayExample";
+    String[] stringArray = {"abc","bef","ghi"};
+    String stringArrayName = "stringArray";
 
-  String[] stringArrayDefault = {"RandomDefaultValue"};
-  String stringArrayDefaultName = "stringArrayDefault";
-  String stringArrayDefaultValue = "RandomDefaultValue";
+    public ArrayDataTypesBuilder setStringArray(final String[] stringArray) {
+        this.stringArray = stringArray;
+        return this;
+      }
 
+    public DslPart build() {
+        PactDslJsonBody pactDslJsonBody = new PactDslJsonBody();
 
-  public ArrayDataTypesBuilder setStringArray(final String[] stringArray) {
-    this.stringArray = stringArray;
-    return this;
-  }
-
-  public ArrayDataTypesBuilder setStringArrayDefault(final String[] stringArrayDefault) {
-    this.stringArrayDefault = stringArrayDefault;
-    return this;
-  }
-
-  public DslPart build() {
-    PactDslJsonBody pactDslJsonBody = new PactDslJsonBody();
-
-    if (Objects.nonNull(stringArray)) {
-      pactDslJsonBody.array(stringArrayName).stringValue(stringArrayValue).closeArray();
+        if (Objects.nonNull(stringArray)) {
+            pactDslJsonBody.array(stringArrayName).stringValue(Arrays.toString(stringArray)).closeArray();
+        }
+        return pactDslJsonBody;
     }
 
-    if (Objects.nonNull(stringArrayDefault)) {
-      pactDslJsonBody.array(stringArrayDefaultName).stringValue(stringArrayDefaultValue).closeArray();
+    public ArrayDataTypes buildExpectedInstance() {
+        ArrayDataTypes object = new ArrayDataTypes();
+        object.setStringArray(this.stringArray);
+        return object;
     }
-    return pactDslJsonBody;
-  }
 
-  public ArrayDataTypes buildExpectedInstance() {
-    ArrayDataTypes object = new ArrayDataTypes();
-    object.setStringArray(this.stringArray);
-    object.setStringArrayDefault(this.stringArrayDefault);
-    return object;
-  }
-
-  private static void applyCustomModifiers(PactDslJsonBody pactDslJsonBody) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-  }
+    private static void applyCustomModifiers(PactDslJsonBody pactDslJsonBody) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+    }
 }
 

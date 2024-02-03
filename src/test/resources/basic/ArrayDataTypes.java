@@ -7,13 +7,11 @@ import com.sngular.annotation.pact.DslExclude;
 @PactDslBodyBuilder
 public class ArrayDataTypes {
 
-  @Example("stringArrayExample")
+  @Example(array = {"abc","bef","ghi"} )
   private String[] stringArray;
 
   @DslExclude
   private String[] stringArrayExclude;
-
-  private String[] stringArrayDefault;
 
   public String[] getStringArray() {
     return stringArray;
@@ -29,13 +27,5 @@ public class ArrayDataTypes {
 
   public void setStringArrayExclude(String[] stringArrayExclude) {
     this.stringArrayExclude = stringArrayExclude;
-  }
-
-  public String[] getStringArrayDefault() {
-    return stringArrayDefault;
-  }
-
-  public void setStringArrayDefault(String[] stringArrayDefault) {
-    this.stringArrayDefault = stringArrayDefault;
   }
 }

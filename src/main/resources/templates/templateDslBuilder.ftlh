@@ -2,9 +2,11 @@
 <#macro writeAttrField field>
   <#if field.functionByType??>
     <#if field.fieldType == "String[]">
-          ${field.fieldType} ${field.name} = {"${field.defaultValue?string}"};
+          ${field.fieldType} ${field.name} = {${field.defaultValue?no_esc}};
           String ${field.name}Name = "${field.name}";
-          String ${field.name}Value = "${field.defaultValue?string}";
+    <#elseif field.fieldType == "char[]">
+          String[] ${field.name} = {"${field.defaultValue?string}"};
+          String ${field.name}Name = "${field.name}";
     <#elseif field.fieldType == "boolean">
       ${field.fieldType} ${field.name} = ${field.defaultValue?string};
     <#elseif field.fieldType == "char">
@@ -48,11 +50,13 @@
 
 <#macro writeSetterField field builderName>
 <#if field.functionByType??>
-  <#if field.fieldType == "char">
-      public ${builderName}Builder set${field.name?cap_first}(final String ${field.name}) {
-  <#else>
-    public ${builderName}Builder set${field.name?cap_first}(final ${field.fieldType?no_esc} ${field.name}) {
-  </#if>
+    <#if field.fieldType == "char">
+          public ${builderName}Builder set${field.name?cap_first}(final String ${field.name}) {
+    <#elseif field.fieldType == "char[]">
+          public ${builderName}Builder set${field.name?cap_first}(final String[] ${field.name}) {
+    <#else >
+          public ${builderName}Builder set${field.name?cap_first}(final ${field.fieldType?no_esc} ${field.name}) {
+    </#if>
 <#elseif field.complexType??>
 <#if field.complexType.name() == "COLLECTION">
   public ${builderName}Builder set${field.name?cap_first}(final ${field.fieldType?no_esc} ${field.name}) {
@@ -71,11 +75,13 @@
 
 <#macro writeExpectedInstanceSetters field>
   <#if !field.empty>
-    <#if field.fieldType == "char">
+        <#if field.fieldType == "char">
           object.set${field.name?cap_first}(this.${field.name}.charAt(0));
-    <#else>
+        <#elseif field.fieldType == "char[]">
+          object.set${field.name?cap_first}("a".toCharArray());
+        <#else >
           object.set${field.name?cap_first}(this.${field.name});
-    </#if>
+        </#if>
   </#if>
 </#macro>
 
@@ -117,6 +123,8 @@
           <#elseif field.fieldType == "byte">
             pactDslJsonBody.${field.functionByType}("${field.name}", (int) ${field.name});
           <#elseif field.fieldType == "String[]">
+            pactDslJsonBody.array(stringArrayName).stringValue(Arrays.toString(stringArray)).closeArray();
+          <#elseif field.fieldType == "char[]">
             pactDslJsonBody.array(${field.name}Name).stringValue(${field.name}Value).closeArray();
           <#else>
             pactDslJsonBody.${field.functionByType}("${field.name}", ${field.name});
@@ -266,10 +274,8 @@ import au.com.dius.pact.consumer.dsl.PactDslJsonRootValue;
 <#if schema.customModifiers??>
 import com.sngular.annotation.processor.mapping.CustomDslModifier;
 </#if>
-
-
 import ${schema.modelPackage}.${schema.className};
-
+import java.util.Arrays;
 <#function complex(field)>
   <#return field.functionByType??>
 </#function>

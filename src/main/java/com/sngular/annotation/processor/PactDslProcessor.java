@@ -7,13 +7,7 @@
 package com.sngular.annotation.processor;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Processor;
@@ -115,6 +109,25 @@ public class PactDslProcessor extends AbstractProcessor {
   private static String getFormat(final Element fieldElement, final String defaultFormat) {
     final String value = fieldElement.getAnnotation(Example.class).format();
     return StringUtils.defaultIfEmpty(value, defaultFormat);
+  }
+
+  private static String getFormatArray(final Element fieldElement, final String defaultFormat) {
+      final String[] value = fieldElement.getAnnotation(Example.class).array();
+      return StringUtils.defaultIfEmpty(getStringFromArray(value), defaultFormat);
+
+  }
+
+  private static String getStringFromArray(String[] value) {
+
+      String arrayToString = "";
+
+      for (int i = 0; ; i++) {
+          if (i == value.length-1) {
+              return arrayToString += "\"" + value[i] + "\"";
+          } else {
+              arrayToString += "\"" + value[i] + "\",";
+          }
+      }
   }
 
   @Override
@@ -335,9 +348,15 @@ public class PactDslProcessor extends AbstractProcessor {
 
     if (Objects.nonNull(fieldElement.getAnnotation(DslExclude.class))) {
       simpleFieldBuilder.empty(true);
+
+    } else if (fieldElement.getAnnotation(Example.class).array().length != 0){
+      simpleFieldBuilder.defaultValue(getFormatArray(fieldElement, mapping.getFieldType()));
+      simpleFieldBuilder.formatValue(null);
+
     } else if (Objects.nonNull(fieldElement.getAnnotation(Example.class))) {
       simpleFieldBuilder.defaultValue(getDefaultValue(fieldElement, mapping.getFieldType()));
       simpleFieldBuilder.formatValue(getFormat(fieldElement, mapping.getFormatValue()));
+
     } else {
       simpleFieldBuilder.defaultValue(mapping.getRandomDefaultValue(validationBuilder.build(), randomSource));
       simpleFieldBuilder.formatValue(mapping.getFormatValue());
@@ -375,7 +394,9 @@ public class PactDslProcessor extends AbstractProcessor {
 
     final var type = element.asType();
 
-    //Object cont = TYPE_MAPPING.get(this.typeUtils.asElement(type).getSimpleName().toString());
+    Object obj = type.getKind();
+
+    String typeArray = type.toString();
 
     return switch (type.getKind()) {
       case BOOLEAN -> Optional.of(TYPE_MAPPING.get("boolean"));
@@ -386,11 +407,10 @@ public class PactDslProcessor extends AbstractProcessor {
       case CHAR -> Optional.of(TYPE_MAPPING.get("char"));
       case FLOAT -> Optional.of(TYPE_MAPPING.get("float"));
       case DOUBLE -> Optional.of(TYPE_MAPPING.get("double"));
-      case ARRAY -> Optional.of(TYPE_MAPPING.get("String[]"));
+      case ARRAY -> Optional.of(TYPE_MAPPING.get(type.toString()));
       case DECLARED -> Optional.ofNullable(TYPE_MAPPING.get(this.typeUtils.asElement(type).getSimpleName().toString()));
       default -> Optional.empty();
     };
   }
-
 }
 
