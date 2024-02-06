@@ -19,6 +19,7 @@ import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslJsonRootValue;
 import com.sngular.annotation.processor.mapping.CustomDslModifier;
 import com.sngular.resources.basic.NumericDataTypes;
+import java.util.Arrays;
 
 public class NumericDataTypesBuilder {
 
@@ -122,18 +123,23 @@ public class NumericDataTypesBuilder {
 
   public DslPart build() {
     PactDslJsonBody pactDslJsonBody = new PactDslJsonBody();
+
     if (Objects.nonNull(integer)) {
       pactDslJsonBody.integerType("integer", integer);
     }
+
     if (Objects.nonNull(primitiveInt)) {
       pactDslJsonBody.integerType("primitiveInt", primitiveInt);
     }
+
     if (Objects.nonNull(longObject)) {
       pactDslJsonBody.integerType("longObject", longObject);
     }
+
     if (Objects.nonNull(primitiveLong)) {
       pactDslJsonBody.integerType("primitiveLong", primitiveLong);
     }
+
     if (Objects.nonNull(floatObject)) {
       pactDslJsonBody.decimalType("floatObject", (double) floatObject);
     }

@@ -7,7 +7,13 @@
 package com.sngular.annotation.processor;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Random;
+import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Processor;
@@ -84,6 +90,22 @@ public class PactDslProcessor extends AbstractProcessor {
                                                                    .put("Date", new DateMapping())
                                                                     .put("String[]", new StringArrayMapping())
                                                                     .put("java.lang.String[]", new StringArrayMapping())
+                                                                    .put("boolean[]", new BooleanArrayMapping())
+                                                                    .put("java.lang.Boolean[]", new BooleanArrayWrapMapping())
+                                                                    .put("byte[]", new ByteArrayMapping())
+                                                                    .put("java.lang.Byte[]", new ByteArrayWrapMapping())
+                                                                    .put("short[]", new ShortArrayMapping())
+                                                                    .put("java.lang.Short[]", new ShortArrayWrapMapping())
+                                                                    .put("int[]", new IntArrayMapping())
+                                                                    .put("java.lang.Integer[]", new IntArrayWrapMapping())
+                                                                    .put("long[]", new LongArrayMapping())
+                                                                    .put("java.lang.Long[]", new LongArrayWrapMapping())
+                                                                    .put("char[]", new CharArrayMapping())
+                                                                    .put("java.lang.Character[]", new CharArrayWrapMapping())
+                                                                    .put("float[]", new FloatArrayMapping())
+                                                                    .put("java.lang.Float[]", new FloatArrayWrapMapping())
+                                                                    .put("double[]", new DoubleArrayMapping())
+                                                                    .put("java.lang.Double[]", new DoubleArrayWrapMapping())
                                                                    .build();
 
   private static final String CUSTOM_MODIFIERS = "customModifiers";
@@ -112,22 +134,52 @@ public class PactDslProcessor extends AbstractProcessor {
   }
 
   private static String getFormatArray(final Element fieldElement, final String defaultFormat) {
-      final String[] value = fieldElement.getAnnotation(Example.class).array();
-      return StringUtils.defaultIfEmpty(getStringFromArray(value), defaultFormat);
-
+    String[] value = fieldElement.getAnnotation(Example.class).array();
+    return StringUtils.defaultIfEmpty(PactDslProcessor.getStringFromArray(value,defaultFormat), defaultFormat);
   }
 
-  private static String getStringFromArray(String[] value) {
+  private static String getStringFromArray(String[] value, String defaultFormat) {
 
       String arrayToString = "";
 
-      for (int i = 0; ; i++) {
-          if (i == value.length-1) {
-              return arrayToString += "\"" + value[i] + "\"";
-          } else {
+      for (int i = 0; i < value.length; i++) {
+
+        switch (TypeArray.get(defaultFormat)) {
+          case STRING_ARRAY:
+            if (i == value.length-1) {
+              arrayToString += "\"" + value[i] + "\"";
+            } else {
               arrayToString += "\"" + value[i] + "\",";
-          }
+            }
+            break;
+
+          case BOOLEAN_ARRAY:
+          case BYTE_ARRAY:
+          case SHORT_ARRAY:
+          case INT_ARRAY:
+          case LONG_ARRAY:
+          case FLOAT_ARRAY:
+          case DOUBLE_ARRAY:
+            if (i == value.length-1) {
+              arrayToString += value[i] ;
+            } else {
+              arrayToString += value[i] + ",";
+            }
+            break;
+
+          case CHAR_ARRAY:
+            if (i == value.length-1) {
+              arrayToString += "'" + value[i] + "'";
+            } else {
+              arrayToString += "'" + value[i] + "',";
+            }
+            break;
+
+          default:
+            arrayToString = "not_found_type_array";
+        }
       }
+      return arrayToString;
   }
 
   @Override
@@ -347,19 +399,20 @@ public class PactDslProcessor extends AbstractProcessor {
                                                  .empty(false);
 
     if (Objects.nonNull(fieldElement.getAnnotation(DslExclude.class))) {
-      simpleFieldBuilder.empty(true);
-
-    } else if (fieldElement.getAnnotation(Example.class).array().length != 0){
-      simpleFieldBuilder.defaultValue(getFormatArray(fieldElement, mapping.getFieldType()));
-      simpleFieldBuilder.formatValue(null);
+        simpleFieldBuilder.empty(true);
 
     } else if (Objects.nonNull(fieldElement.getAnnotation(Example.class))) {
-      simpleFieldBuilder.defaultValue(getDefaultValue(fieldElement, mapping.getFieldType()));
-      simpleFieldBuilder.formatValue(getFormat(fieldElement, mapping.getFormatValue()));
 
+        if (fieldElement.getAnnotation(Example.class).array().length != 0) {
+            simpleFieldBuilder.defaultValue(getFormatArray(fieldElement, mapping.getFieldType()));
+            simpleFieldBuilder.formatValue(null);
+        } else {
+            simpleFieldBuilder.defaultValue(getDefaultValue(fieldElement, mapping.getFieldType()));
+            simpleFieldBuilder.formatValue(getFormat(fieldElement, mapping.getFormatValue()));
+        }
     } else {
-      simpleFieldBuilder.defaultValue(mapping.getRandomDefaultValue(validationBuilder.build(), randomSource));
-      simpleFieldBuilder.formatValue(mapping.getFormatValue());
+        simpleFieldBuilder.defaultValue(mapping.getRandomDefaultValue(validationBuilder.build(), randomSource));
+        simpleFieldBuilder.formatValue(mapping.getFormatValue());
     }
 
     return simpleFieldBuilder;
@@ -393,10 +446,6 @@ public class PactDslProcessor extends AbstractProcessor {
   private Optional<TypeMapping<?>> extractMappingByType(final Element element) {
 
     final var type = element.asType();
-
-    Object obj = type.getKind();
-
-    String typeArray = type.toString();
 
     return switch (type.getKind()) {
       case BOOLEAN -> Optional.of(TYPE_MAPPING.get("boolean"));

@@ -7,6 +7,10 @@ import org.junit.jupiter.api.Test;
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static com.google.testing.compile.Compiler.javac;
 
+/** Represents a test of array types.
+ * @author Miguel Angel Escobar
+ * @version 1.0
+ */
 public class ArrayTest {
 
   @Test

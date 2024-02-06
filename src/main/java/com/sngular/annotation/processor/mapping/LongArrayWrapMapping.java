@@ -2,30 +2,35 @@ package com.sngular.annotation.processor.mapping;
 
 import com.sngular.annotation.processor.model.FieldValidations;
 import org.apache.commons.rng.UniformRandomProvider;
-import org.apache.commons.lang3.RandomStringUtils;
 
-/** Represents an array of char.
+/** Represents an array of Long.
  * @author Miguel Angel Escobar
  * @version 1.0
  */
-public class CharArrayMapping implements TypeMapping<String> {
+public class LongArrayWrapMapping implements TypeMapping<String> {
+
   @Override
   public final String getFieldType() {
-    return "char[]";
+    return "Long[]";
   }
 
   @Override
   public final String getFunctionType() {
-    return "charArrayType";
+    return "longArrayWrapType";
   }
 
   @Override
   public final String getFunctionOnlyValue() {
-    return "charArrayValue";
+    return "longArrayWrapType";
   }
 
   @Override
   public final String getRandomDefaultValue(final FieldValidations fieldValidations, final UniformRandomProvider uniformRandomProvider) {
-    return "'x'";
+    return "9223372036854775807L";
+  }
+
+  @Override
+  public final String getSuffixValue() {
+    return "L";
   }
 }

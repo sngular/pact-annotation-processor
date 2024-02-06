@@ -19,6 +19,7 @@ import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslJsonRootValue;
 import com.sngular.annotation.processor.mapping.CustomDslModifier;
 import com.sngular.resources.basic.CharacterDataTypes;
+import java.util.Arrays;
 
 public class CharacterDataTypesBuilder {
   String name = "nameExample";

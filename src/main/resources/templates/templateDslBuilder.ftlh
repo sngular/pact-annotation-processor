@@ -1,12 +1,25 @@
 <#assign constructor = false>
 <#macro writeAttrField field>
   <#if field.functionByType??>
-    <#if field.fieldType == "String[]">
-          ${field.fieldType} ${field.name} = {${field.defaultValue?no_esc}};
-          String ${field.name}Name = "${field.name}";
-    <#elseif field.fieldType == "char[]">
-          String[] ${field.name} = {"${field.defaultValue?string}"};
-          String ${field.name}Name = "${field.name}";
+    <#if field.fieldType == "String[]"
+        || field.fieldType == "char[]" || field.fieldType == "Character[]"
+        || field.fieldType == "boolean[]" || field.fieldType == "Boolean[]"
+        || field.fieldType == "byte[]" || field.fieldType == "Byte[]"
+        || field.fieldType == "short[]" || field.fieldType == "Short[]"
+        || field.fieldType == "int[]" || field.fieldType == "Integer[]">
+
+      ${field.fieldType} ${field.name} = {${field.defaultValue?no_esc}};
+      String ${field.name}Name = "${field.name}";
+    <#elseif field.fieldType == "double[]" || field.fieldType == "Double[]">
+
+       String[] in${field.name?cap_first} = {"${field.defaultValue?no_esc}"};
+       ${field.fieldType} ${field.name} = Arrays.stream(in${field.name?cap_first}).mapToDouble(Double::parseDouble).toArray();
+       String ${field.name}Name = "${field.name}";
+    <#elseif field.fieldType == "long[]" || field.fieldType == "Long[]">
+
+              String[] in${field.name?cap_first} = {"${field.defaultValue?no_esc}"};
+              ${field.fieldType} ${field.name} = Arrays.stream(in${field.name?cap_first}).mapToLong(Long::parseLong).toArray();
+              String ${field.name}Name = "${field.name}";
     <#elseif field.fieldType == "boolean">
       ${field.fieldType} ${field.name} = ${field.defaultValue?string};
     <#elseif field.fieldType == "char">
@@ -52,8 +65,6 @@
 <#if field.functionByType??>
     <#if field.fieldType == "char">
           public ${builderName}Builder set${field.name?cap_first}(final String ${field.name}) {
-    <#elseif field.fieldType == "char[]">
-          public ${builderName}Builder set${field.name?cap_first}(final String[] ${field.name}) {
     <#else >
           public ${builderName}Builder set${field.name?cap_first}(final ${field.fieldType?no_esc} ${field.name}) {
     </#if>
@@ -77,8 +88,6 @@
   <#if !field.empty>
         <#if field.fieldType == "char">
           object.set${field.name?cap_first}(this.${field.name}.charAt(0));
-        <#elseif field.fieldType == "char[]">
-          object.set${field.name?cap_first}("a".toCharArray());
         <#else >
           object.set${field.name?cap_first}(this.${field.name});
         </#if>
@@ -122,10 +131,16 @@
             pactDslJsonBody.${field.functionByType}("${field.name}", (double) ${field.name});
           <#elseif field.fieldType == "byte">
             pactDslJsonBody.${field.functionByType}("${field.name}", (int) ${field.name});
-          <#elseif field.fieldType == "String[]">
-            pactDslJsonBody.array(stringArrayName).stringValue(Arrays.toString(stringArray)).closeArray();
-          <#elseif field.fieldType == "char[]">
-            pactDslJsonBody.array(${field.name}Name).stringValue(${field.name}Value).closeArray();
+          <#elseif field.fieldType == "String[]"
+                || field.fieldType == "char[]" || field.fieldType == "Character[]"
+                || field.fieldType == "boolean[]" || field.fieldType == "Boolean[]"
+                || field.fieldType == "byte[]" || field.fieldType == "Byte[]"
+                || field.fieldType == "short[]" || field.fieldType == "Short[]"
+                || field.fieldType == "int[]" || field.fieldType == "Integer[]"
+                || field.fieldType == "long[]" || field.fieldType == "Long[]"
+                || field.fieldType == "float[]" || field.fieldType == "Float[]"
+                || field.fieldType == "double[]" || field.fieldType == "Double[]">
+            pactDslJsonBody.array(${field.name}Name).stringValue(Arrays.toString(${field.name})).closeArray();
           <#else>
             pactDslJsonBody.${field.functionByType}("${field.name}", ${field.name});
           </#if>

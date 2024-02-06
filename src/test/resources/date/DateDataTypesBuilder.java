@@ -19,8 +19,7 @@ import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslJsonRootValue;
 import com.sngular.annotation.processor.mapping.CustomDslModifier;
 import com.sngular.annotation.examples.DateDataTypes;
-
-
+import java.util.Arrays;
 public class DateDataTypesBuilder {
   ZonedDateTime formattedZoneDateTime = ZonedDateTime.parse("23/04/2023 12:00",  DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
   ZonedDateTime defaultFormatZoneDateTime = ZonedDateTime.parse("2023-12-03T10:15:30+01:00[Europe/Madrid]",  DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss[.SSSSSS][.SSS]XXX['['VV']']"));

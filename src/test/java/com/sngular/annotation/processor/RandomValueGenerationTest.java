@@ -14,10 +14,10 @@ public class RandomValueGenerationTest {
   public void numericDataTypes() {
     var theMock = Mockito.mock(RestorableUniformRandomProvider.class);
     Mockito.when(theMock.nextInt(0, Integer.MAX_VALUE)).thenReturn(18);
-    Compilation compilation = Compiler.javac().withProcessors( new PactDslProcessor(theMock)).compile(JavaFileObjects.forResource("random/NumericDataTypes.java"));
+    Compilation compilation = Compiler.javac().withProcessors( new PactDslProcessor(theMock)).compile(JavaFileObjects.forResource("random/RandomValueGeneration.java"));
     CompilationSubject.assertThat(compilation).succeeded();
-    CompilationSubject.assertThat(compilation).generatedSourceFile("com/sngular/annotation/examples/NumericDataTypesBuilder")
-                      .hasSourceEquivalentTo(JavaFileObjects.forResource("random/NumericDataTypesBuilder.java"));
+    CompilationSubject.assertThat(compilation).generatedSourceFile("com/sngular/annotation/examples/RandomValueGenerationBuilder")
+                      .hasSourceEquivalentTo(JavaFileObjects.forResource("random/RandomValueGenerationBuilder.java"));
 
   }
 }

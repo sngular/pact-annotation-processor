@@ -1,46 +1,39 @@
-/*
- *  This Source Code Form is subject to the terms of the Mozilla Public
- *  * License, v. 2.0. If a copy of the MPL was not distributed with this
- *  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
- */
-
 package com.sngular.annotation.processor.mapping;
 
 import com.sngular.annotation.processor.model.FieldValidations;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.rng.UniformRandomProvider;
 
 import java.util.Objects;
 
-
-/** Represents an array of String.
+/** Represents an array of Float.
  * @author Miguel Angel Escobar
  * @version 1.0
  */
-public class StringArrayMapping implements TypeMapping<String> {
-
-  public static final int DEFAULT_MAX = 15;
-
-  public static final int DEFAULT_MIN = 1;
+public class FloatArrayWrapMapping implements TypeMapping<String> {
 
   @Override
   public final String getFieldType() {
-    return "String[]";
+    return "Float[]";
   }
 
   @Override
   public final String getFunctionType() {
-    return "stringArrayType";
+    return "floatArrayWrapType";
   }
 
   @Override
   public final String getFunctionOnlyValue() {
-    return "stringArrayValue";
+    return "floatArrayWrapValue";
   }
 
   @Override
   public final String getRandomDefaultValue(final FieldValidations fieldValidations, final UniformRandomProvider uniformRandomProvider) {
-    return "\"defaultValue\"";
+    return "123456789012345678901234567890.402823F";
+  }
+
+  @Override
+  public final String getSuffixValue() {
+    return "F";
   }
 }
