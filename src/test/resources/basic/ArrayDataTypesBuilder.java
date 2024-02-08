@@ -56,15 +56,68 @@ public class ArrayDataTypesBuilder {
     Character[] charArrayWrap = {'m','n','o'};
     String charArrayWrapName = "charArrayWrap";
 
-    // se requiere "inLongArray" para poder crear "longArray", ya que si se pasa
-    // el valor String directo a long[], tenemos conflicto
-    String[] inLongArray = {"-123456789012345678901234567890.402823L"};
-    long[] longArray = Arrays.stream(inLongArray).mapToLong(Long::parseLong).toArray();
+    String[] inLongArray = {"-9223372036854775807l",
+                            "9223372036854775807L",
+                            "-0l",
+                            "0L",
+                            "-3.402823e38",
+                            "0.0",
+                            "al"}
+    long[] longArray = getLongArray(inLongArray);
     String longArrayName = "longArray";
 
-    String[] inDoubleArray = {"-1234567890123456789012345678901234567890.79769313486232D"};
-    double[] doubleArray = Arrays.stream(inDoubleArray).mapToDouble(Double::parseDouble).toArray();
+    String[] inLongArrayWrap = {"-9223372036854775807l",
+                                "9223372036854775807L",
+                                "-0l",
+                                "0L",
+                                "-3.402823e38",
+                                "-0.0",
+                                "aL"};
+    Long[] longArrayWrap = getLongArrayWrap(inLongArrayWrap);
+    String longArrayWrapName = "longArrayWrap";
+
+    String[] inFloatArray = {"-82233720368547758080000001f",
+                            "100.0F",
+                            "-123456789012345678901234567890123456789f",
+                            "123456789012345678901234567890123456789F",
+                            "-3.402823e38",
+                            "0.0",
+                            "af"};
+    float[] floatArray = getFloatArray(inFloatArray);
+    String floatArrayName = "floatArray";
+
+
+    String[] inFloatArrayWrap = {"-1234567890123456789012345678901234567890.79769313486232d",
+                                "1000.0D",
+                                "-123456789012345678901234567890123456789d",
+                                "123456789012345678901234567890123456789D",
+                                "-3.402823e300d",
+                                "-0.0",
+                                "aF"};
+    Float[] floatArrayWrap = getFloatArrayWrap(inFloatArrayWrap);
+    String floatArrayWrapName = "floatArrayWrap";
+
+
+    String[] inDoubleArray = {"-1234567890123456789012345678901234567890.79769313486232d",
+                            "1000.0D",
+                            "1234567890123456789012345678901234567890123456789012345678901234567890D",
+                            "-2.12345678901234d",
+                            "3.402823e307D",
+                            "0.0",
+                            "ad"};
+    double[] doubleArray = getDoubleArray(inDoubleArray);
     String doubleArrayName = "doubleArray";
+
+
+    String[] inDoubleArrayWrap = {"-1234567890123456789012345678901234567890.79769313486232d",
+                                "1000.0D",
+                                "1234567890123456789012345678901234567890123456789012345678901234567890D",
+                                "-2.12345678901234d",
+                                "3.402823e307D",
+                                "-0.0",
+                                "aD"};
+    Double[] doubleArrayWrap = getDoubleArrayWrap(inDoubleArrayWrap);
+    String doubleArrayWrapName = "doubleArrayWrap";
 
 
     public ArrayDataTypesBuilder setStringArray(final String[] stringArray) {
@@ -127,11 +180,30 @@ public class ArrayDataTypesBuilder {
         return this;
     }
 
+    public ArrayDataTypesBuilder setLongArrayWrap(final Long[] longArrayWrap) {
+        this.longArrayWrap = longArrayWrap;
+        return this;
+    }
+
+    public ArrayDataTypesBuilder setFloatArray(final float[] floatArray) {
+        this.floatArray = floatArray;
+        return this;
+    }
+
+    public ArrayDataTypesBuilder setFloatArrayWrap(final Float[] floatArrayWrap) {
+        this.floatArrayWrap = floatArrayWrap;
+        return this;
+    }
+
     public ArrayDataTypesBuilder setDoubleArray(final double[] doubleArray) {
         this.doubleArray = doubleArray;
         return this;
     }
 
+    public ArrayDataTypesBuilder setDoubleArrayWrap(final Double[] doubleArrayWrap) {
+        this.doubleArrayWrap = doubleArrayWrap;
+        return this;
+    }
 
     public DslPart build() {
         PactDslJsonBody pactDslJsonBody = new PactDslJsonBody();
@@ -184,8 +256,24 @@ public class ArrayDataTypesBuilder {
             pactDslJsonBody.array(longArrayName).stringValue(Arrays.toString(longArray)).closeArray();
         }
 
+        if (Objects.nonNull(longArrayWrap)) {
+            pactDslJsonBody.array(longArrayWrapName).stringValue(Arrays.toString(longArrayWrap)).closeArray();
+        }
+
+        if (Objects.nonNull(floatArray)) {
+            pactDslJsonBody.array(floatArrayName).stringValue(Arrays.toString(floatArray)).closeArray();
+        }
+
+        if (Objects.nonNull(floatArrayWrap)) {
+            pactDslJsonBody.array(floatArrayWrapName).stringValue(Arrays.toString(floatArrayWrap)).closeArray();
+        }
+
         if (Objects.nonNull(doubleArray)) {
             pactDslJsonBody.array(doubleArrayName).stringValue(Arrays.toString(doubleArray)).closeArray();
+        }
+
+        if (Objects.nonNull(doubleArrayWrap)) {
+            pactDslJsonBody.array(doubleArrayWrapName).stringValue(Arrays.toString(doubleArrayWrap)).closeArray();
         }
         return pactDslJsonBody;
     }
@@ -204,12 +292,62 @@ public class ArrayDataTypesBuilder {
         object.setCharArray(this.charArray);
         object.setCharArrayWrap(this.charArrayWrap);
         object.setLongArray(this.longArray);
+        object.setLongArrayWrap(this.longArrayWrap);
+        object.setFloatArray(this.floatArray);
+        object.setFloatArrayWrap(this.floatArrayWrap);
         object.setDoubleArray(this.doubleArray);
-
+        object.setDoubleArrayWrap(this.doubleArrayWrap);
         return object;
     }
 
     private static void applyCustomModifiers(PactDslJsonBody pactDslJsonBody) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
     }
-}
 
+    public static long[] getLongArray(String[] numbers) {
+        long[] result = new long[numbers.length];
+        for (int i = 0; i < numbers.length; i++)
+            try { result[i] = Long.parseLong(numbers[i]);
+            } catch (NumberFormatException nfe) { result[i] = 0l; }
+        return result;
+    }
+
+    public static Long[] getLongArrayWrap(String[] numbers) {
+        Long[] result = new Long[numbers.length];
+        for (int i = 0; i < numbers.length; i++)
+            try { result[i] = Long.parseLong(numbers[i]);
+            } catch (NumberFormatException nfe) { result[i] = 0L; }
+        return result;
+    }
+
+    public static float[] getFloatArray(String[] numbers) {
+        float[] result = new float[numbers.length];
+        for (int i = 0; i < numbers.length; i++)
+            try { result[i] = Float.parseFloat(numbers[i]);
+            } catch (NumberFormatException nfe) { result[i] = 0.0f; }
+        return result;
+    }
+
+    public static Float[] getFloatArrayWrap(String[] numbers) {
+        Float[] result = new Float[numbers.length];
+        for (int i = 0; i < numbers.length; i++)
+            try { result[i] = Float.parseFloat(numbers[i]);
+            } catch (NumberFormatException nfe) { result[i] = 0.0F; }
+        return result;
+    }
+
+    public static double[] getDoubleArray(String[] numbers) {
+        double[] result = new double[numbers.length];
+        for (int i = 0; i < numbers.length; i++)
+            try { result[i] = Double.parseDouble(numbers[i]);
+            } catch (NumberFormatException nfe) { result[i] = 0.0d; }
+        return result;
+    }
+
+    public static Double[] getDoubleArrayWrap(String[] numbers) {
+        Double[] result = new Double[numbers.length];
+        for (int i = 0; i < numbers.length; i++)
+            try { result[i] = Double.parseDouble(numbers[i]);
+            } catch (NumberFormatException nfe) { result[i] = 0.0D; }
+        return result;
+    }
+}

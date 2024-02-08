@@ -3,9 +3,7 @@ package com.sngular.resources.basic;
 import com.sngular.annotation.pact.Example;
 import com.sngular.annotation.pact.PactDslBodyBuilder;
 import com.sngular.annotation.pact.DslExclude;
-
 import java.util.Optional;
-
 @PactDslBodyBuilder
 public class ArrayDataTypes {
 
@@ -45,11 +43,59 @@ public class ArrayDataTypes {
   @Example(array = {"m","n","o"} )
   private Character[] charArrayWrap;
 
-  @Example(array = {"-123456789012345678901234567890.402823L"} )
+  @Example(array = {"-9223372036854775807l",
+          "9223372036854775807L",
+          "-0l",
+          "0L",
+          "-3.402823e38",
+          "0.0",
+          "al"} )
   private long[] longArray;
 
-  @Example(array = {"-1234567890123456789012345678901234567890.79769313486232D"} )
+  @Example(array = {"-9223372036854775807l",
+                    "9223372036854775807L",
+                    "-0l",
+                    "0L",
+                    "-3.402823e38",
+                    "-0.0",
+                    "aL"} )
+  private Long[] longArrayWrap;
+
+  @Example(array = {"-82233720368547758080000001f",
+                    "100.0F",
+                    "-123456789012345678901234567890123456789f",
+                    "123456789012345678901234567890123456789F",
+                    "-3.402823e38",
+                    "0.0",
+                    "af"} )
+  private float[] floatArray;
+
+  @Example(array = {"-1234567890123456789012345678901234567890.79769313486232d",
+                    "1000.0D",
+                    "-123456789012345678901234567890123456789d",
+                    "123456789012345678901234567890123456789D",
+                    "-3.402823e300d",
+                    "-0.0",
+                    "aF"} )
+  private Float[] floatArrayWrap;
+
+  @Example(array = {"-1234567890123456789012345678901234567890.79769313486232d",
+                  "1000.0D",
+                  "1234567890123456789012345678901234567890123456789012345678901234567890D",
+                  "-2.12345678901234d",
+                  "3.402823e307D",
+                  "0.0",
+                  "ad"} )
   private double[] doubleArray;
+
+  @Example(array = {"-1234567890123456789012345678901234567890.79769313486232d",
+                  "1000.0D",
+                  "1234567890123456789012345678901234567890123456789012345678901234567890D",
+                  "-2.12345678901234d",
+                  "3.402823e307D",
+                  "-0.0",
+                  "aD"} )
+  private Double[] doubleArrayWrap;
 
   public String[] getStringArray() {
     return stringArray;
@@ -155,6 +201,30 @@ public class ArrayDataTypes {
     this.longArray = longArray;
   }
 
+  public Long[] getLongArrayWrap() {
+    return longArrayWrap;
+  }
+
+  public void setLongArrayWrap(Long[] longArrayWrap) {
+    this.longArrayWrap = longArrayWrap;
+  }
+
+  public float[] getFloatArray() {
+    return floatArray;
+  }
+
+  public void setFloatArray(float[] floatArray) {
+    this.floatArray = floatArray;
+  }
+
+  public Float[] getFloatArrayWrap() {
+    return floatArrayWrap;
+  }
+
+  public void setFloatArrayWrap(Float[] floatArrayWrap) {
+    this.floatArrayWrap = floatArrayWrap;
+  }
+
   public double[] getDoubleArray() {
     return doubleArray;
   }
@@ -163,4 +233,11 @@ public class ArrayDataTypes {
     this.doubleArray = doubleArray;
   }
 
+  public Double[] getDoubleArrayWrap() {
+    return doubleArrayWrap;
+  }
+
+  public void setDoubleArrayWrap(Double[] doubleArrayWrap) {
+    this.doubleArrayWrap = doubleArrayWrap;
+  }
 }

@@ -133,48 +133,72 @@ public class PactDslProcessor extends AbstractProcessor {
     return StringUtils.defaultIfEmpty(value, defaultFormat);
   }
 
-  private static String getFormatArray(final Element fieldElement, final String defaultFormat) {
+  /**
+   * This method gets the values obtained from the array attribute of the example annotation
+   * ( @Example(array = {"value1","value2"} )
+   * @param fieldElement Element, Class containing the attributes annotated with Example
+   * @param defaultFormat String, Array type.
+   * @return The processed strings to set the parameter: parametersimpleFieldBuilder.defaultValue
+   */
+  private static String getArrayFromExample(final Element fieldElement, final String defaultFormat) {
     String[] value = fieldElement.getAnnotation(Example.class).array();
-    return StringUtils.defaultIfEmpty(PactDslProcessor.getStringFromArray(value,defaultFormat), defaultFormat);
+    return PactDslProcessor.getStringFromArray(value,defaultFormat);
   }
 
-  private static String getStringFromArray(String[] value, String defaultFormat) {
+  /**
+   * This method process the array of values to format them according to the type of array.
+   * @param arrayValues String[], Strings to be processed.
+   * @param arrayType String, Array type to be processed.
+   * @return The processed strings to set the parameter: parametersimpleFieldBuilder.defaultValue
+   */
+  private static String getStringFromArray(String[] arrayValues, String arrayType) {
 
+      int size = arrayValues.length-1;
       String arrayToString = "";
+      String element = "";
 
-      for (int i = 0; i < value.length; i++) {
+      for (int i = 0; i < arrayValues.length; i++) {
 
-        switch (TypeArray.get(defaultFormat)) {
+        element = arrayValues[i];
+        switch (TypeArray.get(arrayType)) {
           case STRING_ARRAY:
-            if (i == value.length-1) {
-              arrayToString += "\"" + value[i] + "\"";
+            if (i == size) {
+              arrayToString += "\"" + element + "\"";
             } else {
-              arrayToString += "\"" + value[i] + "\",";
+              arrayToString += "\"" + element + "\",";
             }
             break;
-
+          case LONG_ARRAY:
+          case FLOAT_ARRAY:
+          case DOUBLE_ARRAY:
+            if (i == size) {                                  //ultimo elemento
+              if (i != 0) {
+                arrayToString += "\"" + element;              //si son mas de uno
+              } else { arrayToString += element; }            //si es unico elemento
+            } else {
+              if (i != 0) {
+                arrayToString += "\"" + element + "\",";      //si son mas de uno y elemento intermedio
+              } else { arrayToString += element + "\","; }    //si son mas de uno y primer elemento
+            }
+            break;
           case BOOLEAN_ARRAY:
           case BYTE_ARRAY:
           case SHORT_ARRAY:
           case INT_ARRAY:
-          case LONG_ARRAY:
-          case FLOAT_ARRAY:
-          case DOUBLE_ARRAY:
-            if (i == value.length-1) {
-              arrayToString += value[i] ;
+            if (i == size) {
+              arrayToString += element ;
             } else {
-              arrayToString += value[i] + ",";
+              arrayToString += element + ",";
             }
             break;
 
           case CHAR_ARRAY:
-            if (i == value.length-1) {
-              arrayToString += "'" + value[i] + "'";
+            if (i == size) {
+              arrayToString += "'" + element + "'";
             } else {
-              arrayToString += "'" + value[i] + "',";
+              arrayToString += "'" + element + "',";
             }
             break;
-
           default:
             arrayToString = "not_found_type_array";
         }
@@ -404,7 +428,7 @@ public class PactDslProcessor extends AbstractProcessor {
     } else if (Objects.nonNull(fieldElement.getAnnotation(Example.class))) {
 
         if (fieldElement.getAnnotation(Example.class).array().length != 0) {
-            simpleFieldBuilder.defaultValue(getFormatArray(fieldElement, mapping.getFieldType()));
+            simpleFieldBuilder.defaultValue(getArrayFromExample(fieldElement, mapping.getFieldType()));
             simpleFieldBuilder.formatValue(null);
         } else {
             simpleFieldBuilder.defaultValue(getDefaultValue(fieldElement, mapping.getFieldType()));

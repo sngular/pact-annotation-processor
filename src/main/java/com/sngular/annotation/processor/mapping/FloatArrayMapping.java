@@ -1,9 +1,7 @@
 package com.sngular.annotation.processor.mapping;
 
 import com.sngular.annotation.processor.model.FieldValidations;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.rng.UniformRandomProvider;
-import java.util.Objects;
 
 /** Represents an array of float.
  * @author Miguel Angel Escobar
@@ -28,7 +26,7 @@ public class FloatArrayMapping implements TypeMapping<String> {
 
   @Override
   public final String getRandomDefaultValue(final FieldValidations fieldValidations, final UniformRandomProvider uniformRandomProvider) {
-    return "-123456789012345678901234567890.402823F";
+    return "-123456789012345678901234567890.402823f";
   }
 
   @Override

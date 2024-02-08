@@ -1,11 +1,12 @@
 package com.sngular.annotation.processor.mapping;
 
 import com.sngular.annotation.processor.model.FieldValidations;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.rng.UniformRandomProvider;
 
-import java.util.Objects;
-
+/** Represents an array of Double.
+ * @author Miguel Angel Escobar
+ * @version 1.0
+ */
 public class DoubleArrayWrapMapping implements TypeMapping<String> {
 
   @Override

@@ -26,7 +26,7 @@ public class LongArrayMapping implements TypeMapping<String> {
 
   @Override
   public final String getRandomDefaultValue(final FieldValidations fieldValidations, final UniformRandomProvider uniformRandomProvider) {
-    return "-9223372036854775808L";
+    return "-9223372036854775808l";
   }
 
   @Override

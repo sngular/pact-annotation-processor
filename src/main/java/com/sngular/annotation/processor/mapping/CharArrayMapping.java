@@ -2,7 +2,6 @@ package com.sngular.annotation.processor.mapping;
 
 import com.sngular.annotation.processor.model.FieldValidations;
 import org.apache.commons.rng.UniformRandomProvider;
-import org.apache.commons.lang3.RandomStringUtils;
 
 /** Represents an array of char.
  * @author Miguel Angel Escobar

@@ -59,10 +59,17 @@ public class RandomValueGeneration {
 
   public Character[] charArrayWrap;
 
-  public long[] longArray;
+  long[] longArray;
 
-  public double[] doubleArray;
+  Long[] longArrayWrap;
 
+  float[] floatArray;
+
+  Float[] floatArrayWrap;
+
+  double[] doubleArray;
+
+  Double[] doubleArrayWrap;
 
   public Integer getInteger() {
     return integer;
@@ -272,11 +279,43 @@ public class RandomValueGeneration {
     this.longArray = longArray;
   }
 
+  public Long[] getLongArrayWrap() {
+    return longArrayWrap;
+  }
+
+  public void setLongArrayWrap(Long[] longArrayWrap) {
+    this.longArrayWrap = longArrayWrap;
+  }
+
+  public float[] getFloatArray() {
+    return floatArray;
+  }
+
+  public void setFloatArray(float[] floatArray) {
+    this.floatArray = floatArray;
+  }
+
+  public Float[] getFloatArrayWrap() {
+    return floatArrayWrap;
+  }
+
+  public void setFloatArrayWrap(Float[] floatArrayWrap) {
+    this.floatArrayWrap = floatArrayWrap;
+  }
+
   public double[] getDoubleArray() {
     return doubleArray;
   }
 
   public void setDoubleArray(double[] doubleArray) {
     this.doubleArray = doubleArray;
+  }
+
+  public Double[] getDoubleArrayWrap() {
+    return doubleArrayWrap;
+  }
+
+  public void setDoubleArrayWrap(Double[] doubleArrayWrap) {
+    this.doubleArrayWrap = doubleArrayWrap;
   }
 }

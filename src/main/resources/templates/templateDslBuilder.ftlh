@@ -7,19 +7,39 @@
         || field.fieldType == "byte[]" || field.fieldType == "Byte[]"
         || field.fieldType == "short[]" || field.fieldType == "Short[]"
         || field.fieldType == "int[]" || field.fieldType == "Integer[]">
-
       ${field.fieldType} ${field.name} = {${field.defaultValue?no_esc}};
       String ${field.name}Name = "${field.name}";
-    <#elseif field.fieldType == "double[]" || field.fieldType == "Double[]">
 
-       String[] in${field.name?cap_first} = {"${field.defaultValue?no_esc}"};
-       ${field.fieldType} ${field.name} = Arrays.stream(in${field.name?cap_first}).mapToDouble(Double::parseDouble).toArray();
-       String ${field.name}Name = "${field.name}";
-    <#elseif field.fieldType == "long[]" || field.fieldType == "Long[]">
+    <#elseif field.fieldType == "long[]">
+      String[] in${field.name?cap_first} = {"${field.defaultValue?no_esc}"};
+      ${field.fieldType} ${field.name} = getLongArray(in${field.name?cap_first});
+      String ${field.name}Name = "${field.name}";
 
-              String[] in${field.name?cap_first} = {"${field.defaultValue?no_esc}"};
-              ${field.fieldType} ${field.name} = Arrays.stream(in${field.name?cap_first}).mapToLong(Long::parseLong).toArray();
-              String ${field.name}Name = "${field.name}";
+    <#elseif field.fieldType == "Long[]">
+      String[] in${field.name?cap_first} = {"${field.defaultValue?no_esc}"};
+      ${field.fieldType} ${field.name} = getLongArrayWrap(in${field.name?cap_first});
+      String ${field.name}Name = "${field.name}";
+
+    <#elseif field.fieldType == "float[]">
+      String[] in${field.name?cap_first} = {"${field.defaultValue?no_esc}"};
+      ${field.fieldType} ${field.name} = getFloatArray(in${field.name?cap_first});
+      String ${field.name}Name = "${field.name}";
+
+    <#elseif field.fieldType == "Float[]">
+      String[] in${field.name?cap_first} = {"${field.defaultValue?no_esc}"};
+      ${field.fieldType} ${field.name} = getFloatArrayWrap(in${field.name?cap_first});
+      String ${field.name}Name = "${field.name}";
+
+    <#elseif field.fieldType == "double[]">
+      String[] in${field.name?cap_first} = {"${field.defaultValue?no_esc}"};
+      ${field.fieldType} ${field.name} = getDoubleArray(in${field.name?cap_first});
+      String ${field.name}Name = "${field.name}";
+
+    <#elseif field.fieldType == "Double[]">
+      String[] in${field.name?cap_first} = {"${field.defaultValue?no_esc}"};
+      ${field.fieldType} ${field.name} = getDoubleArrayWrap(in${field.name?cap_first});
+      String ${field.name}Name = "${field.name}";
+
     <#elseif field.fieldType == "boolean">
       ${field.fieldType} ${field.name} = ${field.defaultValue?string};
     <#elseif field.fieldType == "char">
@@ -356,5 +376,51 @@ public class ${schema.className}Builder {
     }
     </#if>
 
-}
+    public static long[] getLongArray(String[] numbers) {
+      long[] result = new long[numbers.length];
+      for (int i = 0; i < numbers.length; i++)
+        try { result[i] = Long.parseLong(numbers[i]);
+        } catch (NumberFormatException nfe) { result[i] = 0l; }
+      return result;
+    }
 
+    public static Long[] getLongArrayWrap(String[] numbers) {
+      Long[] result = new Long[numbers.length];
+      for (int i = 0; i < numbers.length; i++)
+        try { result[i] = Long.parseLong(numbers[i]);
+        } catch (NumberFormatException nfe) { result[i] = 0L; }
+      return result;
+    }
+
+    public static float[] getFloatArray(String[] numbers) {
+      float[] result = new float[numbers.length];
+      for (int i = 0; i < numbers.length; i++)
+        try { result[i] = Float.parseFloat(numbers[i]);
+        } catch (NumberFormatException nfe) { result[i] = 0.0f; }
+      return result;
+    }
+
+    public static Float[] getFloatArrayWrap(String[] numbers) {
+      Float[] result = new Float[numbers.length];
+      for (int i = 0; i < numbers.length; i++)
+        try { result[i] = Float.parseFloat(numbers[i]);
+        } catch (NumberFormatException nfe) { result[i] = 0.0F; }
+      return result;
+    }
+
+    public static double[] getDoubleArray(String[] numbers) {
+      double[] result = new double[numbers.length];
+       for (int i = 0; i < numbers.length; i++)
+         try { result[i] = Double.parseDouble(numbers[i]);
+         } catch (NumberFormatException nfe) { result[i] = 0.0d; }
+       return result;
+    }
+
+    public static Double[] getDoubleArrayWrap(String[] numbers) {
+      Double[] result = new Double[numbers.length];
+      for (int i = 0; i < numbers.length; i++)
+        try { result[i] = Double.parseDouble(numbers[i]);
+        } catch (NumberFormatException nfe) { result[i] = 0.0D; }
+      return result;
+    }
+  }

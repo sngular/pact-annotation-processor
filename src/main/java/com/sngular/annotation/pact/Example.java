@@ -20,6 +20,4 @@ public @interface Example {
   String format() default "";
 
   String[] array() default { };
-
-  long[] longArray() default { };
 }

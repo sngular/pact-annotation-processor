@@ -1,10 +1,7 @@
 package com.sngular.annotation.processor.mapping;
 
 import com.sngular.annotation.processor.model.FieldValidations;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.rng.UniformRandomProvider;
-
-import java.util.Objects;
 
 /** Represents an array of Float.
  * @author Miguel Angel Escobar
