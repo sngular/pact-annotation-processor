@@ -1,7 +1,68 @@
 <#assign constructor = false>
 <#macro writeAttrField field>
   <#if field.functionByType??>
-    <#if field.fieldType == "boolean">
+    <#if field.fieldType == "String[]"
+        || field.fieldType == "char[]" || field.fieldType == "Character[]"
+        || field.fieldType == "boolean[]" || field.fieldType == "Boolean[]"
+        || field.fieldType == "byte[]" || field.fieldType == "Byte[]"
+        || field.fieldType == "short[]" || field.fieldType == "Short[]"
+        || field.fieldType == "int[]" || field.fieldType == "Integer[]">
+      ${field.fieldType} ${field.name} = {${field.defaultValue?no_esc}};
+      String ${field.name}Name = "${field.name}";
+
+    <#elseif field.fieldType == "long[]">
+      String[] in${field.name?cap_first} = {"${field.defaultValue?no_esc}"};
+      ${field.fieldType} ${field.name} = getLongArray(in${field.name?cap_first});
+      String ${field.name}Name = "${field.name}";
+
+    <#elseif field.fieldType == "Long[]">
+      String[] in${field.name?cap_first} = {"${field.defaultValue?no_esc}"};
+      ${field.fieldType} ${field.name} = getLongArrayWrap(in${field.name?cap_first});
+      String ${field.name}Name = "${field.name}";
+
+    <#elseif field.fieldType == "float[]">
+      String[] in${field.name?cap_first} = {"${field.defaultValue?no_esc}"};
+      ${field.fieldType} ${field.name} = getFloatArray(in${field.name?cap_first});
+      String ${field.name}Name = "${field.name}";
+
+    <#elseif field.fieldType == "Float[]">
+      String[] in${field.name?cap_first} = {"${field.defaultValue?no_esc}"};
+      ${field.fieldType} ${field.name} = getFloatArrayWrap(in${field.name?cap_first});
+      String ${field.name}Name = "${field.name}";
+
+    <#elseif field.fieldType == "double[]">
+      String[] in${field.name?cap_first} = {"${field.defaultValue?no_esc}"};
+      ${field.fieldType} ${field.name} = getDoubleArray(in${field.name?cap_first});
+      String ${field.name}Name = "${field.name}";
+
+    <#elseif field.fieldType == "Double[]">
+      String[] in${field.name?cap_first} = {"${field.defaultValue?no_esc}"};
+      ${field.fieldType} ${field.name} = getDoubleArrayWrap(in${field.name?cap_first});
+      String ${field.name}Name = "${field.name}";
+
+    <#elseif field.fieldType == "BigInteger[]">
+      String[] in${field.name?cap_first} = {"${field.defaultValue?no_esc}"};
+      ${field.fieldType} ${field.name} = getBigIntegerArray(in${field.name?cap_first});
+      String ${field.name}Name = "${field.name}";
+
+    <#elseif field.fieldType == "BigDecimal[]">
+      String[] in${field.name?cap_first} = {"${field.defaultValue?no_esc}"};
+      ${field.fieldType} ${field.name} = getBigDecimalArray(in${field.name?cap_first});
+      String ${field.name}Name = "${field.name}";
+
+    <#elseif field.fieldType == "ZonedDateTime[]">
+      String[] in${field.name?cap_first} = {"${field.defaultValue?no_esc}"};
+      String ${field.name}Format = "${field.formatValue?no_esc}";
+      ${field.fieldType} ${field.name} = getZonedDateTimeArray(in${field.name?cap_first},${field.name}Format);
+      String ${field.name}Name = "${field.name}";
+
+    <#elseif field.fieldType == "Date[]">
+      String[] in${field.name?cap_first} = {"${field.defaultValue?no_esc}"};
+      String ${field.name}Format = "${field.formatValue?no_esc}";
+      ${field.fieldType} ${field.name} = getDateArray(in${field.name?cap_first},${field.name}Format);
+      String ${field.name}Name = "${field.name}";
+
+    <#elseif field.fieldType == "boolean">
       ${field.fieldType} ${field.name} = ${field.defaultValue?string};
     <#elseif field.fieldType == "char">
       String ${field.name} = "${field.defaultValue}";
@@ -44,11 +105,11 @@
 
 <#macro writeSetterField field builderName>
 <#if field.functionByType??>
-  <#if field.fieldType == "char">
-      public ${builderName}Builder set${field.name?cap_first}(final String ${field.name}) {
-  <#else>
-    public ${builderName}Builder set${field.name?cap_first}(final ${field.fieldType?no_esc} ${field.name}) {
-  </#if>
+    <#if field.fieldType == "char">
+          public ${builderName}Builder set${field.name?cap_first}(final String ${field.name}) {
+    <#else >
+          public ${builderName}Builder set${field.name?cap_first}(final ${field.fieldType?no_esc} ${field.name}) {
+    </#if>
 <#elseif field.complexType??>
 <#if field.complexType.name() == "COLLECTION">
   public ${builderName}Builder set${field.name?cap_first}(final ${field.fieldType?no_esc} ${field.name}) {
@@ -67,11 +128,11 @@
 
 <#macro writeExpectedInstanceSetters field>
   <#if !field.empty>
-    <#if field.fieldType == "char">
+        <#if field.fieldType == "char">
           object.set${field.name?cap_first}(this.${field.name}.charAt(0));
-    <#else>
+        <#else >
           object.set${field.name?cap_first}(this.${field.name});
-    </#if>
+        </#if>
   </#if>
 </#macro>
 
@@ -99,11 +160,13 @@
       <#if field.name?has_content>
           if (Objects.nonNull(${field.name})) {
           <#if field.formatValue??>
-           <#if field.functionByType != "datetime">
-            pactDslJsonBody.${field.functionByType}("${field.name}", "${field.formatValue?no_esc}", ${field.name});
-           <#else>
-            pactDslJsonBody.${field.functionByType}("${field.name}", "${field.formatValue?no_esc}", ${field.name}.toInstant());
-           </#if>
+            <#if field.fieldType == "ZonedDateTime[]" || field.fieldType == "Date[]">
+              pactDslJsonBody.array(${field.name}Name).stringValue(Arrays.toString(${field.name})).closeArray();
+            <#elseif field.functionByType != "datetime">
+              pactDslJsonBody.${field.functionByType}("${field.name}", "${field.formatValue?no_esc}", ${field.name});
+            <#else>
+              pactDslJsonBody.${field.functionByType}("${field.name}", "${field.formatValue?no_esc}", ${field.name}.toInstant());
+             </#if>
           <#elseif field.fieldType == "short">
             pactDslJsonBody.${field.functionByType}("${field.name}", (int) ${field.name});
           <#elseif field.fieldType == "BigInteger">
@@ -112,6 +175,18 @@
             pactDslJsonBody.${field.functionByType}("${field.name}", (double) ${field.name});
           <#elseif field.fieldType == "byte">
             pactDslJsonBody.${field.functionByType}("${field.name}", (int) ${field.name});
+          <#elseif field.fieldType == "String[]"
+                || field.fieldType == "char[]" || field.fieldType == "Character[]"
+                || field.fieldType == "boolean[]" || field.fieldType == "Boolean[]"
+                || field.fieldType == "byte[]" || field.fieldType == "Byte[]"
+                || field.fieldType == "short[]" || field.fieldType == "Short[]"
+                || field.fieldType == "int[]" || field.fieldType == "Integer[]"
+                || field.fieldType == "long[]" || field.fieldType == "Long[]"
+                || field.fieldType == "float[]" || field.fieldType == "Float[]"
+                || field.fieldType == "double[]" || field.fieldType == "Double[]"
+                || field.fieldType == "BigInteger[]" || field.fieldType == "BigDecimal[]">
+
+            pactDslJsonBody.array(${field.name}Name).stringValue(Arrays.toString(${field.name})).closeArray();
           <#else>
             pactDslJsonBody.${field.functionByType}("${field.name}", ${field.name});
           </#if>
@@ -247,6 +322,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.DateTimeException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
@@ -260,10 +338,8 @@ import au.com.dius.pact.consumer.dsl.PactDslJsonRootValue;
 <#if schema.customModifiers??>
 import com.sngular.annotation.processor.mapping.CustomDslModifier;
 </#if>
-
-
 import ${schema.modelPackage}.${schema.className};
-
+import java.util.Arrays;
 <#function complex(field)>
   <#return field.functionByType??>
 </#function>
@@ -329,5 +405,121 @@ public class ${schema.className}Builder {
     }
     </#if>
 
-}
+    public static long[] getLongArray(String[] numbers) {
+      long[] result = new long[numbers.length];
+      for (int i = 0; i < numbers.length; i++)
+        try { result[i] = Long.parseLong(numbers[i]);
+        } catch (NumberFormatException nfe) {
+          System.out.println("long value expected but was: "+numbers[i]);
+          result[i] = 0l;
+        }
+      return result;
+    }
 
+    public static Long[] getLongArrayWrap(String[] numbers) {
+      Long[] result = new Long[numbers.length];
+      for (int i = 0; i < numbers.length; i++)
+        try { result[i] = Long.parseLong(numbers[i]);
+        } catch (NumberFormatException nfe) {
+          System.out.println("Long value expected but was: "+numbers[i]);
+          result[i] = 0L;
+        }
+      return result;
+    }
+
+    public static float[] getFloatArray(String[] numbers) {
+      float[] result = new float[numbers.length];
+      for (int i = 0; i < numbers.length; i++)
+        try { result[i] = Float.parseFloat(numbers[i]);
+        } catch (NumberFormatException nfe) {
+          System.out.println("float value expected but was: "+numbers[i]);
+          result[i] = 0.0f;
+        }
+      return result;
+    }
+
+    public static Float[] getFloatArrayWrap(String[] numbers) {
+      Float[] result = new Float[numbers.length];
+      for (int i = 0; i < numbers.length; i++)
+        try { result[i] = Float.parseFloat(numbers[i]);
+        } catch (NumberFormatException nfe) {
+          System.out.println("Float value expected but was: "+numbers[i]);
+          result[i] = 0.0F;
+        }
+      return result;
+    }
+
+    public static double[] getDoubleArray(String[] numbers) {
+      double[] result = new double[numbers.length];
+       for (int i = 0; i < numbers.length; i++)
+         try { result[i] = Double.parseDouble(numbers[i]);
+         } catch (NumberFormatException nfe) {
+           System.out.println("double value expected but was: "+numbers[i]);
+           result[i] = 0.0d;
+         }
+       return result;
+    }
+
+    public static Double[] getDoubleArrayWrap(String[] numbers) {
+      Double[] result = new Double[numbers.length];
+      for (int i = 0; i < numbers.length; i++)
+        try { result[i] = Double.parseDouble(numbers[i]);
+        } catch (NumberFormatException nfe) {
+          System.out.println("Double value expected but was: "+numbers[i]);
+          result[i] = 0.0D;
+        }
+      return result;
+    }
+
+    public static BigInteger[] getBigIntegerArray(String[] numbers) {
+      BigInteger[] result = new BigInteger[numbers.length];
+      for (int i = 0; i < numbers.length; i++)
+        try { result[i] = new BigInteger(numbers[i]);
+        } catch (NumberFormatException nfe) {
+          System.out.println("BigInteger value expected but was: "+numbers[i]);
+          result[i] = new BigInteger("0");
+        }
+      return result;
+    }
+
+    public static BigDecimal[] getBigDecimalArray(String[] numbers) {
+      BigDecimal[] result = new BigDecimal[numbers.length];
+      for (int i = 0; i < numbers.length; i++)
+        try { result[i] = new BigDecimal(numbers[i]);
+        } catch (NumberFormatException nfe) {
+          System.out.println("BigDecimal value expected but was: "+numbers[i]);
+          result[i] = new BigDecimal("0.0");
+        }
+      return result;
+    }
+
+    public static ZonedDateTime[] getZonedDateTimeArray(String[] numbers, String format) {
+        ZonedDateTime[] result = new ZonedDateTime[numbers.length];
+        for (int i = 0; i < numbers.length; i++)
+          try {
+            result[i] = LocalDateTime
+                    .parse(numbers[i],DateTimeFormatter.ofPattern(format))
+                    .atZone(ZoneId.systemDefault())
+                    .withZoneSameInstant(ZoneId.systemDefault());
+
+          } catch (DateTimeException dte) {
+            System.out.println("Format["+format+"] expected but was: "+numbers[i]);
+            System.out.println("    "+dte.getMessage());
+            result[i] = ZonedDateTime.now();
+          }
+        return result;
+      }
+
+      public static Date[] getDateArray(String[] numbers, String format) {
+        Date[] result = new Date[numbers.length];
+        for (int i = 0; i < numbers.length; i++)
+          try {
+            result[i] = new SimpleDateFormat(format).parse(numbers[i]);
+          } catch (Exception dte) {
+            System.out.println("Format["+format+"] expected but was: "+numbers[i]);
+            System.out.println("    "+dte.getMessage());
+            result[i] = new Date();
+          }
+        return result;
+      }
+ }

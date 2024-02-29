@@ -18,4 +18,6 @@ public @interface Example {
   String value() default "";
 
   String format() default "";
+
+  String[] array() default { };
 }

@@ -1,9 +1,3 @@
-/*
- *  This Source Code Form is subject to the terms of the Mozilla Public
- *  * License, v. 2.0. If a copy of the MPL was not distributed with this
- *  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
- */
-
 package com.sngular.annotation.processor;
 
 import java.io.IOException;
@@ -38,20 +32,7 @@ import com.sngular.annotation.pact.PactDslBodyBuilder;
 import com.sngular.annotation.processor.exception.PactProcessorException;
 import com.sngular.annotation.processor.exception.TemplateFactoryException;
 import com.sngular.annotation.processor.exception.TemplateGenerationException;
-import com.sngular.annotation.processor.mapping.BigDecimalMapping;
-import com.sngular.annotation.processor.mapping.BigIntegerMapping;
-import com.sngular.annotation.processor.mapping.BooleanMapping;
-import com.sngular.annotation.processor.mapping.ByteMapping;
-import com.sngular.annotation.processor.mapping.CharMapping;
-import com.sngular.annotation.processor.mapping.DateMapping;
-import com.sngular.annotation.processor.mapping.DoubleMapping;
-import com.sngular.annotation.processor.mapping.FloatMapping;
-import com.sngular.annotation.processor.mapping.IntegerMapping;
-import com.sngular.annotation.processor.mapping.LongMapping;
-import com.sngular.annotation.processor.mapping.ShortMapping;
-import com.sngular.annotation.processor.mapping.StringMapping;
-import com.sngular.annotation.processor.mapping.TypeMapping;
-import com.sngular.annotation.processor.mapping.ZonedDateTimeMapping;
+import com.sngular.annotation.processor.mapping.*;
 import com.sngular.annotation.processor.model.ClassBuilderTemplate;
 import com.sngular.annotation.processor.model.DslComplexField;
 import com.sngular.annotation.processor.model.DslComplexTypeEnum;
@@ -101,6 +82,29 @@ public class PactDslProcessor extends AbstractProcessor {
                                                                    .put("ZonedDateTime", new ZonedDateTimeMapping())
                                                                    .put("java.util.Date", new DateMapping())
                                                                    .put("Date", new DateMapping())
+                                                                    .put("String[]", new StringArrayMapping())
+                                                                    .put("java.lang.String[]", new StringArrayMapping())
+                                                                    .put("boolean[]", new BooleanArrayMapping())
+                                                                    .put("java.lang.Boolean[]", new BooleanArrayWrapMapping())
+                                                                    .put("byte[]", new ByteArrayMapping())
+                                                                    .put("java.lang.Byte[]", new ByteArrayWrapMapping())
+                                                                    .put("short[]", new ShortArrayMapping())
+                                                                    .put("java.lang.Short[]", new ShortArrayWrapMapping())
+                                                                    .put("int[]", new IntArrayMapping())
+                                                                    .put("java.lang.Integer[]", new IntArrayWrapMapping())
+                                                                    .put("long[]", new LongArrayMapping())
+                                                                    .put("java.lang.Long[]", new LongArrayWrapMapping())
+                                                                    .put("char[]", new CharArrayMapping())
+                                                                    .put("java.lang.Character[]", new CharArrayWrapMapping())
+                                                                    .put("float[]", new FloatArrayMapping())
+                                                                    .put("java.lang.Float[]", new FloatArrayWrapMapping())
+                                                                    .put("double[]", new DoubleArrayMapping())
+                                                                    .put("java.lang.Double[]", new DoubleArrayWrapMapping())
+                                                                    .put("java.math.BigInteger[]", new BigIntegerArrayMapping())
+                                                                    .put("java.math.BigDecimal[]", new BigDecimalArrayMapping())
+                                                                    .put("java.time.ZonedDateTime[]", new ZonedDateTimeArrayMapping())
+                                                                    .put("java.util.Date[]", new DateArrayMapping())
+                                                                    .put("Date[]", new DateArrayMapping())
                                                                    .build();
 
   private static final String CUSTOM_MODIFIERS = "customModifiers";
@@ -126,6 +130,83 @@ public class PactDslProcessor extends AbstractProcessor {
   private static String getFormat(final Element fieldElement, final String defaultFormat) {
     final String value = fieldElement.getAnnotation(Example.class).format();
     return StringUtils.defaultIfEmpty(value, defaultFormat);
+  }
+
+  /**
+   * This method gets the values obtained from the array attribute of the example annotation
+   * ( @Example(array = {"value1","value2"} )
+   * @param fieldElement Element, Class containing the attributes annotated with Example
+   * @param defaultFormat String, Array type.
+   * @return The processed strings to set the parameter: parametersimpleFieldBuilder.defaultValue
+   */
+  private static String getArrayFromExample(final Element fieldElement, final String defaultFormat) {
+    String[] value = fieldElement.getAnnotation(Example.class).array();
+    return PactDslProcessor.getStringFromArray(value,defaultFormat);
+  }
+
+  /**
+   * This method process the array of values to format them according to the type of array.
+   * @param arrayValues String[], Strings to be processed.
+   * @param arrayType String, Array type to be processed.
+   * @return The processed strings to set the parameter: parametersimpleFieldBuilder.defaultValue
+   */
+  private static String getStringFromArray(String[] arrayValues, String arrayType) {
+
+      int size = arrayValues.length-1;
+      String arrayToString = "";
+      String element = "";
+
+      for (int i = 0; i < arrayValues.length; i++) {
+
+        element = arrayValues[i];
+        switch (TypeArray.get(arrayType)) {
+          case STRING_ARRAY:
+            if (i == size) {
+              arrayToString += "\"" + element + "\"";
+            } else {
+              arrayToString += "\"" + element + "\",";
+            }
+            break;
+          case LONG_ARRAY:
+          case FLOAT_ARRAY:
+          case DOUBLE_ARRAY:
+          case BIG_INTEGER_ARRAY:
+          case BIG_DECIMAL_ARRAY:
+          case ZONED_DATE_TIME_ARRAY:
+          case DATE_ARRAY:
+            if (i == size) {                                  //ultimo elemento
+              if (i != 0) {
+                arrayToString += "\"" + element;              //si son mas de uno
+              } else { arrayToString += element; }            //si es unico elemento
+            } else {
+              if (i != 0) {
+                arrayToString += "\"" + element + "\",";      //si son mas de uno y elemento intermedio
+              } else { arrayToString += element + "\","; }    //si son mas de uno y primer elemento
+            }
+            break;
+          case BOOLEAN_ARRAY:
+          case BYTE_ARRAY:
+          case SHORT_ARRAY:
+          case INT_ARRAY:
+            if (i == size) {
+              arrayToString += element ;
+            } else {
+              arrayToString += element + ",";
+            }
+            break;
+
+          case CHAR_ARRAY:
+            if (i == size) {
+              arrayToString += "'" + element + "'";
+            } else {
+              arrayToString += "'" + element + "',";
+            }
+            break;
+          default:
+            arrayToString = "not_found_type_array";
+        }
+      }
+      return arrayToString;
   }
 
   @Override
@@ -345,13 +426,21 @@ public class PactDslProcessor extends AbstractProcessor {
                                                  .empty(false);
 
     if (Objects.nonNull(fieldElement.getAnnotation(DslExclude.class))) {
-      simpleFieldBuilder.empty(true);
+        simpleFieldBuilder.empty(true);
+
     } else if (Objects.nonNull(fieldElement.getAnnotation(Example.class))) {
-      simpleFieldBuilder.defaultValue(getDefaultValue(fieldElement, mapping.getFieldType()));
-      simpleFieldBuilder.formatValue(getFormat(fieldElement, mapping.getFormatValue()));
+
+        if (fieldElement.getAnnotation(Example.class).array().length != 0) {
+            simpleFieldBuilder.defaultValue(getArrayFromExample(fieldElement, mapping.getFieldType()));
+            simpleFieldBuilder.formatValue(getFormat(fieldElement, mapping.getFormatValue()));
+
+        } else {
+            simpleFieldBuilder.defaultValue(getDefaultValue(fieldElement, mapping.getFieldType()));
+            simpleFieldBuilder.formatValue(getFormat(fieldElement, mapping.getFormatValue()));
+        }
     } else {
-      simpleFieldBuilder.defaultValue(mapping.getRandomDefaultValue(validationBuilder.build(), randomSource));
-      simpleFieldBuilder.formatValue(mapping.getFormatValue());
+        simpleFieldBuilder.defaultValue(mapping.getRandomDefaultValue(validationBuilder.build(), randomSource));
+        simpleFieldBuilder.formatValue(mapping.getFormatValue());
     }
 
     return simpleFieldBuilder;
@@ -385,6 +474,7 @@ public class PactDslProcessor extends AbstractProcessor {
   private Optional<TypeMapping<?>> extractMappingByType(final Element element) {
 
     final var type = element.asType();
+
     return switch (type.getKind()) {
       case BOOLEAN -> Optional.of(TYPE_MAPPING.get("boolean"));
       case BYTE -> Optional.of(TYPE_MAPPING.get("byte"));
@@ -394,10 +484,10 @@ public class PactDslProcessor extends AbstractProcessor {
       case CHAR -> Optional.of(TYPE_MAPPING.get("char"));
       case FLOAT -> Optional.of(TYPE_MAPPING.get("float"));
       case DOUBLE -> Optional.of(TYPE_MAPPING.get("double"));
+      case ARRAY -> Optional.of(TYPE_MAPPING.get(type.toString()));
       case DECLARED -> Optional.ofNullable(TYPE_MAPPING.get(this.typeUtils.asElement(type).getSimpleName().toString()));
       default -> Optional.empty();
     };
   }
-
 }
 
