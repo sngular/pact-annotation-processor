@@ -7,6 +7,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.DateTimeException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
@@ -119,6 +122,66 @@ public class ArrayDataTypesBuilder {
     Double[] doubleArrayWrap = getDoubleArrayWrap(inDoubleArrayWrap);
     String doubleArrayWrapName = "doubleArrayWrap";
 
+    String[] inBigIntegerArray = {"-8223372036854775808000000182233720368547758000182233720368547758080000001",
+            "9542233720368547758080000001822334563456435643720367867865758000182233720352345368547758080000001",
+            "100.0",
+            "0",
+            "-0",
+            "abc"};
+    BigInteger[] bigIntegerArray = getBigIntegerArray(inBigIntegerArray);
+    String bigIntegerArrayName = "bigIntegerArray";
+
+    String[] inBigDecimalArray = {"-8223372036854775808000000182233720368547758000182233720368547758080000001.8000182233720368547758080000001",
+            "954223372036854775808000000135643720367867865758000182233720352345368547758080000001.58000182233720352345368547758080000001",
+            "100.0",
+            "0",
+            "-0",
+            "abc"};
+    BigDecimal[] bigDecimalArray = getBigDecimalArray(inBigDecimalArray);
+    String bigDecimalArrayName = "bigDecimalArray";
+
+    //2024-02-28T00:00-06:00[America/Mexico_City]
+    String[] inZonedDateTimeArray = {"28/02/2024 00:00",
+                                    "28/02/2024 23:59",
+                                    "30/02/2024 00:00",
+                                    "28/03/2024 25:00",
+                                    "28/04/2024 23:70",
+                                    "00/00/0000 00:00",
+                                    "12345",
+                                    "100.100",
+                                    "abc"};
+    String zonedDateTimeArrayFormat = "dd/MM/yyyy HH:mm";
+    ZonedDateTime[] zonedDateTimeArray = getZonedDateTimeArray(inZonedDateTimeArray,zonedDateTimeArrayFormat);
+    String zonedDateTimeArrayName = "zonedDateTimeArray";
+
+    //2024-02-28T00:00-06:00[America/Mexico_City]
+    String[] inZonedDateTimeArray2 = {"2024-02-28 00:00",
+            "2024-02-28 23:59",
+            "2024-02-30 00:00",
+            "2024-03-28 25:00",
+            "2024-04-28 23:70",
+            "0000-00-00 00:00",
+            "12345",
+            "100.100",
+            "abc"};
+    String zonedDateTimeArray2Format = "yyyy-MM-dd HH:mm";
+    ZonedDateTime[] zonedDateTimeArray2 = getZonedDateTimeArray(inZonedDateTimeArray2,zonedDateTimeArray2Format);
+    String zonedDateTimeArray2Name = "zonedDateTimeArray2";
+
+
+    //Wed Feb 28 00:00:00 CST 2024
+    String[] inDateArray = {"28/02/2024",
+            "28/02/2024",
+            "30/02/2024",
+            "28/03/2024",
+            "28/04/2024",
+            "00/00/0000",
+            "12345",
+            "100.100",
+            "abc"};
+    String dateArrayFormat = "dd/MM/yyyy";
+    Date[] dateArray = getDateArray(inDateArray,dateArrayFormat);
+    String dateArrayName = "dateArray";
 
     public ArrayDataTypesBuilder setStringArray(final String[] stringArray) {
         this.stringArray = stringArray;
@@ -205,6 +268,31 @@ public class ArrayDataTypesBuilder {
         return this;
     }
 
+    public ArrayDataTypesBuilder setBigIntegerArray(final BigInteger[] bigIntegerArray) {
+        this.bigIntegerArray = bigIntegerArray;
+        return this;
+    }
+
+    public ArrayDataTypesBuilder setBigDecimalArray(final BigDecimal[] bigDecimalArray) {
+        this.bigDecimalArray = bigDecimalArray;
+        return this;
+    }
+
+    public ArrayDataTypesBuilder setZonedDateTimeArray(final ZonedDateTime[] zonedDateTimeArray) {
+        this.zonedDateTimeArray = zonedDateTimeArray;
+        return this;
+    }
+
+    public ArrayDataTypesBuilder setZonedDateTimeArray2(final ZonedDateTime[] zonedDateTimeArray2) {
+        this.zonedDateTimeArray2 = zonedDateTimeArray2;
+        return this;
+    }
+
+    public ArrayDataTypesBuilder setDateArray(final Date[] dateArray) {
+        this.dateArray = dateArray;
+        return this;
+    }
+
     public DslPart build() {
         PactDslJsonBody pactDslJsonBody = new PactDslJsonBody();
 
@@ -275,6 +363,26 @@ public class ArrayDataTypesBuilder {
         if (Objects.nonNull(doubleArrayWrap)) {
             pactDslJsonBody.array(doubleArrayWrapName).stringValue(Arrays.toString(doubleArrayWrap)).closeArray();
         }
+
+        if (Objects.nonNull(bigIntegerArray)) {
+            pactDslJsonBody.array(bigIntegerArrayName).stringValue(Arrays.toString(bigIntegerArray)).closeArray();
+        }
+
+        if (Objects.nonNull(bigDecimalArray)) {
+            pactDslJsonBody.array(bigDecimalArrayName).stringValue(Arrays.toString(bigDecimalArray)).closeArray();
+        }
+
+        if (Objects.nonNull(zonedDateTimeArray)) {
+            pactDslJsonBody.array(zonedDateTimeArrayName).stringValue(Arrays.toString(zonedDateTimeArray)).closeArray();
+        }
+
+        if (Objects.nonNull(zonedDateTimeArray2)) {
+            pactDslJsonBody.array(zonedDateTimeArray2Name).stringValue(Arrays.toString(zonedDateTimeArray2)).closeArray();
+        }
+
+        if (Objects.nonNull(dateArray)) {
+            pactDslJsonBody.array(dateArrayName).stringValue(Arrays.toString(dateArray)).closeArray();
+        }
         return pactDslJsonBody;
     }
 
@@ -297,6 +405,11 @@ public class ArrayDataTypesBuilder {
         object.setFloatArrayWrap(this.floatArrayWrap);
         object.setDoubleArray(this.doubleArray);
         object.setDoubleArrayWrap(this.doubleArrayWrap);
+        object.setBigIntegerArray(this.bigIntegerArray);
+        object.setBigDecimalArray(this.bigDecimalArray);
+        object.setZonedDateTimeArray(this.zonedDateTimeArray);
+        object.setZonedDateTimeArray2(this.zonedDateTimeArray2);
+        object.setDateArray(this.dateArray);
         return object;
     }
 
@@ -307,7 +420,10 @@ public class ArrayDataTypesBuilder {
         long[] result = new long[numbers.length];
         for (int i = 0; i < numbers.length; i++)
             try { result[i] = Long.parseLong(numbers[i]);
-            } catch (NumberFormatException nfe) { result[i] = 0l; }
+            } catch (NumberFormatException nfe) {
+                System.out.println("long value expected but was: "+numbers[i]);
+                result[i] = 0l;
+            }
         return result;
     }
 
@@ -315,7 +431,10 @@ public class ArrayDataTypesBuilder {
         Long[] result = new Long[numbers.length];
         for (int i = 0; i < numbers.length; i++)
             try { result[i] = Long.parseLong(numbers[i]);
-            } catch (NumberFormatException nfe) { result[i] = 0L; }
+            } catch (NumberFormatException nfe) {
+                System.out.println("Long value expected but was: "+numbers[i]);
+                result[i] = 0L;
+            }
         return result;
     }
 
@@ -323,7 +442,10 @@ public class ArrayDataTypesBuilder {
         float[] result = new float[numbers.length];
         for (int i = 0; i < numbers.length; i++)
             try { result[i] = Float.parseFloat(numbers[i]);
-            } catch (NumberFormatException nfe) { result[i] = 0.0f; }
+            } catch (NumberFormatException nfe) {
+                System.out.println("float value expected but was: "+numbers[i]);
+                result[i] = 0.0f;
+            }
         return result;
     }
 
@@ -331,7 +453,10 @@ public class ArrayDataTypesBuilder {
         Float[] result = new Float[numbers.length];
         for (int i = 0; i < numbers.length; i++)
             try { result[i] = Float.parseFloat(numbers[i]);
-            } catch (NumberFormatException nfe) { result[i] = 0.0F; }
+            } catch (NumberFormatException nfe) {
+                System.out.println("Float value expected but was: "+numbers[i]);
+                result[i] = 0.0F;
+            }
         return result;
     }
 
@@ -339,7 +464,10 @@ public class ArrayDataTypesBuilder {
         double[] result = new double[numbers.length];
         for (int i = 0; i < numbers.length; i++)
             try { result[i] = Double.parseDouble(numbers[i]);
-            } catch (NumberFormatException nfe) { result[i] = 0.0d; }
+            } catch (NumberFormatException nfe) {
+                System.out.println("double value expected but was: "+numbers[i]);
+                result[i] = 0.0d;
+            }
         return result;
     }
 
@@ -347,7 +475,62 @@ public class ArrayDataTypesBuilder {
         Double[] result = new Double[numbers.length];
         for (int i = 0; i < numbers.length; i++)
             try { result[i] = Double.parseDouble(numbers[i]);
-            } catch (NumberFormatException nfe) { result[i] = 0.0D; }
+            } catch (NumberFormatException nfe) {
+                System.out.println("Double value expected but was: "+numbers[i]);
+                result[i] = 0.0D;
+            }
+        return result;
+    }
+
+    public static BigInteger[] getBigIntegerArray(String[] numbers) {
+        BigInteger[] result = new BigInteger[numbers.length];
+        for (int i = 0; i < numbers.length; i++)
+            try { result[i] = new BigInteger(numbers[i]);
+            } catch (NumberFormatException nfe) {
+                System.out.println("BigInteger value expected but was: "+numbers[i]);
+                result[i] = new BigInteger("0");
+            }
+        return result;
+    }
+
+    public static BigDecimal[] getBigDecimalArray(String[] numbers) {
+        BigDecimal[] result = new BigDecimal[numbers.length];
+        for (int i = 0; i < numbers.length; i++)
+            try { result[i] = new BigDecimal(numbers[i]);
+            } catch (NumberFormatException nfe) {
+                System.out.println("BigDecimal value expected but was: "+numbers[i]);
+                result[i] = new BigDecimal("0.0");
+            }
+        return result;
+    }
+
+    public static ZonedDateTime[] getZonedDateTimeArray(String[] numbers, String format) {
+        ZonedDateTime[] result = new ZonedDateTime[numbers.length];
+        for (int i = 0; i < numbers.length; i++)
+            try {
+                result[i] = LocalDateTime
+                        .parse(numbers[i],DateTimeFormatter.ofPattern(format))
+                        .atZone(ZoneId.systemDefault())
+                        .withZoneSameInstant(ZoneId.systemDefault());
+
+            } catch (DateTimeException dte) {
+                System.out.println("Format["+format+"] expected but was: "+numbers[i]);
+                System.out.println("    "+dte.getMessage());
+                result[i] = ZonedDateTime.now();
+            }
+        return result;
+    }
+
+    public static Date[] getDateArray(String[] numbers, String format) {
+        Date[] result = new Date[numbers.length];
+        for (int i = 0; i < numbers.length; i++)
+            try {
+                result[i] = new SimpleDateFormat(format).parse(numbers[i]);
+            } catch (Exception dte) {
+                System.out.println("Format["+format+"] expected but was: "+numbers[i]);
+                System.out.println("    "+dte.getMessage());
+                result[i] = new Date();
+            }
         return result;
     }
 }

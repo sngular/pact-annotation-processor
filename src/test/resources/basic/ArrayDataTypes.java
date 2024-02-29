@@ -3,7 +3,13 @@ package com.sngular.resources.basic;
 import com.sngular.annotation.pact.Example;
 import com.sngular.annotation.pact.PactDslBodyBuilder;
 import com.sngular.annotation.pact.DslExclude;
+
+import java.math.BigInteger;
+import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 import java.util.Optional;
+import java.util.Date;
+
 @PactDslBodyBuilder
 public class ArrayDataTypes {
 
@@ -96,6 +102,55 @@ public class ArrayDataTypes {
                   "-0.0",
                   "aD"} )
   private Double[] doubleArrayWrap;
+
+  @Example(array = {"-8223372036854775808000000182233720368547758000182233720368547758080000001",
+          "9542233720368547758080000001822334563456435643720367867865758000182233720352345368547758080000001",
+          "100.0",
+          "0",
+          "-0",
+          "abc"})
+  private BigInteger[] bigIntegerArray;
+
+  @Example(array = {"-8223372036854775808000000182233720368547758000182233720368547758080000001.8000182233720368547758080000001",
+          "954223372036854775808000000135643720367867865758000182233720352345368547758080000001.58000182233720352345368547758080000001",
+          "100.0",
+          "0",
+          "-0",
+          "abc"})
+  private BigDecimal[] bigDecimalArray;
+
+  @Example(array = {"28/02/2024 00:00",
+                    "28/02/2024 23:59",
+                    "30/02/2024 00:00",
+                    "28/03/2024 25:00",
+                    "28/04/2024 23:70",
+                    "00/00/0000 00:00",
+                    "12345",
+                    "100.100",
+                    "abc"}, format = "dd/MM/yyyy HH:mm")
+  private ZonedDateTime[] zonedDateTimeArray;
+
+  @Example(array = {"2024-02-28 00:00",
+                    "2024-02-28 23:59",
+                    "2024-02-30 00:00",
+                    "2024-03-28 25:00",
+                    "2024-04-28 23:70",
+                    "0000-00-00 00:00",
+                    "12345",
+                    "100.100",
+                    "abc"}, format = "yyyy-MM-dd HH:mm")
+  private ZonedDateTime[] zonedDateTimeArray2;
+
+  @Example(array = {"28/02/2024",
+                    "28/02/2024",
+                    "30/02/2024",
+                    "28/03/2024",
+                    "28/04/2024",
+                    "00/00/0000",
+                    "12345",
+                    "100.100",
+                    "abc"}, format = "dd/MM/yyyy")
+  private Date[] dateArray;
 
   public String[] getStringArray() {
     return stringArray;
@@ -239,5 +294,45 @@ public class ArrayDataTypes {
 
   public void setDoubleArrayWrap(Double[] doubleArrayWrap) {
     this.doubleArrayWrap = doubleArrayWrap;
+  }
+
+  public BigInteger[] getBigIntegerArray() {
+    return bigIntegerArray;
+  }
+
+  public void setBigIntegerArray(BigInteger[] bigIntegerArray) {
+    this.bigIntegerArray = bigIntegerArray;
+  }
+
+  public BigDecimal[] getBigDecimalArray() {
+    return bigDecimalArray;
+  }
+
+  public void setBigDecimalArray(BigDecimal[] bigDecimalArray) {
+    this.bigDecimalArray = bigDecimalArray;
+  }
+
+  public ZonedDateTime[] getZonedDateTimeArray() {
+    return zonedDateTimeArray;
+  }
+
+  public void setZonedDateTimeArray(ZonedDateTime[] zonedDateTimeArray) {
+    this.zonedDateTimeArray = zonedDateTimeArray;
+  }
+
+  public ZonedDateTime[] getZonedDateTimeArray2() {
+    return zonedDateTimeArray2;
+  }
+
+  public void setZonedDateTimeArray2(ZonedDateTime[] zonedDateTimeArray2) {
+    this.zonedDateTimeArray2 = zonedDateTimeArray2;
+  }
+
+  public Date[] getDateArray() {
+    return dateArray;
+  }
+
+  public void setDateArray(Date[] dateArray) {
+    dateArray = dateArray;
   }
 }

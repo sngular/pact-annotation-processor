@@ -1,9 +1,3 @@
-/*
- *  This Source Code Form is subject to the terms of the Mozilla Public
- *  * License, v. 2.0. If a copy of the MPL was not distributed with this
- *  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
- */
-
 package com.sngular.annotation.processor;
 
 import java.io.IOException;
@@ -106,6 +100,11 @@ public class PactDslProcessor extends AbstractProcessor {
                                                                     .put("java.lang.Float[]", new FloatArrayWrapMapping())
                                                                     .put("double[]", new DoubleArrayMapping())
                                                                     .put("java.lang.Double[]", new DoubleArrayWrapMapping())
+                                                                    .put("java.math.BigInteger[]", new BigIntegerArrayMapping())
+                                                                    .put("java.math.BigDecimal[]", new BigDecimalArrayMapping())
+                                                                    .put("java.time.ZonedDateTime[]", new ZonedDateTimeArrayMapping())
+                                                                    .put("java.util.Date[]", new DateArrayMapping())
+                                                                    .put("Date[]", new DateArrayMapping())
                                                                    .build();
 
   private static final String CUSTOM_MODIFIERS = "customModifiers";
@@ -171,6 +170,10 @@ public class PactDslProcessor extends AbstractProcessor {
           case LONG_ARRAY:
           case FLOAT_ARRAY:
           case DOUBLE_ARRAY:
+          case BIG_INTEGER_ARRAY:
+          case BIG_DECIMAL_ARRAY:
+          case ZONED_DATE_TIME_ARRAY:
+          case DATE_ARRAY:
             if (i == size) {                                  //ultimo elemento
               if (i != 0) {
                 arrayToString += "\"" + element;              //si son mas de uno
@@ -429,7 +432,8 @@ public class PactDslProcessor extends AbstractProcessor {
 
         if (fieldElement.getAnnotation(Example.class).array().length != 0) {
             simpleFieldBuilder.defaultValue(getArrayFromExample(fieldElement, mapping.getFieldType()));
-            simpleFieldBuilder.formatValue(null);
+            simpleFieldBuilder.formatValue(getFormat(fieldElement, mapping.getFormatValue()));
+
         } else {
             simpleFieldBuilder.defaultValue(getDefaultValue(fieldElement, mapping.getFieldType()));
             simpleFieldBuilder.formatValue(getFormat(fieldElement, mapping.getFormatValue()));

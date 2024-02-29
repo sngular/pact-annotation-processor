@@ -5,6 +5,8 @@ import com.sngular.annotation.pact.PactDslBodyBuilder;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.ZonedDateTime;
+import java.util.Date;
 
 @PactDslBodyBuilder
 public class RandomValueGeneration {
@@ -70,6 +72,14 @@ public class RandomValueGeneration {
   double[] doubleArray;
 
   Double[] doubleArrayWrap;
+
+  BigInteger[] bigIntegerArray;
+
+  BigDecimal[] bigDecimalArray;
+
+  ZonedDateTime[] zonedDateTimeArray;
+
+  Date[] dateArray;
 
   public Integer getInteger() {
     return integer;
@@ -317,5 +327,37 @@ public class RandomValueGeneration {
 
   public void setDoubleArrayWrap(Double[] doubleArrayWrap) {
     this.doubleArrayWrap = doubleArrayWrap;
+  }
+
+  public BigInteger[] getBigIntegerArray() {
+    return bigIntegerArray;
+  }
+
+  public void setBigIntegerArray(BigInteger[] bigIntegerArray) {
+    this.bigIntegerArray = bigIntegerArray;
+  }
+
+  public BigDecimal[] getBigDecimalArray() {
+    return bigDecimalArray;
+  }
+
+  public void setBigDecimalArray(BigDecimal[] bigDecimalArray) {
+    this.bigDecimalArray = bigDecimalArray;
+  }
+
+  public ZonedDateTime[] getZonedDateTimeArray() {
+    return zonedDateTimeArray;
+  }
+
+  public void setZonedDateTimeArray(ZonedDateTime[] zonedDateTimeArray) {
+    this.zonedDateTimeArray = zonedDateTimeArray;
+  }
+
+  public Date[] getDateArray() {
+    return dateArray;
+  }
+
+  public void setDateArray(Date[] dateArray) {
+    this.dateArray = dateArray;
   }
 }

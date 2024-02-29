@@ -7,6 +7,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.DateTimeException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
@@ -99,7 +102,10 @@ public class CharacterDataTypesBuilder {
     long[] result = new long[numbers.length];
     for (int i = 0; i < numbers.length; i++)
       try { result[i] = Long.parseLong(numbers[i]);
-      } catch (NumberFormatException nfe) { result[i] = 0l; }
+      } catch (NumberFormatException nfe) {
+        System.out.println("long value expected but was: "+numbers[i]);
+        result[i] = 0l;
+      }
     return result;
   }
 
@@ -107,7 +113,10 @@ public class CharacterDataTypesBuilder {
     Long[] result = new Long[numbers.length];
     for (int i = 0; i < numbers.length; i++)
       try { result[i] = Long.parseLong(numbers[i]);
-      } catch (NumberFormatException nfe) { result[i] = 0L; }
+      } catch (NumberFormatException nfe) {
+        System.out.println("Long value expected but was: "+numbers[i]);
+        result[i] = 0L;
+      }
     return result;
   }
 
@@ -115,7 +124,10 @@ public class CharacterDataTypesBuilder {
     float[] result = new float[numbers.length];
     for (int i = 0; i < numbers.length; i++)
       try { result[i] = Float.parseFloat(numbers[i]);
-      } catch (NumberFormatException nfe) { result[i] = 0.0f; }
+      } catch (NumberFormatException nfe) {
+        System.out.println("float value expected but was: "+numbers[i]);
+        result[i] = 0.0f;
+      }
     return result;
   }
 
@@ -123,7 +135,10 @@ public class CharacterDataTypesBuilder {
     Float[] result = new Float[numbers.length];
     for (int i = 0; i < numbers.length; i++)
       try { result[i] = Float.parseFloat(numbers[i]);
-      } catch (NumberFormatException nfe) { result[i] = 0.0F; }
+      } catch (NumberFormatException nfe) {
+        System.out.println("Float value expected but was: "+numbers[i]);
+        result[i] = 0.0F;
+      }
     return result;
   }
 
@@ -131,7 +146,10 @@ public class CharacterDataTypesBuilder {
     double[] result = new double[numbers.length];
     for (int i = 0; i < numbers.length; i++)
       try { result[i] = Double.parseDouble(numbers[i]);
-      } catch (NumberFormatException nfe) { result[i] = 0.0d; }
+      } catch (NumberFormatException nfe) {
+        System.out.println("double value expected but was: "+numbers[i]);
+        result[i] = 0.0d;
+      }
     return result;
   }
 
@@ -139,7 +157,62 @@ public class CharacterDataTypesBuilder {
     Double[] result = new Double[numbers.length];
     for (int i = 0; i < numbers.length; i++)
       try { result[i] = Double.parseDouble(numbers[i]);
-      } catch (NumberFormatException nfe) { result[i] = 0.0D; }
+      } catch (NumberFormatException nfe) {
+        System.out.println("Double value expected but was: "+numbers[i]);
+        result[i] = 0.0D;
+      }
+    return result;
+  }
+
+  public static BigInteger[] getBigIntegerArray(String[] numbers) {
+    BigInteger[] result = new BigInteger[numbers.length];
+    for (int i = 0; i < numbers.length; i++)
+      try { result[i] = new BigInteger(numbers[i]);
+      } catch (NumberFormatException nfe) {
+        System.out.println("BigInteger value expected but was: "+numbers[i]);
+        result[i] = new BigInteger("0");
+      }
+    return result;
+  }
+
+  public static BigDecimal[] getBigDecimalArray(String[] numbers) {
+    BigDecimal[] result = new BigDecimal[numbers.length];
+    for (int i = 0; i < numbers.length; i++)
+      try { result[i] = new BigDecimal(numbers[i]);
+      } catch (NumberFormatException nfe) {
+        System.out.println("BigDecimal value expected but was: "+numbers[i]);
+        result[i] = new BigDecimal("0.0");
+      }
+    return result;
+  }
+
+  public static ZonedDateTime[] getZonedDateTimeArray(String[] numbers, String format) {
+    ZonedDateTime[] result = new ZonedDateTime[numbers.length];
+    for (int i = 0; i < numbers.length; i++)
+      try {
+        result[i] = LocalDateTime
+                .parse(numbers[i],DateTimeFormatter.ofPattern(format))
+                .atZone(ZoneId.systemDefault())
+                .withZoneSameInstant(ZoneId.systemDefault());
+
+      } catch (DateTimeException dte) {
+        System.out.println("Format["+format+"] expected but was: "+numbers[i]);
+        System.out.println("    "+dte.getMessage());
+        result[i] = ZonedDateTime.now();
+      }
+    return result;
+  }
+
+  public static Date[] getDateArray(String[] numbers, String format) {
+    Date[] result = new Date[numbers.length];
+    for (int i = 0; i < numbers.length; i++)
+      try {
+        result[i] = new SimpleDateFormat(format).parse(numbers[i]);
+      } catch (Exception dte) {
+        System.out.println("Format["+format+"] expected but was: "+numbers[i]);
+        System.out.println("    "+dte.getMessage());
+        result[i] = new Date();
+      }
     return result;
   }
 }

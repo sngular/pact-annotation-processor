@@ -3,7 +3,6 @@ package com.sngular.annotation.processor;
 import java.util.Arrays;
 import java.util.Optional;
 
-
 /** Represents an enum of array types.
  * @author Miguel Angel Escobar
  * @version 1.0
@@ -52,7 +51,27 @@ public enum TypeArray {
     /**
      * An array type {@code double[]}.
      */
-    DOUBLE_ARRAY("double[]","Double[]");
+    DOUBLE_ARRAY("double[]","Double[]"),
+
+    /**
+     * An array type {@code BigInteger[]}.
+     */
+    BIG_INTEGER_ARRAY("","BigInteger[]"),
+
+    /**
+     * An array type {@code BigDecimal[]}.
+     */
+    BIG_DECIMAL_ARRAY("","BigDecimal[]"),
+
+    /**
+     * An array type {@code ZonedDateTime[]}.
+     */
+    ZONED_DATE_TIME_ARRAY("","ZonedDateTime[]"),
+
+    /**
+     * An array type {@code Date[]}.
+     */
+    DATE_ARRAY("","Date[]");
 
     private String primitiveName;
     private String objectName;
@@ -74,13 +93,14 @@ public enum TypeArray {
     public String getobjectName() {
         return objectName;
     }
+
     /**
      * {@return TypeArray value that matches typeString}
      */
     public static TypeArray get(String typeString) {
         Optional<TypeArray> op = Arrays.stream(TypeArray.values())
-                .filter(accStatus -> accStatus.primitiveName.equals(typeString)
-                        || accStatus.objectName.equals(typeString))
+                .filter(typeArray -> typeArray.primitiveName.equals(typeString)
+                        || typeArray.objectName.equals(typeString))
                 .findFirst();
 
         return op.get();
