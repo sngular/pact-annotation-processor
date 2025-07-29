@@ -94,7 +94,7 @@
     <maven.compiler.target>17</maven.compiler.target>
     <freemarker.version>2.3.32</freemarker.version>
     <projectlombok.version>1.18.30</projectlombok.version>
-    <commons-lang3.version>3.13.0</commons-lang3.version>
+    <commons-lang3.version>3.18.0</commons-lang3.version>
     <google-auto.version>1.1.1</google-auto.version>
     <pact-consumer.version>4.6.3</pact-consumer.version>
     <org-json.version>20230618</org-json.version>
